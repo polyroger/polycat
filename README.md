@@ -1,4 +1,5 @@
 # polycat
 polycat pipeline scripts
 
-a bit about myself
+This is a tempory repo that stores some basic pipeline scripts
+
