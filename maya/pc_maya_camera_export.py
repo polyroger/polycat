@@ -1,12 +1,10 @@
-#still to do :
-#create variables for all the names and figure out how to store objects in a variable so that you dont explicitly call the name - kinda done
-#fix the out of rannge error if there is nothing selected - done
-#make it so that if anything other that a camera is selected the script doesnt execute - done
-#make sure that the abc plugin is loaded - done
-#allow for selection of multiple cameras
-
 #create a gui to set some paramaters like the export scale.
+#export the camera with the frame rande -1 so as to include camera blur on the first frame
 
+"""
+Polycat script for exporting a camera at the correct scale for houdini
+
+"""
 
 import maya.cmds as cdms
 import os
