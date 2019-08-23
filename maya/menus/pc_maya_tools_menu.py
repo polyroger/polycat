@@ -5,9 +5,8 @@
 import pymel.core as pm
 
 
-def executthis():
-    test = "this is working"
-    print (test)
+def foo():
+    print("this is working")
 
 def createMayaMenus():
 
@@ -19,10 +18,9 @@ def createMayaMenus():
 
     custom_tools_menu = pm.menu(menu_obj, label=menu_label, parent=main_window, tearOff=True)
     pm.menuItem(label="Scene",subMenu=True, parent=custom_tools_menu, tearOff=True)
-    pm.menuItem(label="Export Camera",command="executthis()")
+    pm.menuItem(label="Export Camera",command="import pc_ABC_camera_exporter") #pc_ABC_camera_exporter path is being imported
 
     # sets the parent back to the specified menu
     pm.setParent("..",menu=True)
 
     # add in other pm.menu and pm.menuItem after this to create more menus
-

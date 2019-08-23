@@ -1,2 +1,3 @@
 .idea/
-*/*dev_test*.py
+*dev_test*.py
+*.pyc
