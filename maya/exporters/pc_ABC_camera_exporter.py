@@ -1,18 +1,7 @@
-# Polycat Maya Camera to Houdini Exporter
-# 2019
-
-# Creates a maya camera cl# Polycat Maya Camera to Houdini Exporter
-# 2019
-
-# Creates a maya camera class, houdini camera class and a maya abc exprt class. The selected cameras attributes are passed
-# onto a newly created camera that gets assigned as an object in the houdini camera class. For each frame in the frame range
-# the houdini camera gets its values set by the maya camaera and keyed ( the translates get multiplied by a scale factor )
-# then the houdini camera is exported.
-
 # todo:
 # export both the maya camera and the houdini camera into a version folder with a .houdini or .maya tag - done
 # unify all the classes to use the same attribute names so reading the code is easier - done ( should be further fixed with inheritance )
-# add this to a maya polycat menu rather than a shelf tool
+# add this to a maya polycat menu rather than a shelf tool - done
 # add the camera to a version folder / check to see if a version exists and version up from it.
 # create a standard nameing convention for cameras ( {scene}_{shot}_camera_{version}
 # let the user select a folder rather than choosing a name
@@ -22,7 +11,11 @@
 # look at maintaining this and future code in a git repository
 # use inheratice to have to maya camera and the houdini camera to share the same "export functino" from a place holder export class
 # ad exceptions for the camera exports so that it does not fail and gives you a confirmation dialogue
+# set the frame range from the database
 
+
+# Polycat Maya Camera to Houdini Exporter
+# 2019
 
 import pymel.core as pm
 import os
