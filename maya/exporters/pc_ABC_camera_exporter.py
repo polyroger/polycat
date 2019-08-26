@@ -1,21 +1,13 @@
-# todo:
-# export both the maya camera and the houdini camera into a version folder with a .houdini or .maya tag - done
-# unify all the classes to use the same attribute names so reading the code is easier - done ( should be further fixed with inheritance )
-# add this to a maya polycat menu rather than a shelf tool - done
-# add the camera to a version folder / check to see if a version exists and version up from it.
-# create a standard nameing convention for cameras ( {scene}_{shot}_camera_{version}
-# let the user select a folder rather than choosing a name
-# fix the naming of the imported maya camera
-# print out a "camera export was a sucsess " if the conditions are me
-# create an interface that lets you overide the defualy scale value
-# look at maintaining this and future code in a git repository
-# use inheratice to have to maya camera and the houdini camera to share the same "export functino" from a place holder export class
-# ad exceptions for the camera exports so that it does not fail and gives you a confirmation dialogue
-# set the frame range from the database
-
-
 # Polycat Maya Camera to Houdini Exporter
 # 2019
+
+"""
+This script is designed to be run from a main window drop down menu in maya.
+It creates a new camera at the scene root and on each frame sets and keys a specified value from the maya camera.
+It also scales the translates by 0.1 so as to match the houdini scene scale.
+A houdini camera at scale 0.1 is exported as well as a maya camera at scale 1.
+
+"""
 
 import pymel.core as pm
 import os
