@@ -7,7 +7,6 @@ from pc_utilities import pc_helper
 
 
 BASE_ATTRIBUTES = [
-    "-frameRange",
     "-dataFormat ogawa"
 ]
 
@@ -19,7 +18,6 @@ class Helper:
         self._output = None
         self._command = self.__create_default_command()
 
-    @property
     def set_alembic_node(self, node):
         self._node = node
 
@@ -27,7 +25,6 @@ class Helper:
     def get_alembic_node(self):
         return self._node
 
-    @property
     def set_alembic_output(self, output):
         self._output = output
 
@@ -35,7 +32,6 @@ class Helper:
     def get_alembic_output(self):
         return self._output
 
-    @property
     def set_alembic_command(self, commands):
         self._command = self.__create_default_command(extra_attributes=commands)
 
