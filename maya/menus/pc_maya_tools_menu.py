@@ -4,10 +4,6 @@
 
 import pymel.core as pm
 
-
-def foo():
-    print("this is working")
-
 def createMayaMenus():
 
     main_window = pm.language.melGlobals["gMainWindow"]
@@ -18,7 +14,7 @@ def createMayaMenus():
 
     custom_tools_menu = pm.menu(menu_obj, label=menu_label, parent=main_window, tearOff=True)
     pm.menuItem(label="Scene",subMenu=True, parent=custom_tools_menu, tearOff=True)
-    pm.menuItem(label="Export Camera",command="import pc_ABC_camera_exporter") #pc_ABC_camera_exporter path is being imported
+    pm.menuItem(label="Export Camera",command="pc_ABC_camera_exporter.runCameraExport()")
 
     # sets the parent back to the specified menu
     pm.setParent("..",menu=True)

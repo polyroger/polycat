@@ -43,6 +43,9 @@ class GetSceneSettings():
         self.end = int(pm.playbackOptions(query=True, max=True))
         self.scene_scale = scene_scale
 
+    @classmethod
+    def test(cls):
+        print("this is a class method")
 
 class SelectedCamera():
     def __init__(self):
@@ -70,16 +73,18 @@ def runCameraExport():
 
     scene_settings = GetSceneSettings(0.1)
     selectedcam = SelectedCamera()
-    rootcam = RootCamera("root")
+    rootcam = RootCamera("maya")
     houdinicam = RootCamera("houdini")
 
+
+
     # BAKES
-    bakedrootcam = BasicCameraBake(rootcam,selectedcam)
-    bakedhoudinicam = BasicCameraBake(houdinicam,rootcam)
+    bakedrootcam = BasicCameraBake(rootcam, selectedcam)
+    bakedhoudinicam = BasicCameraBake(houdinicam, rootcam)
 
     bakedrootcam.bakeme(scene_settings.start,scene_settings.end,1)
     bakedhoudinicam.bakeme(scene_settings.start,scene_settings.end,0.1)
 
     print(selectedcam.camobj)
 
-runCameraExport()
+
