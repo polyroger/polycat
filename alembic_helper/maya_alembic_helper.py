@@ -1,10 +1,6 @@
 import maya.cmds as cmds
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.realpath(sys.argv[0])))).replace(os.sep, "/"))
-from pc_utilities import pc_helper
-
 
 BASE_ATTRIBUTES = [
     "-dataFormat ogawa"
