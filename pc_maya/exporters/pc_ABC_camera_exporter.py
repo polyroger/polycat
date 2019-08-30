@@ -1,7 +1,12 @@
+"""
+Polycat maya camera exporter 
+2019
+"""
+
+
 import os
 import pymel.core as pm
-class ABCexport():
-    pass
+
 
 class BasicCameraBake():
 
@@ -65,10 +70,8 @@ class RootCamera():
     def __str__(self):
         return ("{}".format(self.selection))
 
-class MayaCamera():
-    pass
 
-
+# RUNS THE EXPORT
 def runCameraExport():
 
     # SETTING THE VARIABLES FOR THE ABC EXPORT
