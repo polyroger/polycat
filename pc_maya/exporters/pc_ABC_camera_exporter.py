@@ -77,7 +77,7 @@ def runCameraExport():
     # SETTING THE VARIABLES FOR THE ABC EXPORT
     exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory="Y:/")
     if exportfilepath:
-
+        
         basename = os.path.basename(exportfilepath[0])
         dirname = os.path.dirname(exportfilepath[0])
         savename = os.path.splitext(basename)[0]
@@ -88,21 +88,35 @@ def runCameraExport():
         rootcam = RootCamera("maya")
         houdinicam = RootCamera("houdini")
 
+       
         # BAKES
         bakedrootcam = BasicCameraBake(rootcam, selectedcam)
         bakedhoudinicam = BasicCameraBake(houdinicam, rootcam)
 
         bakedrootcam.bakeme(scene_settings.start,scene_settings.end,1)
         bakedhoudinicam.bakeme(scene_settings.start,scene_settings.end,0.1)
+           
 
-        from alembic_helper import maya_alembic_helper
-        reload(maya_alembic_helper)
-        for s in ["maya", "houdini"]:
-            newDir = os.path.join(dirname, s)
-            if os.path.exists(newDir) is False:
-                os.mkdir(newDir)
-            a = maya_alembic_helper.Helper()
-            a.set_alembic_node(houdinicam.selection)
-            a.set_alembic_output(os.path.join(newDir, "{}{}".format(savename, ext)))
-            a.set_alembic_command(["-frameRange 1 120"])
-            a.export_alembic()
+        myfile = str("-file " + dirname + "/" + savename + "_houdini" + ext)
+        root = str("-root " + str(houdinicam.selection))
+        myframerange = "-frameRange " + str(scene_settings.start) + " " + str(scene_settings.end)
+        exportcommand = myfile + " " + root + " " + myframerange + " " + "-eulerFilter -worldspace"
+        pm.AbcExport(j=exportcommand)
+
+        print (houdinicam.selection)
+        print (rootcam.selection)
+        print (exportcommand)
+        
+        
+        
+        # from alembic_helper import maya_alembic_helper
+        # reload(maya_alembic_helper)
+        # for s in ["maya", "houdini"]:
+        #     newDir = os.path.join(dirname, s)
+        #     if os.path.exists(newDir) is False:
+        #         os.mkdir(newDir)
+        #     a = maya_alembic_helper.Helper()
+        #     a.set_alembic_node(houdinicam.selection)
+        #     a.set_alembic_output(os.path.join(newDir, "{}{}".format(savename, ext)))
+        #     a.set_alembic_command(["-frameRange 1 120"])
+        #     a.export_alembic()
