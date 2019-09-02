@@ -6,6 +6,7 @@ Polycat maya camera exporter
 
 import os
 import pymel.core as pm
+import re
 
 
 class BasicCameraBake():
@@ -70,12 +71,23 @@ class RootCamera():
     def __str__(self):
         return ("{}".format(self.selection))
 
+def getexportdir():
+    scenedir = pm.sceneName()
+    dirname = os.path.dirname(scenedir)
+    cameradir = os.path.abspath(os.path.join(dirname,"../../0_Camera"))
+
+    if not os.path.exists(cameradir):
+        cameradir = "Y:/"
+
+    return cameradir
+
+
 
 # RUNS THE EXPORT
 def runCameraExport():
 
     # SETTING THE VARIABLES FOR THE ABC EXPORT
-    exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory="Y:/")
+    exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir())
     if exportfilepath:
         
         basename = os.path.basename(exportfilepath[0])
@@ -96,16 +108,19 @@ def runCameraExport():
         bakedrootcam.bakeme(scene_settings.start,scene_settings.end,1)
         bakedhoudinicam.bakeme(scene_settings.start,scene_settings.end,0.1)
            
+        for app in ["maya","houdini"]:
+           
+            newDir = os.path.join(dirname, app)
+                      
+            if os.path.exists(newDir) is False:
+                os.mkdir(newDir)
 
-        myfile = str("-file " + dirname + "/" + savename + "_houdini" + ext)
-        root = str("-root " + str(houdinicam.selection))
-        myframerange = "-frameRange " + str(scene_settings.start) + " " + str(scene_settings.end)
-        exportcommand = myfile + " " + root + " " + myframerange + " " + "-eulerFilter -worldspace"
-        pm.AbcExport(j=exportcommand)
+            myfile = str("-file " + newDir + "/" + savename + ext)
+            root = str("-root " + str(houdinicam.selection))
+            myframerange = "-frameRange " + str(scene_settings.start) + " " + str(scene_settings.end)
+            exportcommand = myfile + " " + root + " " + myframerange + " " + "-eulerFilter -worldspace"
+            pm.AbcExport(j=exportcommand)
 
-        print (houdinicam.selection)
-        print (rootcam.selection)
-        print (exportcommand)
         
         
         
