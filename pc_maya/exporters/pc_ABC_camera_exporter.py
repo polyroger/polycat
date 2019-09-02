@@ -81,14 +81,37 @@ def getexportdir():
 
     return cameradir
 
-def getVersion():
-    pass
+# def getVersion(camerapath):
+#     for root,dirs,files in os.walk(camerapath):
+#         for folder in dirs:
+#             mypath = os.path.join(camerapath,folder)
+#             print(mypath)
+    
+#             for root,dirs,files in os.walk(mypath):
+#                 try:
+#                     campath = os.path.splitext(files[0])[0]
+#                     # this regex looks for numbers matching 0-9 only at the end of a filenam. The extension is stripped to make it easier.
+#                     x = re.search("\d[0-9]$",campath).group()
+#                     xint = int(x)
+#                     newintx = xint + int(1)
+#                     version = str(newintx)
+
+#                 except:
+#                     print("there was no version found, using v001")
+#                     version = str("01")
+
+#     return version
+                    
         
+
+
+
+
 # RUNS THE EXPORT
 def runCameraExport():
 
     # SETTING THE VARIABLES FOR THE ABC EXPORT
-    exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir())
+    exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir(),fileMode=2,caption="Select the camera folder")
     if exportfilepath:
         
         basename = os.path.basename(exportfilepath[0])
