@@ -55,9 +55,14 @@ class GetSceneSettings():
 
 class SelectedCamera():
     def __init__(self):
-        self.camobj = pm.ls(selection=True)
-        self.selection = self.camobj[0]
-        self.shape = self.selection.getShape()
+        try:
+            self.camobj = pm.ls(selection=True)
+            self.selection = self.camobj[0]
+            self.shape = self.selection.getShape()
+        except IndexError:
+            pm.confirmDialog(m="You have not selected a camera",t="Camera export Error",)
+            raise SystemExit
+      
 
 class RootCamera():
 
@@ -93,6 +98,8 @@ def runCameraExport():
     # filenaming.getVersion("C:/Users/roger/Documents/local_dev/testing")
 
     # SETTING THE VARIABLES FOR THE ABC EXPORT
+    selectedcam = SelectedCamera()
+
     exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir(),fileMode=2,caption="Select the camera folder")
     if exportfilepath:
         
@@ -102,10 +109,9 @@ def runCameraExport():
         ext = os.path.splitext(basename)[1]
 
         scene_settings = GetSceneSettings(0.1)
-        selectedcam = SelectedCamera()
+        
         rootcam = RootCamera("maya")
         houdinicam = RootCamera("houdini")
-
         print(rootcam.selection)
         print(houdinicam.selection)
 
