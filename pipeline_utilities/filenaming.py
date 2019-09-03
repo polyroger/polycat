@@ -7,6 +7,7 @@ def walk_error_handler(exception_instance):
     return latest_plus
 
 def getVersion(camerapath):
+    import re
 
     for root,dirs,files in os.walk(camerapath):
         for folder in dirs:
@@ -22,7 +23,7 @@ def getVersion(camerapath):
                     for file in files:
                         noext = os.path.splitext(file)[0]
                         # this regex looks for numbers matching 0-9 only at the end of a filenam. The extension is stripped to make it easier.
-                        latest = re.search("\d[0-9]$",noext).group()
+                        latest = re.search(r"\d[0-9]$",noext).group()
                         latest_plus = int(latest) + int(1)
                 else:
                     print("there were no files in the folder...creating version 001")
@@ -36,7 +37,7 @@ def getVersion(camerapath):
 
         
 
-getVersion("C:/Users/roger/Documents/local_dev/testing")
+# getVersion("C:/Users/roger/Documents/local_dev/testing")
 
 # need to find the file with the highest version
 # add in a better regex to get any numbered version, currently its only getting two platces , 1 - 99 addin int two /d seemed to do it but i think that its incorrect

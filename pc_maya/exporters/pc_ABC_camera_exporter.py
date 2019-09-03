@@ -6,8 +6,8 @@ Polycat maya camera exporter
 
 import os
 import pymel.core as pm
-import re
 from pipeline_utilities import filenaming
+
 
 class BasicCameraBake():
 
@@ -88,53 +88,56 @@ def getexportdir():
 
 # RUNS THE EXPORT
 def runCameraExport():
+    
+    print("the file is running")
+    filenaming.getVersion("C:/Users/roger/Documents/local_dev/testing")
 
-    # SETTING THE VARIABLES FOR THE ABC EXPORT
-    exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir(),fileMode=2,caption="Select the camera folder")
-    if exportfilepath:
+    # # SETTING THE VARIABLES FOR THE ABC EXPORT
+    # exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir(),fileMode=2,caption="Select the camera folder")
+    # if exportfilepath:
         
-        basename = os.path.basename(exportfilepath[0])
-        dirname = os.path.dirname(exportfilepath[0])
-        savename = os.path.splitext(basename)[0]
-        ext = os.path.splitext(basename)[1]
+    #     basename = os.path.basename(exportfilepath[0])
+    #     dirname = os.path.dirname(exportfilepath[0])
+    #     savename = os.path.splitext(basename)[0]
+    #     ext = os.path.splitext(basename)[1]
 
-        scene_settings = GetSceneSettings(0.1)
-        selectedcam = SelectedCamera()
-        rootcam = RootCamera("maya")
-        houdinicam = RootCamera("houdini")
+    #     scene_settings = GetSceneSettings(0.1)
+    #     selectedcam = SelectedCamera()
+    #     rootcam = RootCamera("maya")
+    #     houdinicam = RootCamera("houdini")
 
-        print(rootcam.selection)
-        print(houdinicam.selection)
+    #     print(rootcam.selection)
+    #     print(houdinicam.selection)
 
                
-        # BAKES
-        bakedrootcam = BasicCameraBake(rootcam, selectedcam)
-        bakedhoudinicam = BasicCameraBake(houdinicam, rootcam)
+    #     # BAKES
+    #     bakedrootcam = BasicCameraBake(rootcam, selectedcam)
+    #     bakedhoudinicam = BasicCameraBake(houdinicam, rootcam)
 
-        bakedrootcam.bakeme(scene_settings.start,scene_settings.end,1)
-        bakedhoudinicam.bakeme(scene_settings.start,scene_settings.end,0.1)
+    #     bakedrootcam.bakeme(scene_settings.start,scene_settings.end,1)
+    #     bakedhoudinicam.bakeme(scene_settings.start,scene_settings.end,0.1)
 
-        camindex = 0
+    #     camindex = 0
            
-        for app in ["maya","houdini"]:
+    #     for app in ["maya","houdini"]:
            
-            newDir = os.path.join(dirname, app).replace(os.sep,"/")
+    #         newDir = os.path.join(dirname, app).replace(os.sep,"/")
             
-            if not os.path.exists(newDir):
-                 os.mkdir(newDir)
+    #         if not os.path.exists(newDir):
+    #              os.mkdir(newDir)
 
-            camname = (rootcam.selection,houdinicam.selection)
+    #         camname = (rootcam.selection,houdinicam.selection)
 
-            myfile = str("-file " + newDir + "/" + savename + ext)
-            root = str("-root " + str(camname[camindex]))
-            myframerange = "-frameRange " + str(scene_settings.start) + " " + str(scene_settings.end)
-            exportcommand = myfile + " " + root + " " + myframerange + " " + "-eulerFilter -worldspace"
-            pm.AbcExport(j=exportcommand)
+    #         myfile = str("-file " + newDir + "/" + savename + ext)
+    #         root = str("-root " + str(camname[camindex]))
+    #         myframerange = "-frameRange " + str(scene_settings.start) + " " + str(scene_settings.end)
+    #         exportcommand = myfile + " " + root + " " + myframerange + " " + "-eulerFilter -worldspace"
+    #         pm.AbcExport(j=exportcommand)
 
-            camindex = not camindex
+    #         camindex = not camindex
 
-        pm.delete(houdinicam.selection)
-        pm.delete(rootcam.selection)
+    #     pm.delete(houdinicam.selection)
+    #     pm.delete(rootcam.selection)
         
         
         # from alembic_helper import maya_alembic_helper
