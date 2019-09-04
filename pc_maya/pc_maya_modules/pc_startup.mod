@@ -1,1 +1,1 @@
-+ pc_startup 0.01 Y:\pipeline\development\pc_maya\pc_maya_modules
++ pc_startup 0.01 ${MAYA_MODULE_PATH}
