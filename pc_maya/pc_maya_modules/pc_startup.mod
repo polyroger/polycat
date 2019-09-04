@@ -1,1 +1,0 @@
-+ pc_startup 0.01 ${MAYA_MODULE_PATH}
