@@ -4,10 +4,10 @@ import pymel.core as pm
 
 def getexportdir():
     scenedir = pm.sceneName()
-    dirname = os.path.dirname(scenedir)
-    cameradir = os.path.abspath(os.path.join(dirname,"../../"))
-
-    if not os.path.exists(cameradir):
+    if scenedir.startswith("Y:"):
+        dirname = os.path.dirname(scenedir)
+        cameradir = os.path.abspath(os.path.join(dirname,"../../"))
+    else:
         cameradir = "Y:/"
 
     return cameradir
