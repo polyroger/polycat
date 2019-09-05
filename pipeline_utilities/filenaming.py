@@ -13,8 +13,7 @@ def getexportdir():
     return cameradir
 
 def getVersion(camerapath):
-    # import re
-    # print(camerapath)
+
     app_versions = {"maya":int(1),"houdini":int(1),"nuke":int(1)}
     for root,dirs,files in os.walk(camerapath):
         for folder in dirs:
@@ -35,7 +34,6 @@ def getVersion(camerapath):
                     latest_plus = int(1)
                 app_versions[folder] = latest_plus   
                
-    # print(app_versions)
     return app_versions                        
 
 def getExportFilePath():
@@ -51,7 +49,6 @@ def getExportFilePath():
 
 def buildFileName(app,exportfilepath):
         
-    # basename = os.path.basename(exportfilepath)
     dirname = os.path.dirname(exportfilepath)
     ext = ".abc"
     camera = "_camera_"
@@ -59,30 +56,10 @@ def buildFileName(app,exportfilepath):
     cut = os.path.basename(dirname)
 
     pathname = exportfilepath +"/"+ app + "/" + cut + camera + "v" + str(latest_version[app]).zfill(3) + ext
-
-    # print(os.path.split(pathname)[0])
-    # print(exportfilepath)
-    # print(latest_version)
-    # print(basename)
-    # print(dirname)
-    # print(cut)
-    # print(ext)
-    # print(pathname)
-    # print("afterpathname")
+ 
     return (pathname,dirname)
-
-   
-   
-
-    
-    # # test to check var names
-    # print(houdini_version , maya_version , nuke_version)              
-    # print (cutdir)
-    # print(cut)
-    # print(cameradir)
 
 
 # need to find the file with the highest version
 # add in a better regex to get any numbered version, currently its only getting two platces , 1 - 99 addin int two /d seemed to do it but i think that its incorrect            
 
-# buildFileName()

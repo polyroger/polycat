@@ -83,20 +83,13 @@ def runCameraExport():
     selectedcam = SelectedCamera()
     path = filenaming.getExportFilePath()
 
-    # exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir(),fileMode=2,caption="Select the camera folder")
     if path:
-        
-        # basename = os.path.basename(exportfilepath[0])
-        # dirname = os.path.dirname(exportfilepath[0])
-        # savename = os.path.splitext(basename)[0]
-        # ext = ".abc"
         
         scene_settings = GetSceneSettings(0.1)
         rootcam = RootCamera("maya")
         houdinicam = RootCamera("houdini")
         print(rootcam.selection)
         print(houdinicam.selection)
-
                
         # BAKES
         bakedrootcam = BasicCameraBake(rootcam, selectedcam)
@@ -132,15 +125,3 @@ def runCameraExport():
         pm.delete(houdinicam.selection)
         pm.delete(rootcam.selection)
         
-        
-        # from alembic_helper import maya_alembic_helper
-        # reload(maya_alembic_helper)
-        # for s in ["maya", "houdini"]:
-        #     newDir = os.path.join(dirname, s)
-        #     if os.path.exists(newDir) is False:
-        #         os.mkdir(newDir)
-        #     a = maya_alembic_helper.Helper()
-        #     a.set_alembic_node(houdinicam.selection)
-        #     a.set_alembic_output(os.path.join(newDir, "{}{}".format(savename, ext)))
-        #     a.set_alembic_command(["-frameRange 1 120"])
-        #     a.export_alembic()
