@@ -38,7 +38,7 @@ def getVersion(camerapath):
 
 def getExportFilePath():
     exportfilepath = pm.fileDialog2(fileFilter=".nothing", dialogStyle=2, startingDirectory=getexportdir(),fileMode=3,caption="Select the camera folder")
-    if os.path.basename(exportfilepath[0]) != "0_Camera":
+    if os.path.basename(exportfilepath[0].lower()) != "0_camera":
         pm.confirmDialog(m="You have not selected a pipeline camera folder\nPlease select the 0_Camera folder in a cut",t="Camera export Error",)
         exit()
     else:
