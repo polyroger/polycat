@@ -112,7 +112,7 @@ def runCameraExport():
 
             pathname,dirname = filenaming.buildFileName(app,path)
             
-            newDir = os.path.join(dirname, app).replace(os.sep,"/")
+            newDir = os.path.split(pathname)[0]
             
             if not os.path.exists(newDir):
                  os.mkdir(newDir)

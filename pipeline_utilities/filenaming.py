@@ -15,7 +15,7 @@ def getexportdir():
 def getVersion(camerapath):
     # import re
     # print(camerapath)
-    app_versions = {"maya":"","houdini":"","nuke":int(1)}
+    app_versions = {"maya":int(1),"houdini":int(1),"nuke":int(1)}
     for root,dirs,files in os.walk(camerapath):
         for folder in dirs:
            
@@ -60,6 +60,7 @@ def buildFileName(app,exportfilepath):
 
     pathname = exportfilepath +"/"+ app + "/" + cut + camera + "v" + str(latest_version[app]).zfill(3) + ext
 
+    # print(os.path.split(pathname)[0])
     # print(exportfilepath)
     # print(latest_version)
     # print(basename)
