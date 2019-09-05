@@ -49,10 +49,7 @@ class GetSceneSettings():
         self.end = int(pm.playbackOptions(query=True, max=True))
         self.scene_scale = scene_scale
 
-    @classmethod
-    def test(cls):
-        print("this is a class method")
-
+    
 class SelectedCamera():
     def __init__(self):
         try:
@@ -61,7 +58,8 @@ class SelectedCamera():
             self.shape = self.selection.getShape()
         except IndexError:
             pm.confirmDialog(m="You have not selected a camera",t="Camera export Error",)
-            raise SystemExit
+            # raise SystemExit
+            exit()
       
 
 class RootCamera():
@@ -76,40 +74,24 @@ class RootCamera():
     def __str__(self):
         return ("{}".format(self.selection))
 
-def getexportdir():
-    scenedir = pm.sceneName()
-    dirname = os.path.dirname(scenedir)
-    cameradir = os.path.abspath(os.path.join(dirname,"../../0_Camera"))
-
-    if not os.path.exists(cameradir):
-        cameradir = "Y:/"
-
-    return cameradir
-
-
-
-
 
 
 # RUNS THE EXPORT
 def runCameraExport():
-    
-    # print("the file is running")
-    # filenaming.getVersion("C:/Users/roger/Documents/local_dev/testing")
 
     # SETTING THE VARIABLES FOR THE ABC EXPORT
     selectedcam = SelectedCamera()
+    path = filenaming.getExportFilePath()
 
-    exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir(),fileMode=2,caption="Select the camera folder")
-    if exportfilepath:
+    # exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory=getexportdir(),fileMode=2,caption="Select the camera folder")
+    if path:
         
-        basename = os.path.basename(exportfilepath[0])
-        dirname = os.path.dirname(exportfilepath[0])
-        savename = os.path.splitext(basename)[0]
-        ext = os.path.splitext(basename)[1]
-
+        # basename = os.path.basename(exportfilepath[0])
+        # dirname = os.path.dirname(exportfilepath[0])
+        # savename = os.path.splitext(basename)[0]
+        # ext = ".abc"
+        
         scene_settings = GetSceneSettings(0.1)
-        
         rootcam = RootCamera("maya")
         houdinicam = RootCamera("houdini")
         print(rootcam.selection)
@@ -125,9 +107,11 @@ def runCameraExport():
 
         # for the object.selection toggle
         camindex = 0
-           
+
         for app in ["maya","houdini"]:
-           
+
+            pathname,dirname = filenaming.buildFileName(app,path)
+            
             newDir = os.path.join(dirname, app).replace(os.sep,"/")
             
             if not os.path.exists(newDir):
@@ -135,7 +119,8 @@ def runCameraExport():
 
             camname = (rootcam.selection,houdinicam.selection)
 
-            myfile = str("-file " + newDir + "/" + savename + ext)
+            myfile = str("-file " + pathname)
+            print(myfile)
             root = str("-root " + str(camname[camindex]))
             myframerange = "-frameRange " + str(scene_settings.start) + " " + str(scene_settings.end)
             exportcommand = myfile + " " + root + " " + myframerange + " " + "-eulerFilter -worldspace"
