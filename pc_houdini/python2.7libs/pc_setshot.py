@@ -1,6 +1,4 @@
-import hou
 import os
-
 root =  hou.getenv("JOB") + "/"
 
 def createMenu(menu_path):
@@ -80,7 +78,14 @@ def cameraSetup(cut,abcnode):
     hcam.parm("ar_dof_enable").set(1)
     hcam.parm("ar_aperture_size").set(0.005)
     
+    parent = hcam.parent()
+    focus_null = parent.createNode("null","focus_null")
+    expr = "ch(\"../focus_null/tz\")"
+    hcam.parm("focus").setExpression(expr)
+    
     return hcam.path()
+    
+ 
    
    
         
@@ -107,6 +112,7 @@ def getAbcCamera():
     alembicCam.parm('buildHierarchy').pressButton()
     
     setshot.parm("camera").set(cameraSetup(cut,alembicCam))
+    
     
     
     
