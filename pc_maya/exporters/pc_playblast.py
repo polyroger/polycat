@@ -3,35 +3,28 @@ import pymel.core as pm
 #setting the render settings
 
 
-def createWindow():
 
-    # just for testing so the if a window gets created from the script it will get deleted first
-    # pm.deleteUI("window",window=True,panel=True)
+def getEditor():
+    """
+    The modelEditor is the node in maya that contains all the information about a modelPanel. A panel is an object in maya that acts as the root of a ui element. The model editor
+    for instance holds information about what cameras have been added to a panel.
+    """
 
-    #windows are created in a heiracy so the order of these commands are important,
-    #when you create a window everything after that becomes a child of the window object
+    modpanels =  pm.getPanel(type="modelPanel")
 
-    window = pm.window('window')
-    form = pm.formLayout()
-    editor = pm.modelEditor()
-    column = pm.columnLayout('true')
-
-    pm.formLayout( form, edit=True, attachForm=[(column, 'top', 0), (column, 'left', 0), (editor, 'top', 0), (editor, 'bottom', 0), (editor, 'right', 0)], attachNone=[(column, 'bottom'), (column, 'right')], attachControl=(editor, 'left', 0, column))
-
-
-    camera= pm.ls(selection=True)[0]
-
-    #    Attach the camera to the model editor.
-    pm.modelEditor( editor, edit=True, camera=camera[0], activeView=True )
-
-    pm.showWindow( window )
-
-
-    return editor
-
+    for panel in modpanels:
+        if pm.modelPanel(panel,query=True,camera=True) == "camera2":
+            modpanel = panel #modpanel is a panel object, so it uses pymel object methods
+                
+    cameditorname =  pm.modelPanel(modpanel,query=True,modelEditor=True) #cameditor is the name of the editor attatched to the modpanel object
+    modeditor = pm.modelEditor(cameditorname)
+    # print type(modeditor)
+   
+   
 def runPlayblast():
     
     createWindow()
-    pm.playblast()
+    pm.playblast(format="image",filename="C:/Users/roger/Documents/maya/projects/default/images/test",compression="jpg",widthHeight=[1920,1080],percent=100)
+    
 
   
