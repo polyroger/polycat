@@ -2,11 +2,13 @@ import os
 import re
 import pymel.core as pm
 
-def getexportdir():
+def getexportdir(asset):
+    # this is a tempory way to idetify folders, find a better way. Maybe a global json file that gives you relative paths
+    relpaths = {"cam":"../../","playblast":"../../0_Playblast"}
     scenedir = pm.sceneName()
     if scenedir.startswith("Y:"):
         dirname = os.path.dirname(scenedir)
-        cameradir = os.path.abspath(os.path.join(dirname,"../../"))
+        cameradir = os.path.abspath(os.path.join(dirname,relpaths[asset]))
     else:
         cameradir = "Y:/"
 
@@ -37,7 +39,7 @@ def getVersion(camerapath):
     return app_versions                        
 
 def getExportFilePath():
-    exportfilepath = pm.fileDialog2(fileFilter=".nothing", dialogStyle=2, startingDirectory=getexportdir(),fileMode=3,caption="Select the camera folder")
+    exportfilepath = pm.fileDialog2(fileFilter=".nothing", dialogStyle=2, startingDirectory=getexportdir("cam"),fileMode=3,caption="Select the camera folder")
     if os.path.basename(exportfilepath[0].lower()) != "0_camera":
         pm.confirmDialog(m="You have not selected a pipeline camera folder\nPlease select the 0_Camera folder in a cut",t="Camera export Error",)
         exit()
