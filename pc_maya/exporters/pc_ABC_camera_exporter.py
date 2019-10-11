@@ -9,6 +9,7 @@ import pymel.core as pm
 from pipeline_utilities import filenaming
 
 
+
 class BasicCameraBake():
 
     def __init__(self,camtobake,camtoget):
@@ -77,7 +78,9 @@ class RootCamera():
 
 
 # RUNS THE EXPORT
-def runCameraExport():
+def runCameraExport(scale):
+    print(scale)
+    
 
     # SETTING THE VARIABLES FOR THE ABC EXPORT
     selectedcam = SelectedCamera()
@@ -125,3 +128,12 @@ def runCameraExport():
         pm.delete(houdinicam.selection)
         pm.delete(rootcam.selection)
         
+ 
+
+   
+
+
+
+
+
+
