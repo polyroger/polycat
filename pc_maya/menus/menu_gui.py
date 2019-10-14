@@ -1,7 +1,7 @@
 import pymel.core as pm
 from pc_maya.exporters import pc_ABC_camera_exporter
 
-class MyGui(object):
+class CamExportGui(object):
     def __init__(self,name):
         self.name = name
         
@@ -23,23 +23,22 @@ class MyGui(object):
     
     def exportCamera(self,_):
         print("The settings arent supported yet")
-        print(self.range.getValue())
-        
+
+        #check for single frame export       
         if self.single.getValue1():
-            print type(self.range)
             self.range.setValue1(val=True,value1=int(pm.playbackOptions(query=True, min=True)),value2=int(pm.playbackOptions(query=True, min=True)+int(1)))
-       
-
-        print(self.range.getValue())
-
-
-        
-        
-        # pc_ABC_camera_exporter.runCameraExport(self.scale.getValue(),self.range.getValue(),self.houexp.getValue1(),self.mayaexp.getValue1())  
+        print(self.range.getValue()[0])
+        print(self.range.getValue()[1])
+        pc_ABC_camera_exporter.runCameraExport(self.scale.getValue(),self.range.getValue(),self.houexp.getValue1(),self.mayaexp.getValue1(),self)
+        pm.deleteUI(self.name,window=True)  
 
     
 def initGui():
-    gui = MyGui("cameraexportgui")
+    gui = CamExportGui("cameraexportgui")
+
+def delGui(guiobject):
+    del guiobject
+    print("camexportgui object deleted")
 
     
         

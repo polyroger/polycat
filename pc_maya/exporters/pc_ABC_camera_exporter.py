@@ -43,13 +43,6 @@ class BasicCameraBake():
             pm.setKeyframe(self.camtobake.selection, v=myrotx, at="rotateX")
             pm.setKeyframe(self.camtobake.selection, v=myroty, at="rotateY")
 
-
-class GetSceneSettings():
-    def __init__(self,scene_scale=float(1.0)):
-        self.start =  int(pm.playbackOptions(query=True, min=True))
-        self.end = int(pm.playbackOptions(query=True, max=True))
-        self.scene_scale = scene_scale
-
     
 class SelectedCamera():
     def __init__(self):
@@ -63,6 +56,7 @@ class SelectedCamera():
             exit()
       
 
+# creates a new camera
 class RootCamera():
 
     def __init__(self,name):
@@ -78,36 +72,38 @@ class RootCamera():
 
 
 # RUNS THE EXPORT
-def runCameraExport(scale,frange,houdiniexp,mayaexp):
-    print(scale)
-    print(frange)
-    print(houdiniexp)
-    print(mayaexp)
-
+def runCameraExport(scale,frange,houdiniexp,mayaexp,guiobject):
+  
     # SETTING THE VARIABLES FOR THE ABC EXPORT
     selectedcam = SelectedCamera()
     path = filenaming.getExportFilePath()
-
+    exportcams = []
+    
+    
     if path:
-        
-        scene_settings = GetSceneSettings(0.1)
-        rootcam = RootCamera("maya")
-        houdinicam = RootCamera("houdini")
-        print(rootcam.selection)
-        print(houdinicam.selection)
-               
-        # BAKES
-        bakedrootcam = BasicCameraBake(rootcam, selectedcam)
-        bakedhoudinicam = BasicCameraBake(houdinicam, rootcam)
 
-        bakedrootcam.bakeme(scene_settings.start,scene_settings.end,1)
-        bakedhoudinicam.bakeme(scene_settings.start,scene_settings.end,0.1)
+        # checking if cam needs to be exported and baking
+        if mayaexp:
+            rootcam = RootCamera("maya")
+            exportcams.append(str(rootcam.selection))#replacing the 1 in the name...find a better way
+            print(rootcam.selection + " was added to the exportcams list")
+            bakedrootcam = BasicCameraBake(rootcam, selectedcam)
+            bakedrootcam.bakeme(frange[0],frange[1],1)
+        
+        # checking if cam needs to be exported and baking
+        if houdiniexp:
+            houdinicam = RootCamera("houdini")
+            exportcams.append(str(houdinicam.selection))#replacing the 1 in the name....find a better way
+            print(houdinicam.selection + " was added to the exportcams list")
+            bakedhoudinicam = BasicCameraBake(houdinicam, selectedcam)
+            bakedhoudinicam.bakeme(frange[0],frange[1],scale)
+        
 
         # for the object.selection toggle
         camindex = 0
 
-        for app in ["maya","houdini"]:
-
+        for app in exportcams:
+           
             pathname,dirname = filenaming.buildFileName(app,path)
             
             newDir = os.path.split(pathname)[0]
@@ -115,21 +111,27 @@ def runCameraExport(scale,frange,houdiniexp,mayaexp):
             if not os.path.exists(newDir):
                  os.mkdir(newDir)
 
-            camname = (rootcam.selection,houdinicam.selection)
-
             myfile = str("-file " + pathname)
             print(myfile)
-            root = str("-root " + str(camname[camindex]))
-            myframerange = "-frameRange " + str(scene_settings.start) + " " + str(scene_settings.end)
+            root = str("-root " + str(app))
+            myframerange = "-frameRange " + str(frange[0]) + " " + str(frange[1])
             exportcommand = myfile + " " + root + " " + myframerange + " " + "-eulerFilter -worldspace"
             pm.AbcExport(j=exportcommand)
 
-            # toggles between 0 - 1, there should always only every be a camera at scale 1 and 0.1 so other cameras can just be copy pasted into other folders 
-            camindex = not camindex
 
-        pm.delete(houdinicam.selection)
-        pm.delete(rootcam.selection)
+        try: 
+            pm.delete(houdinicam.selection)
+        except:
+            print("There is no need to delete the houdini camera")
+        try:
+             pm.delete(rootcam.selection)
+        except:
+            ("There is no need to delete the maya camera")
         
+       
+        del guiobject
+        
+                
  
 
    
