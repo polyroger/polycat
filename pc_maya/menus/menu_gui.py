@@ -1,6 +1,5 @@
 import pymel.core as pm
 from pc_maya.exporters import pc_ABC_camera_exporter
-from functools import partial
 
 class MyGui(object):
     def __init__(self,name):
@@ -24,11 +23,21 @@ class MyGui(object):
     
     def exportCamera(self,_):
         print("The settings arent supported yet")
-        pc_ABC_camera_exporter.runCameraExport(self.scale.getValue())  
+        print(self.range.getValue())
+        
+        if self.single.getValue1():
+            print type(self.range)
+            self.range.setValue1(val=True,value1=int(pm.playbackOptions(query=True, min=True)),value2=int(pm.playbackOptions(query=True, min=True)+int(1)))
+       
 
-    def getSettings(self,*args):
-        pass
+        print(self.range.getValue())
 
+
+        
+        
+        # pc_ABC_camera_exporter.runCameraExport(self.scale.getValue(),self.range.getValue(),self.houexp.getValue1(),self.mayaexp.getValue1())  
+
+    
 def initGui():
     gui = MyGui("cameraexportgui")
 

@@ -78,9 +78,11 @@ class RootCamera():
 
 
 # RUNS THE EXPORT
-def runCameraExport(scale):
+def runCameraExport(scale,frange,houdiniexp,mayaexp):
     print(scale)
-    
+    print(frange)
+    print(houdiniexp)
+    print(mayaexp)
 
     # SETTING THE VARIABLES FOR THE ABC EXPORT
     selectedcam = SelectedCamera()
