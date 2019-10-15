@@ -3,6 +3,7 @@
 # POLYCAT ANIMATION
 
 import pymel.core as pm
+# from pc_maya import callback_test
 
 def createMayaMenus():
 
@@ -14,9 +15,12 @@ def createMayaMenus():
 
     custom_tools_menu = pm.menu(menu_obj, label=menu_label, parent=main_window, tearOff=True)
     pm.menuItem(label="Scene",subMenu=True, parent=custom_tools_menu, tearOff=True)
-    pm.menuItem(label="Export Camera",command="reload(pc_maya_tools_menu)\nreload(pc_ABC_camera_exporter)\npc_ABC_camera_exporter.runCameraExport()")
-
+    pm.menuItem(label="Export Camera",command="menu_gui.initGui()")
+    
     # sets the parent back to the specified menu
     pm.setParent("..",menu=True)
 
     # add in other pm.menu and pm.menuItem after this to create more menus
+
+
+
