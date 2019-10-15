@@ -1,7 +1,14 @@
+"""
+Polycat maya camera exporter 
+2019
+"""
+
+
 import os
 import pymel.core as pm
-class ABCexport():
-    pass
+from pipeline_utilities import filenaming
+
+
 
 class BasicCameraBake():
 
@@ -36,23 +43,20 @@ class BasicCameraBake():
             pm.setKeyframe(self.camtobake.selection, v=myrotx, at="rotateX")
             pm.setKeyframe(self.camtobake.selection, v=myroty, at="rotateY")
 
-
-class GetSceneSettings():
-    def __init__(self,scene_scale=float(1.0)):
-        self.start =  int(pm.playbackOptions(query=True, min=True))
-        self.end = int(pm.playbackOptions(query=True, max=True))
-        self.scene_scale = scene_scale
-
-    @classmethod
-    def test(cls):
-        print("this is a class method")
-
+    
 class SelectedCamera():
     def __init__(self):
-        self.camobj = pm.ls(selection=True)
-        self.selection = self.camobj[0]
-        self.shape = self.selection.getShape()
+        try:
+            self.camobj = pm.ls(selection=True)
+            self.selection = self.camobj[0]
+            self.shape = self.selection.getShape()
+        except IndexError:
+            pm.confirmDialog(m="You have not selected a camera",t="Camera export Error",)
+            # raise SystemExit
+            exit()
+      
 
+# creates a new camera
 class RootCamera():
 
     def __init__(self,name):
@@ -65,41 +69,75 @@ class RootCamera():
     def __str__(self):
         return ("{}".format(self.selection))
 
-class MayaCamera():
-    pass
 
 
-def runCameraExport():
-
+# RUNS THE EXPORT
+def runCameraExport(scale,frange,houdiniexp,mayaexp,guiobject):
+  
     # SETTING THE VARIABLES FOR THE ABC EXPORT
-    exportfilepath = pm.fileDialog2(fileFilter="*.abc", dialogStyle=2, startingDirectory="Y:/")
-    if exportfilepath:
+    selectedcam = SelectedCamera()
+    path = filenaming.getExportFilePath()
+    exportcams = []
+    
+    
+    if path:
 
-        basename = os.path.basename(exportfilepath[0])
-        dirname = os.path.dirname(exportfilepath[0])
-        savename = os.path.splitext(basename)[0]
-        ext = os.path.splitext(basename)[1]
+        # checking if cam needs to be exported and baking
+        if mayaexp:
+            rootcam = RootCamera("maya")
+            exportcams.append(str(rootcam.selection))#replacing the 1 in the name...find a better way
+            print(rootcam.selection + " was added to the exportcams list")
+            bakedrootcam = BasicCameraBake(rootcam, selectedcam)
+            bakedrootcam.bakeme(frange[0],frange[1],1)
+        
+        # checking if cam needs to be exported and baking
+        if houdiniexp:
+            houdinicam = RootCamera("houdini")
+            exportcams.append(str(houdinicam.selection))#replacing the 1 in the name....find a better way
+            print(houdinicam.selection + " was added to the exportcams list")
+            bakedhoudinicam = BasicCameraBake(houdinicam, selectedcam)
+            bakedhoudinicam.bakeme(frange[0],frange[1],scale)
+        
 
-        scene_settings = GetSceneSettings(0.1)
-        selectedcam = SelectedCamera()
-        rootcam = RootCamera("maya")
-        houdinicam = RootCamera("houdini")
+        # for the object.selection toggle
+        camindex = 0
 
-        # BAKES
-        bakedrootcam = BasicCameraBake(rootcam, selectedcam)
-        bakedhoudinicam = BasicCameraBake(houdinicam, rootcam)
+        for app in exportcams:
+           
+            pathname,dirname = filenaming.buildFileName(app,path)
+            
+            newDir = os.path.split(pathname)[0]
+            
+            if not os.path.exists(newDir):
+                 os.mkdir(newDir)
 
-        bakedrootcam.bakeme(scene_settings.start,scene_settings.end,1)
-        bakedhoudinicam.bakeme(scene_settings.start,scene_settings.end,0.1)
+            myfile = str("-file " + pathname)
+            print(myfile)
+            root = str("-root " + str(app))
+            myframerange = "-frameRange " + str(frange[0]) + " " + str(frange[1])
+            exportcommand = myfile + " " + root + " " + myframerange + " " + "-eulerFilter -worldspace"
+            pm.AbcExport(j=exportcommand)
 
-        from alembic_helper import maya_alembic_helper
-        reload(maya_alembic_helper)
-        for s in ["maya", "houdini"]:
-            newDir = os.path.join(dirname, s)
-            if os.path.exists(newDir) is False:
-                os.mkdir(newDir)
-            a = maya_alembic_helper.Helper()
-            a.set_alembic_node(houdinicam.selection)
-            a.set_alembic_output(os.path.join(newDir, "{}{}".format(savename, ext)))
-            a.set_alembic_command(["-frameRange 1 120"])
-            a.export_alembic()
+
+        try: 
+            pm.delete(houdinicam.selection)
+        except:
+            print("There is no need to delete the houdini camera")
+        try:
+             pm.delete(rootcam.selection)
+        except:
+            ("There is no need to delete the maya camera")
+        
+       
+        del guiobject
+        
+                
+ 
+
+   
+
+
+
+
+
+

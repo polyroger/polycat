@@ -1,3 +1,5 @@
 .idea/
 *dev_test*.py
 *.pyc
+.vscode
+notes.txt
