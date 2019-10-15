@@ -70,8 +70,3 @@ def buildFileName(app,exportfilepath):
 # need to find the file with the highest version
 # add in a better regex to get any numbered version, currently its only getting two platces , 1 - 99 addin int two /d seemed to do it but i think that its incorrect            
 
-def getCameraDir():
-    temp = r"Y:\ber\ggg\cut_011\sam_01\maya\anim\cut_011_anim_v02.ma"
-    print(os.path.basename(temp))
-
-getCameraDir
