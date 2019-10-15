@@ -1,5 +1,6 @@
 import pymel.core as pm
 from pc_maya.exporters import pc_ABC_camera_exporter
+from pc_maya.exporters import pc_playblast
 
 class CamExportGui(object):
     def __init__(self,name):
@@ -32,13 +33,42 @@ class CamExportGui(object):
         pc_ABC_camera_exporter.runCameraExport(self.scale.getValue(),self.range.getValue(),self.houexp.getValue1(),self.mayaexp.getValue1(),self)
         pm.deleteUI(self.name,window=True)  
 
+class PlayblastCameraGui(object):
+    def __init__(self,name):
+        self.name = name
+        print("Playblast camera init succsess")
+
+        if pm.window(self.name,q=True,exists=True):
+            pm.deleteUI(self.name)
+                
+        self.window = pm.window(self.name,width=300)
+        pm.columnLayout(columnOffset=("both",20),height=100,rowSpacing=10)
+        pm.separator()
+        self.range = pm.intFieldGrp(numberOfFields=2,label="Frame Range",value1=int(pm.playbackOptions(query=True, min=True)),value2=int(200),columnAlign=(1,"left"))
+        pm.separator()
+        pm.rowLayout(numberOfColumns=2,width=300,adjustableColumn=1)
+        pm.button(label="Export",width=300,command=self.runPlayblast)
+        pm.showWindow(self.name)
+
+    def runPlayblast(self,_):
+        print("this will run the playblast")
+        pc_playblast.getEditor()
+        pc_playblast.setBlastSettings()
+        pm.playblast(format="image",filename="C:/Users/roger/Documents/maya/projects/default/images/test",compression="jpg",widthHeight=[1920,1080],percent=100)
     
-def initGui():
-    gui = CamExportGui("cameraexportgui")
+    
+    
+
+
+def initCameraExportGui():
+    camgui = CamExportGui("cameraexportgui")
+
+def initPlayblastCameraGui():
+    blastgui = PlayblastCameraGui("blastcameragui")
 
 def delGui(guiobject):
     del guiobject
-    print("camexportgui object deleted")
+    print("gui object deleted")
 
     
         

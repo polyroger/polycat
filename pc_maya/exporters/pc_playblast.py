@@ -9,19 +9,20 @@ def getEditor():
     The modelEditor is the node in maya that contains all the information about a modelPanel. A panel is an object in maya that acts as the root of a ui element. The model editor
     for instance holds information about what cameras have been added to a panel.
     """
-    camview = pm.ls(selection=True)[0]
-    modpanels =  pm.getPanel(type="modelPanel")
+    if pm.modelEditor("mypanel",exists=True):
+        print("the panel exists...deleting and creating a new one")
+        pm.deleteUI("mypanel") 
+    
+    cam = pm.ls(selection=True)[0]
+    window = pm.window(width=1280,height=720)
+    lay = pm.paneLayout()
+    pan = pm.modelPanel()
+    pm.modelEditor("mypanel",camera=cam,parent=pan,activeView=True)
+    pm.showWindow(window)
 
-    for panel in modpanels:
-        print(panel)
-        if pm.modelPanel(panel,query=True,camera=True) == camview:
-            modpanel = panel #modpanel is a panel object, so it uses pymel object methods
-
-    print (type(modpanel))
-             
-    cameditorobj =  pm.modelPanel(modpanel,edit=True) #cameditor is a modelPanel object, you pass a panel object to get the modelPanel
-    print (type(cameditorobj))
-    modeditor = pm.modelEditor(cameditorobj,edit=True,activeView=True) #this is a modeleditor object
+def setBlastSettings():
+    
+    pm.setAttr("hardwareRenderingGlobals.multiSampleEnable",1)
 
 def saveLocation():
     
@@ -31,11 +32,7 @@ def saveLocation():
  
    
    
-def runPlayblast():
-    
-    getEditor()
-    pm.playblast(format="image",filename="C:/Users/roger/Documents/maya/projects/default/images/test",compression="jpg",widthHeight=[1920,1080],percent=100)
-    
+
 
   
 
