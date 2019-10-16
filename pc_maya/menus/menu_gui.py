@@ -52,7 +52,7 @@ class PlayblastCameraGui(object):
 
     def runPlayblast(self,_):
         print("this will run the playblast")
-        pc_playblast.getEditor()
+        pc_playblast.getEditor() 
         pc_playblast.setBlastSettings()
         pm.playblast(format="image",filename="C:/Users/roger/Documents/maya/projects/default/images/test",compression="jpg",widthHeight=[1920,1080],percent=100)
     
