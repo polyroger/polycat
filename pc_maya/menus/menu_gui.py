@@ -1,5 +1,6 @@
 import pymel.core as pm
 from pc_maya.exporters import pc_ABC_camera_exporter
+from pc_maya.exporters import pc_playblast
 
 class CamExportGui(object):
     def __init__(self,name):
@@ -32,13 +33,54 @@ class CamExportGui(object):
         pc_ABC_camera_exporter.runCameraExport(self.scale.getValue(),self.range.getValue(),self.houexp.getValue1(),self.mayaexp.getValue1(),self)
         pm.deleteUI(self.name,window=True)  
 
+class PlayblastCameraGui(object):
+    def __init__(self,name):
+        self.name = name
+        self.savedir = str(pc_playblast.saveLocation() + "/")
+        print("Playblast camera init succsess")
+ 
+        if pm.window(self.name,q=True,exists=True):
+            pm.deleteUI(self.name)
+                
+        self.window = pm.window(self.name,width=300)
+        pm.columnLayout(columnOffset=("both",20),height=100,rowSpacing=10)
+        pm.separator()
+        self.saveloc = pm.textFieldGrp(label="Save Location",text=self.savedir,columnAlign=(1,"left"))
+        self.range = pm.intFieldGrp(numberOfFields=2,label="Frame Range",value1=int(pm.playbackOptions(query=True, min=True)),value2=int(pm.playbackOptions(query=True, max=True)),columnAlign=(1,"left"))
+        pm.separator()
+        pm.rowLayout(numberOfColumns=3,width=300,adjustableColumn=1)
+        pm.button(label="Export",width=300,command=self.runPlayblast)
+        pm.showWindow(self.name)
+
+    def runPlayblast(self,_):
+        print("this will run the playblast")
+        pc_playblast.getEditor() 
+        pc_playblast.setBlastSettings()
+
+        current = pm.displayRGBColor("background",query=True)
+        pm.displayRGBColor("background",0.2,0.2,0.2)
+
+        pc_playblast.pcBlast(self.saveloc.getText(),self.range.getValue1(),self.range.getValue2())
+        pm.deleteUI(self.name)
+
+        pm.displayRGBColor("background",current[0],current[1],current[2])
+      
+       
+       
     
-def initGui():
-    gui = CamExportGui("cameraexportgui")
+# SECTION TO INIT MENU GUIS
+
+def initCameraExportGui():
+    camgui = CamExportGui("cameraexportgui")
+
+def initPlayblastCameraGui():
+    blastgui = PlayblastCameraGui("blastcameragui")
+
+
 
 def delGui(guiobject):
     del guiobject
-    print("camexportgui object deleted")
+    print("gui object deleted")
 
     
         

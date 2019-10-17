@@ -3,3 +3,5 @@
 *.pyc
 .vscode
 notes.txt
+*.mod
+*.env
