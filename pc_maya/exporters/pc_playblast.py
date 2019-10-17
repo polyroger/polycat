@@ -14,21 +14,33 @@ def getEditor():
         pm.deleteUI("mypanel") 
     
     cam = pm.ls(selection=True)[0]
-    window = pm.window(width=1280,height=720)
+    #SETTING CAMERA VIEWPORT SETTINGS
+    pm.camera(cam,edit=True,displayResolution=False,displayFilmGate=False)
+
+    window = pm.window(width=1280,height=720,backgroundColor=(1.0,0.0,0.0))
     lay = pm.paneLayout()
     pan = pm.modelPanel()
-    pm.modelEditor("mypanel",camera=cam,parent=pan,activeView=True)
-    pm.showWindow(window)
+    pm.modelEditor("mypanel",camera=cam,activeView=True,displayAppearance="smoothShaded")
+    pm.showWindow(window,window=True)
 
 def setBlastSettings():
-    
+    #these can only be set on global level
     pm.setAttr("hardwareRenderingGlobals.multiSampleEnable",1)
+    pm.setAttr("hardwareRenderingGlobals.ssaoEnable",False)
+
 
 def saveLocation():
     
     startpath = filenaming.getexportdir("playblast")
-    print (startpath)
-    # savepath = pm.fileDialog2(am=1,ds=2,fm=2,)
+    exportfilepath = pm.fileDialog2(dialogStyle=2, startingDirectory=startpath,fileMode=3,caption="Select a save location")
+
+    return exportfilepath[0]
+
+def pcBlast(savepath,startf,endf):
+
+    #this runs the actual playblast 
+    pm.playblast(format="image",filename=savepath,startTime=startf,endTime=endf,compression="jpg",widthHeight=[1920,1080],percent=100,framePadding=3,showOrnaments=False,viewer=False)
+      
  
    
    
