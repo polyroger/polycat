@@ -1,4 +1,5 @@
 import os
+import hou
 root =  hou.getenv("JOB") + "/"
 
 def createMenu(menu_path):
@@ -50,6 +51,18 @@ def resolvedJobPath():
     
     return hou.parm("job").set("test")
     
+def resetParms():
+    
+    job = hou.parm("job")
+    cut = hou.parm("cut")
+    
+    jobexp = "strcat(strcat(chs(\"client\"),\"/\"),chs(\"project\"))"
+    cutexp = "chs(\"shot\")"
+        
+    job.setExpression(jobexp)
+    cut.setExpression(cutexp)   
+    
+    
 ########################
 
 def getlatest(path):
@@ -80,7 +93,7 @@ def cameraSetup(cut,abcnode):
     
     parent = hcam.parent()
     focus_null = parent.createNode("null","focus_null")
-    expr = "ch(\"../focus_null/tz\")"
+    expr = "abs(ch(\"../focus_null/tz\"))"
     hcam.parm("focus").setExpression(expr)
     
     return hcam.path()
