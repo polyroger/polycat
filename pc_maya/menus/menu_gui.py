@@ -16,7 +16,7 @@ class CamExportGui(object):
         self.single = pm.checkBoxGrp(label="Export Single Frame",value1=False,columnAlign=(1,"left"))
         self.houexp = pm.checkBoxGrp(label="Export Houdini Camera",value1=True,columnAlign=(1,"left"))
         self.mayaexp = pm.checkBoxGrp(label="Export Maya Camera",value1=True,columnAlign=(1,"left"))
-        self.range = pm.intFieldGrp(numberOfFields=2,label="Frame Range",value1=int(pm.playbackOptions(query=True, min=True)),value2=int(200),columnAlign=(1,"left"))
+        self.range = pm.intFieldGrp(numberOfFields=2,label="Frame Range",value1=int(pm.playbackOptions(query=True, min=True)),value2=int(pm.playbackOptions(query=True, max=True)),columnAlign=(1,"left"))
         pm.separator()
         pm.rowLayout(numberOfColumns=2,width=300,adjustableColumn=1)
         pm.button(label="Export",width=300,command=self.exportCamera)
