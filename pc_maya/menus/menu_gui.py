@@ -12,7 +12,7 @@ class CamExportGui(object):
         self.window = pm.window(self.name,width=300)
         pm.columnLayout(columnOffset=("both",20),height=100,rowSpacing=10)
         pm.separator()
-        self.scale = pm.floatSliderGrp(label="Camera Scale",field=True,value=0.1,columnAlign=(1,"left"))
+        self.scale = pm.floatSliderGrp(label="Camera Scale",field=True,value=0.1,precision=3,columnAlign=(1,"left"))
         self.single = pm.checkBoxGrp(label="Export Single Frame",value1=False,columnAlign=(1,"left"))
         self.houexp = pm.checkBoxGrp(label="Export Houdini Camera",value1=True,columnAlign=(1,"left"))
         self.mayaexp = pm.checkBoxGrp(label="Export Maya Camera",value1=True,columnAlign=(1,"left"))
