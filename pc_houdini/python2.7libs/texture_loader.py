@@ -3,6 +3,57 @@ import hou
 import os
 import re
 
+# phsudocode for generating the folders / paramater templates, need to work on how to set the paramater values. Currently using a list wich wont work
+# so nice now, look at setting the path before doing any udim tagging
+
+# create paramater group
+
+# def createTemplates(parmGroup):
+
+# 	for folder in os.listdir(texture catagory):
+		
+# 		for name in os.listdir(texture catagory + folder)
+			
+# 			foldertemplate = mynode.folderParmTemplate()
+# 			foldertemp.setName(name)
+			
+# 			for root,dirs,files in os.walk(texture catagory + "/" + folder + "/" + name):
+				
+# 				for i in files:
+# 					parmtemplate = hou.StringParmTemplate()
+# 					parmtemplate.setName(i)
+# 					foldertemp.addParmTemplate(parmtemplate)
+
+# 			parmGroup.addFolderTemplate()
+
+# 	return parmGroup
+
+
+
+
+
+
+
+
+
+def getTextureCatagory(texpath):
+
+    """
+    Create a Label ( folder name) / token (path of folder) pair to use in buildin a menu in the type properties.
+
+    Returns a even list of name and token value
+
+    TIP : hou.evalAsString() to the the string token value
+    """
+    
+    texcat = []
+    for i in os.listdir(texpath):
+        catpath = texpath + i
+        texcat.extend((catpath,i))
+
+    return texcat    
+
+
 
 def getTextureList(texpath):
     """
@@ -14,16 +65,19 @@ def getTextureList(texpath):
     #filter through the texture folder and get only the textures
     textures = []
     for root,dirs,files in os.walk(texpath):
-        
+        print root
+        print dirs
+        print files
+               
         for i in files:
             
             filename,ext = os.path.splitext(i)
             if ext != ".tx" and ext != ".db":
                 textures.append(i)
-        
-        textures.sort()
-        
-        return textures    
+       
+    textures.sort() 
+    
+    return textures    
 
 def udimCheck(texturelist):
     """
