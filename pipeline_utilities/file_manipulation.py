@@ -3,7 +3,7 @@ import re
 
 def checkFileVersion(afile):
     """
-    Expects a file name string as an input, looks for "v001" styled versioning.
+    Expects a file name string as an input, looks for "v001" styled versioning. Aims to extract the current version in the filename
     
     RETURNS: The version of the file as an integer or False if no version was found
 
@@ -40,7 +40,7 @@ def versionPlusOne(aversion):
     print("new version created : %s")%versionplus
 
     return versionplus
-   
+
 
 
 
