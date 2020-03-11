@@ -15,6 +15,7 @@ def createMayaMenus():
 
     custom_tools_menu = pm.menu(menu_obj, label=menu_label, parent=main_window, tearOff=True)
     pm.menuItem(label="Scene",subMenu=True, parent=custom_tools_menu, tearOff=True)
+    pm.menuItem(label="Scene Exporter",command="PcSceneExporter.openExportDialog()")
     pm.menuItem(label="Export Camera",command="menu_gui.initCameraExportGui()")
     pm.menuItem(label="Playblast Camera",command="menu_gui.initPlayblastCameraGui()")
     
