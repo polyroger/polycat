@@ -1,0 +1,2 @@
+-i https://pypi.org/simple
+scandir==1.10.0
