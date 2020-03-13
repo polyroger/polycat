@@ -3,10 +3,17 @@
 
 import pymel.core as pm
 import os
+import sys
 from pc_maya.exporters import pc_ABC_camera_exporter
+
+#package dependencies, not sure if this is the best way to do this.
+sys.path.append("Y:\\pipeline\\packages")
+
+import scandir
 
 # these are deffered because they are required for the menu creation, if you are adding to the tools menu they must be added as deffered
 pm.evalDeferred("from pc_maya.menus import pc_maya_tools_menu;pc_maya_tools_menu.createMayaMenus()")
 pm.evalDeferred("from pc_maya.menus import menu_gui")
+pm.evalDeferred("from pc_maya.snippets import snippets")
 pm.evalDeferred("from pc_dialogs.scene_export_dialog import PcSceneExporter ")
 pm.evalDeferred("from pc_dialogs.maya_export_prep import NameGGRP")

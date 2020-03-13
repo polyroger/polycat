@@ -12,10 +12,6 @@ from shiboken2 import wrapInstance
 import pymel.core as pm
 import maya.OpenMayaUI as omui
 
-#polycat imports
-from pipeline_utilities import path_manipulation
-import os
-
 def mayaMainWindow():
     """
     Helper function that returns a python object for maya's main window, so that you can use this python object as the parent for qt widgets 
@@ -26,7 +22,7 @@ def mayaMainWindow():
 
     return mainwindowobject
 
-class NameGGRP(QtWidgets.QDialog,path_manipulation):
+class NameGGRP(QtWidgets.QDialog):
 
     nameGGRP_dialog = None
 
@@ -114,9 +110,8 @@ class NameGGRP(QtWidgets.QDialog,path_manipulation):
         asset = pm.group(empty=True,world=True,n=groupname)
         pm.parent(transgroup,asset)
 
-        starting_dir = pm.sceneName()
 
-        path_manipulation.goFindDirectory(starting_dir.name,"0_sourcegeo")
+                
         
         
    

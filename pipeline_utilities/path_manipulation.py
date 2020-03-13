@@ -29,8 +29,3 @@ def goFindDirectory(start_path,folder):
         mydirs = scandir.scandir(start_path)
     
     return geopath
-
-test_path = "Y:\\ref\\vqs\\ASSETS\\ruan_01\\maya\\scenes\\mckean"
-test_folder = "0_sourcegeo"
-
-test = goFindDirectory(test_path,test_folder)
