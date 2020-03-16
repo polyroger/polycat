@@ -8,7 +8,11 @@ def importAlembicFile():
     starting_path = os.path.split(maya_file)[0]
     print(starting_path)
 
-    asset_path = path_manipulation.goFindDirectory(starting_path,"0_sourcegeo")  
+    #just a check to see if the scene file has bees saved or not
+    if not path_manipulation.goFindDirectory(starting_path,"0_sourcegeo"):
+        return None
+    else:
+        asset_path = path_manipulation.goFindDirectory(starting_path,"0_sourcegeo")
 
     abcfilter = "alembic (*.abc)"
 
