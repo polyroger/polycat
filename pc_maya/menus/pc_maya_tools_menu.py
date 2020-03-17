@@ -3,7 +3,6 @@
 # POLYCAT ANIMATION
 
 import pymel.core as pm
-# from pc_maya import callback_test
 
 def createMayaMenus():
 
@@ -17,8 +16,8 @@ def createMayaMenus():
     
     #start of Scene tools
     pm.menuItem(label="Scene tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
-    pm.menuItem(label="Import Alembic",command="snippets.importAlembicFile()")
-    pm.menuItem(label="Scene Exporter",command="PcSceneExporter.openExportDialog()")
+    pm.menuItem(label="Import Alembic",command="from pc_maya.snippets import snippets;snippets.importAlembicFile()")
+    pm.menuItem(label="Scene Exporter",command="from pc_dialogs.scene_export_dialog import PcSceneExporter;PcSceneExporter.openExportDialog()")
     pm.menuItem(label="Export Camera",command="menu_gui.initCameraExportGui()")
     pm.menuItem(label="Playblast Camera",command="menu_gui.initPlayblastCameraGui()")
     # sets the parent back to the specified menu

@@ -7,10 +7,6 @@ def goFindDirectory(start_path,folder):
     Goes up from a starting directory and tries to find a folder
     RETURNS : STRING - path to folder if found
     """
-    if start_path == "":
-        pm.confirmDialog(button="OK", message="Your scene has not been saved yet, please save or open a scene and try again", title="Save file location error")
-        return None
-                
 
     mydirs = scandir.scandir(start_path)
 

@@ -14,6 +14,8 @@ import maya.cmds as cmds
 import maya.OpenMaya as om
 import maya.OpenMayaUI as omui
 
+#polycat imports
+from pc_maya.exporters.export_helpers import ExportHelpers
 
 def mayaMainWindow():
     """
@@ -29,6 +31,7 @@ def mayaMainWindow():
 class PcSceneExporter(QtWidgets.QDialog):
 
     exporter_dialog = None
+    helpers = ExportHelpers()
 
     @classmethod
     def openExportDialog(cls):
@@ -49,6 +52,7 @@ class PcSceneExporter(QtWidgets.QDialog):
     def __init__(self,parent=mayaMainWindow()):
         
         super(PcSceneExporter,self).__init__(parent)
+       
 
         self.setWindowTitle("Polycat Exporter")
         self.setMinimumSize(1000,120)
@@ -58,16 +62,18 @@ class PcSceneExporter(QtWidgets.QDialog):
         self.createLayout()
         self.createConnections()
 
+        print("this is the init")
     
     def createWidgets(self):
 
+        #geo export table
         self.geo_table = QtWidgets.QTableWidget()
         self.geo_table.setColumnCount(3)
         self.geo_table.setColumnWidth(0,30)
         self.geo_table.setColumnWidth(2,30)
         self.geo_table.setHorizontalHeaderLabels(["E","Name","SF"])
-        self.table_header = self.geo_table.horizontalHeader()
-        self.table_header.setSectionResizeMode(1,QtWidgets.QHeaderView.Stretch)
+        self.geo_table_header = self.geo_table.horizontalHeader()
+        self.geo_table_header.setSectionResizeMode(1,QtWidgets.QHeaderView.Stretch)
         
         self.geo_export_path = QtWidgets.QLineEdit()
         self.geo_export_path_label = QtWidgets.QLabel("Asset Directory :")
@@ -75,7 +81,18 @@ class PcSceneExporter(QtWidgets.QDialog):
         self.geo_export_path_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.geo_export_path_btn.setToolTip("select file")
         
+        
+        #camera export table
+        self.cam_table = QtWidgets.QTableWidget()
+        self.cam_table.setColumnCount(3)
+        self.cam_table.setColumnWidth(0,30)
+        self.cam_table.setColumnWidth(2,30)
+        self.cam_table.setHorizontalHeaderLabels(["E","Name","SF"])
+        self.cam_table_header = self.cam_table.horizontalHeader()
+        self.cam_table_header.setSectionResizeMode(1,QtWidgets.QHeaderView.Stretch)
+        
         self.cam_export_path = QtWidgets.QLineEdit()
+        self.cam_export_path_label = QtWidgets.QLabel("Camera Directory")
         self.cam_export_path_btn = QtWidgets.QPushButton()
         self.cam_export_path_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.cam_export_path_btn.setToolTip("select file")
@@ -96,6 +113,8 @@ class PcSceneExporter(QtWidgets.QDialog):
         geo_export_layout.addWidget(self.geo_export_path_btn)
 
         cam_export_layout = QtWidgets.QHBoxLayout()
+        cam_export_layout.addWidget(self.cam_table)
+        cam_export_layout.addWidget(self.cam_export_path_label)
         cam_export_layout.addWidget(self.cam_export_path)
         cam_export_layout.addWidget(self.cam_export_path_btn)
 
@@ -119,7 +138,7 @@ class PcSceneExporter(QtWidgets.QDialog):
     def createConnections(self):
         
         self.cancel_btn.clicked.connect(self.close)
-        self.export_btn.clicked.connect(self.exportSelections)
+        self.export_btn.clicked.connect(self.helpers.printTest)
 
     #START OF CUSTOM METHODS
     
