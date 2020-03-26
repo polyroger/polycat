@@ -17,6 +17,7 @@ import maya.OpenMayaUI as omui
 #polycat imports
 from pc_maya.exporters.export_helpers import ExportHelpers
 
+
 def mayaMainWindow():
     """
     Helper function that returns a python object for maya's main window, so that you can use this python object as the parent for qt widgets 
