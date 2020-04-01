@@ -147,17 +147,6 @@ class PcSceneExporter(QtWidgets.QDialog):
         print("TODO: write the export methods")
 
 
-#if run directly in the application
-if __name__ == "__main__":
-
-    try:
-        pc_exporter.close()
-        pc_exporter.deleteLater
-    except:
-        pass
-
-    pc_exporter = PcSceneExporter(mayaMainWindow())
-    pc_exporter.show()
 
 
 

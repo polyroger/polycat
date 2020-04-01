@@ -1,3 +1,6 @@
+# this is in the wrong place..it should be in the pc_dialogs section
+
+
 import pymel.core as pm
 from pc_maya.exporters import pc_ABC_camera_exporter
 from pc_maya.exporters import pc_playblast

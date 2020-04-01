@@ -12,6 +12,10 @@ from shiboken2 import wrapInstance
 import pymel.core as pm
 import maya.OpenMayaUI as omui
 
+#polycat imports
+import pc_maya.helpers.model_helpers
+from pc_maya.helpers.model_helpers import pc_model_prep
+
 def mayaMainWindow():
     """
     Helper function that returns a python object for maya's main window, so that you can use this python object as the parent for qt widgets 
@@ -83,32 +87,9 @@ class NameGGRP(QtWidgets.QDialog):
 
     def createConnections(self):
         
-        self.go.clicked.connect(self.createStructure)
+        self.go.clicked.connect(lambda: pc_model_prep.createStructure(self.export_prep_name.text()))
         self.cancel.clicked.connect(self.close)
 
-#this should be moved into its own module, keeping this for gui creatiion
-
-    def createStructure(self):
-        
-        namesuffix = "_GGRP"
-        transname = "SRT"
-        geosuffix = "_geo"
-
-        selectedgeo = pm.ls(selection=True)
-        groupname = self.export_prep_name.text() + namesuffix
-
-        transgroup = pm.group(empty=True,world=True,n=transname)
-
-        for i in selectedgeo:
-            if not "_geo" in i.name():
-
-                i.rename(i.name() + geosuffix)
-                print(i.name())
-         
-            pm.parent(i,transgroup)
-
-        asset = pm.group(empty=True,world=True,n=groupname)
-        pm.parent(transgroup,asset)
 
 
                 

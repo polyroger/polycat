@@ -6,7 +6,7 @@ import os
 import sys
 
 #package dependencies, not sure if this is the best way to do this.
-sys.path.append("Y:\\pipeline\\packages")
+sys.path.append("F:\\projects\\pipeline\\packages")
 
 #external packages, after path append
 import scandir
