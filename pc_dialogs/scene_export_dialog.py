@@ -13,9 +13,11 @@ from shiboken2 import wrapInstance
 import maya.cmds as cmds
 import maya.OpenMaya as om
 import maya.OpenMayaUI as omui
+import pymel.core as pm
 
 #polycat imports
-from pc_maya.exporters.export_helpers import ExportHelpers
+from pc_maya.helpers.export_helpers import export_helpers
+from pipeline_utilities import pyside2_helpers
 
 
 def mayaMainWindow():
@@ -32,7 +34,6 @@ def mayaMainWindow():
 class PcSceneExporter(QtWidgets.QDialog):
 
     exporter_dialog = None
-    helpers = ExportHelpers()
 
     @classmethod
     def openExportDialog(cls):
@@ -98,6 +99,7 @@ class PcSceneExporter(QtWidgets.QDialog):
         self.cam_export_path_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.cam_export_path_btn.setToolTip("select file")
         
+        self.refresh_btn = QtWidgets.QPushButton("Refresh")
         self.export_btn = QtWidgets.QPushButton("Export")
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
         
@@ -127,6 +129,7 @@ class PcSceneExporter(QtWidgets.QDialog):
         #main dialog button layout
         d_btn_layout = QtWidgets.QHBoxLayout()
         d_btn_layout.addStretch()
+        d_btn_layout.addWidget(self.refresh_btn)
         d_btn_layout.addWidget(self.export_btn)
         d_btn_layout.addWidget(self.cancel_btn)
 
@@ -138,13 +141,19 @@ class PcSceneExporter(QtWidgets.QDialog):
 
     def createConnections(self):
         
+        self.export_btn.clicked.connect(lambda : export_helpers.pc_ABCExporter()) 
+        self.refresh_btn.clicked.connect(lambda : pyside2_helpers.refreshPysideTableWidget())
         self.cancel_btn.clicked.connect(self.close)
-        self.export_btn.clicked.connect(self.helpers.printTest)
+       
 
     #START OF CUSTOM METHODS
     
-    def exportSelections(self):
-        print("TODO: write the export methods")
+    def refreshPysideTableWidget():
+        print("TODO: implement the table refresh")
+
+        self.geo_table.setRowCount(0)
+        self.cam_table.setRowCount(0)
+
 
 
 

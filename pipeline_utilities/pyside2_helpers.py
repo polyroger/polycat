@@ -9,3 +9,9 @@ def mayaMainWindow():
     mainwindowobject = wrapInstance(long(mainwindowpointer),QtWidgets.QWidget)
 
     return mainwindowobject
+
+def refreshPysideTableWidget():
+    print("TODO: implement the table refresh")
+
+    self.geo_table.setRow
+    self.cam_table
