@@ -1,10 +1,12 @@
 import pymel.core as pm
 from pc_maya.helpers.export_helpers import export_helpers
+from pc_maya.snippets import snippets
 
-def createStructure(groupname="no_group_specified"):
+
+def createStructure(justgeo,groupname,freezetrans,delhistory):
     """
     Creates the correct stucture for exporting geometry.
-    Expexts a string as an input to the groupname kwarg EG : createStructure(groupname="rocks")
+    Used with the model prep dialog.
     """
     
     namesuffix = "_GGRP"
@@ -13,35 +15,46 @@ def createStructure(groupname="no_group_specified"):
 
     selectedgeo = pm.ls(selection=True)
 
-    try:
-        assetname = self.export_prep_name.text() + namesuffix
-    except:
-        assetname = groupname + namesuffix
- 
+    if justgeo:
+        for i in selectedgeo:
+            snippets.addGeoSuffix(i,geosuffix)
+    else:
 
-    transgroup = pm.group(empty=True,world=True,n=transname)
+        try:
+            assetname = groupname + namesuffix
+        except:
+            assetname = "no group name " + namesuffix
     
-    #nested to prevent suffixing _geo on the GGRP
-    for i in selectedgeo:
+
+        transgroup = pm.group(empty=True,world=True,n=transname)
         
-        if i.nodeType() == "transform" and i.getShape() == None:
-            print("The selected node is a group, skipping _gep suffix")
+        #nested to prevent suffixing _geo on the GGRP
+        for i in selectedgeo:
+            
+            if i.nodeType() == "transform" and i.getShape() == None:
+                print("The selected node is a group, skipping _geo suffix")
+            
+            else:
+                snippets.addGeoSuffix(i,geosuffix)
+            
+                pm.parent(i,transgroup)
+
+        asset = pm.group(empty=True,world=True,n=assetname)
+        asset.addAttr("referenceVersion",dt="string")
+
+        pm.parent(transgroup,asset)
+
+        #freeze transforms and delete history
         
+        if freezetrans:
+            pm.makeIdentity(transgroup,apply=True)
         else:
+            print("Transforms preserved")
+        
+        if delhistory:
+            pm.delete(selectedgeo,ch=True)
+        else:
+            print("History Preserved")
 
-            if not "_geo" in i.name():
-                i.rename(i.name() + geosuffix)
-
-        pm.parent(i,transgroup)
-
-    asset = pm.group(empty=True,world=True,n=assetname)
-    asset.addAttr("referenceVersion",dt="string")
-
-    pm.parent(transgroup,asset)
-
-    #freeze transforms and delete history
-    pm.makeIdentity(transgroup,apply=True)
-    pm.delete(selectedgeo,ch=True)
-
-    exportset = export_helpers.createExportSet("EXPORTSET")
-    exportset.add(asset)
+        exportset = export_helpers.createExportSet()
+        exportset.add(asset)

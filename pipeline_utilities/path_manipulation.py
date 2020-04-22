@@ -30,3 +30,20 @@ def goFindDirectory(start_path,folder):
         mydirs = scandir.scandir(start_path)
     
     return geopath
+
+def checkForPath(basepath,assetname):
+    """
+    Checks for a path + assetname, if it doesnt exist it makes it. If somthing goes wrong it returns None
+    """
+    
+    basepath = os.path.normpath(basepath)
+    assetpath = os.path.join(basepath,assetname)
+
+    if not os.path.exists(assetpath):
+        os.mkdir(assetpath)
+        
+        return assetpath
+    
+    else:
+        return assetpath
+       

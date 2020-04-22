@@ -12,7 +12,11 @@ import maya.OpenMaya as om
 import maya.OpenMayaUI as omui
 import pymel.core as pm
 
-def createExportSet(setname):
+def createExportSet():
+
+    EXPORTSET = "EXPORTSET"
+    setname = EXPORTSET
+
     try:
         exportset =  pm.ls(setname)[0]
         
@@ -24,7 +28,45 @@ def createExportSet(setname):
         
         return exportset
 
+def getExportSet():
+
+    EXPORTSET = "EXPORTSET"
+    setname = EXPORTSET
+
+    try:
+        exportset = pm.ls(setname)
+        return exportset[0]
+    except:
+        print("Export Set could not be found")
+        return False
+
+def freezeTransforms():
+    print("freeze me")  
+
+def deleteHistory():
+    print("delete my history") 
+
+def getExportList(table):
+
+    print ("export list cleared")
+    exportlist = []
+
+    for i in range(table.rowCount()):
+
+        exportme = table.item(i,0)
+        exportitem = table.item(i,1)
+
+        if exportme.checkState() == QtCore.Qt.Checked:
+            exportlist.append(exportitem)
+            print("{0} added to abc export list".format(exportitem.text()))
+        else:
+            print("{0} not added to abc export list".format(exportitem.text()))
+    
+    return exportlist  
+
+def getItemValue(item):
+    return item.data(self.VALUE_ROLE)
+
+
    
 
-def pc_ABCExporter():
-    print("this is the pc_ABCExporter from export helpers")

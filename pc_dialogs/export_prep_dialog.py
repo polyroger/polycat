@@ -15,6 +15,7 @@ import maya.OpenMayaUI as omui
 #polycat imports
 import pc_maya.helpers.model_helpers
 from pc_maya.helpers.model_helpers import pc_model_prep
+# from pc_maya.helpers.export_helpers import export_helpers
 
 def mayaMainWindow():
     """
@@ -64,6 +65,15 @@ class NameGGRP(QtWidgets.QDialog):
         #lineedit
         self.export_prep_name = QtWidgets.QLineEdit("Unnamed")
 
+        #checkboxes
+        self.freezetrans = QtWidgets.QCheckBox("Freeze Transforms")
+        # self.freezetrans.setEnabled(True)
+        self.delhistory = QtWidgets.QCheckBox("Delete History")
+        # self.delhistory.setEnabled(True)
+        self.addsuffix = QtWidgets.QCheckBox("ONLY Add Suffix")
+        # self.addsuffix.setEnabled(True)
+       
+
         # buttons
         self.go = QtWidgets.QPushButton("GO")
         self.cancel = QtWidgets.QPushButton("Close")
@@ -74,6 +84,13 @@ class NameGGRP(QtWidgets.QDialog):
         export_prep_lineedit_layout = QtWidgets.QHBoxLayout()
         export_prep_lineedit_layout.addWidget(self.export_prep_name)
 
+        #checkboxes
+        checkbox_layout = QtWidgets.QVBoxLayout()
+        checkbox_layout.addWidget(self.freezetrans)
+        checkbox_layout.addWidget(self.delhistory)
+        checkbox_layout.addWidget(self.addsuffix)
+      
+
         #buttons
         export_prep_button_layout = QtWidgets.QHBoxLayout()
         export_prep_button_layout.addStretch()
@@ -83,15 +100,36 @@ class NameGGRP(QtWidgets.QDialog):
         #mainlayout
         export_prep_main_layout = QtWidgets.QVBoxLayout(self)
         export_prep_main_layout.addLayout(export_prep_lineedit_layout)
+        export_prep_main_layout.addLayout(checkbox_layout)
         export_prep_main_layout.addLayout(export_prep_button_layout)
 
     def createConnections(self):
-        
-        self.go.clicked.connect(lambda: pc_model_prep.createStructure(self.export_prep_name.text()))
+
+        self.addsuffix.stateChanged.connect(self.toggleEnabled)     
+        self.go.clicked.connect(lambda: pc_model_prep.createStructure(self.addsuffix.isChecked(),self.export_prep_name.text(),self.freezetrans.isChecked(),self.delhistory.isChecked()))
         self.cancel.clicked.connect(self.close)
 
+    #custom methods
+
+    def toggleEnabled(self,state):
+        if state:
+            self.export_prep_name.setEnabled(False)
+            self.freezetrans.setEnabled(False)
+            self.delhistory.setEnabled(False)
+
+        else:
+            self.export_prep_name.setEnabled(True)
+            self.freezetrans.setEnabled(True)
+            self.delhistory.setEnabled(True)
 
 
+            
+        
+
+
+        
+
+    
                 
         
         

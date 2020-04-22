@@ -26,6 +26,7 @@ def createMayaMenus():
     #start of Model tools
     pm.menuItem(label="Model tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
     pm.menuItem(label="Model Prep",command="from pc_dialogs.export_prep_dialog import NameGGRP;NameGGRP.openNameGGRP_dialog()")
+    pm.menuItem(label="Create Export Set", command="from pc_maya.helpers.export_helpers import export_helpers;export_helpers.createExportSet()")
 
 
 

@@ -8,19 +8,15 @@ def checkFileVersion(afile):
     RETURNS: The version of the file as an integer or False if no version was found
 
     """
-    digitlist = []
-    repattern = r"v[\d\-\d]+"
+    
+    repattern = "v\d+"
     match = re.findall(repattern, afile)
     
     if match:
         print("there is a version in the filename")
         print("current version is : %s"%match[0])
 
-        for i in match[0]:
-            if i.isdigit():
-                digitlist.append(i)
-    
-        version = int("".join(digitlist))
+        version = int(match[0].replace("v",""))
 
         return version
     else:
@@ -28,19 +24,36 @@ def checkFileVersion(afile):
 
         return False
 
-def versionPlusOne(aversion):
+def getLatestVersion(filepath,assetname):
+    
+    versionlist = []
+    contents = os.listdir(filepath)
+    
+    for file in contents:
+        
+        path = os.path.join(filepath,file)
+        
+        if os.path.isfile(path):
+
+            fileversion = checkFileVersion(file)
+            versionlist.append(fileversion)
+            versionlist.sort()
+            latestinfolder = versionlist[-1]
+
+    return int(latestinfolder)
+        
+def versionPlusOne(version):
 
     """
     Expects and integer version as an input
 
-    RETURNS: a integer, double padded version + 1
+    RETURNS: a string integer, double padded version + 1
 
     """ 
-    versionplus = "v" + (str(aversion + 1).zfill(3))
+    versionplus = "_v" + (str(version + 1).zfill(3))
     print("new version created : %s")%versionplus
 
     return versionplus
-
 
 
 

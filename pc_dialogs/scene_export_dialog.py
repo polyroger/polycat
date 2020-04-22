@@ -16,8 +16,11 @@ import maya.OpenMayaUI as omui
 import pymel.core as pm
 
 #polycat imports
+import os
 from pc_maya.helpers.export_helpers import export_helpers
+from pc_maya.exporters import pc_abc_exporter
 from pipeline_utilities import pyside2_helpers
+from pipeline_utilities import path_manipulation
 
 
 def mayaMainWindow():
@@ -32,6 +35,9 @@ def mayaMainWindow():
 
 
 class PcSceneExporter(QtWidgets.QDialog):
+
+    ATTR_ROLE = QtCore.Qt.UserRole
+    VALUE_ROLE = QtCore.Qt.UserRole + 1
 
     exporter_dialog = None
 
@@ -54,7 +60,8 @@ class PcSceneExporter(QtWidgets.QDialog):
     def __init__(self,parent=mayaMainWindow()):
         
         super(PcSceneExporter,self).__init__(parent)
-       
+
+        print("this is the init")
 
         self.setWindowTitle("Polycat Exporter")
         self.setMinimumSize(1000,120)
@@ -64,7 +71,6 @@ class PcSceneExporter(QtWidgets.QDialog):
         self.createLayout()
         self.createConnections()
 
-        print("this is the init")
     
     def createWidgets(self):
 
@@ -76,31 +82,27 @@ class PcSceneExporter(QtWidgets.QDialog):
         self.geo_table.setHorizontalHeaderLabels(["E","Name","SF"])
         self.geo_table_header = self.geo_table.horizontalHeader()
         self.geo_table_header.setSectionResizeMode(1,QtWidgets.QHeaderView.Stretch)
-        
+   
+
         self.geo_export_path = QtWidgets.QLineEdit()
-        self.geo_export_path_label = QtWidgets.QLabel("Asset Directory :")
+        self.geo_export_path.setText(path_manipulation.goFindDirectory(self.getStartingPath(),"0_sourcegeo"))
+        self.geo_export_path_label = QtWidgets.QLabel("Export Directory :")
         self.geo_export_path_btn = QtWidgets.QPushButton()
         self.geo_export_path_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.geo_export_path_btn.setToolTip("select file")
-        
-        
-        #camera export table
-        self.cam_table = QtWidgets.QTableWidget()
-        self.cam_table.setColumnCount(3)
-        self.cam_table.setColumnWidth(0,30)
-        self.cam_table.setColumnWidth(2,30)
-        self.cam_table.setHorizontalHeaderLabels(["E","Name","SF"])
-        self.cam_table_header = self.cam_table.horizontalHeader()
-        self.cam_table_header.setSectionResizeMode(1,QtWidgets.QHeaderView.Stretch)
-        
+        self.export_geo = QtWidgets.QPushButton(" Export Geo ")
+
         self.cam_export_path = QtWidgets.QLineEdit()
+        self.cam_export_path.setText(path_manipulation.goFindDirectory(self.getStartingPath(),"0_camera"))
         self.cam_export_path_label = QtWidgets.QLabel("Camera Directory")
         self.cam_export_path_btn = QtWidgets.QPushButton()
         self.cam_export_path_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.cam_export_path_btn.setToolTip("select file")
+        self.export_cam = QtWidgets.QPushButton(" Export Camera ")
+        
         
         self.refresh_btn = QtWidgets.QPushButton("Refresh")
-        self.export_btn = QtWidgets.QPushButton("Export")
+        self.export_btn = QtWidgets.QPushButton("Export All")
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
         
     
@@ -109,27 +111,38 @@ class PcSceneExporter(QtWidgets.QDialog):
         #main layout
         main_layout = QtWidgets.QVBoxLayout(self)
 
+        geo_table_layout = QtWidgets.QHBoxLayout()
+        geo_table_layout.addWidget(self.geo_table)
+        
         geo_export_layout = QtWidgets.QHBoxLayout()
-        geo_export_layout.addWidget(self.geo_table)
         geo_export_layout.addWidget(self.geo_export_path_label)
         geo_export_layout.addWidget(self.geo_export_path)
         geo_export_layout.addWidget(self.geo_export_path_btn)
 
+        geo_export_btn_layout = QtWidgets.QHBoxLayout()
+        geo_export_btn_layout.addWidget(self.export_geo)
+
         cam_export_layout = QtWidgets.QHBoxLayout()
-        cam_export_layout.addWidget(self.cam_table)
         cam_export_layout.addWidget(self.cam_export_path_label)
         cam_export_layout.addWidget(self.cam_export_path)
         cam_export_layout.addWidget(self.cam_export_path_btn)
 
-        body_layout = QtWidgets.QFormLayout()
-        body_layout.addRow("Geo Exports",geo_export_layout)
-        body_layout.addRow("Camera Exports", cam_export_layout)
-        
+        cam_export_btn_layout = QtWidgets.QHBoxLayout()
+        cam_export_btn_layout.addWidget(self.export_cam)
 
+        body_layout = QtWidgets.QFormLayout()
+        body_layout.addRow("",geo_table_layout)
+        body_layout.addRow("",geo_export_layout)
+        body_layout.addRow("",geo_export_btn_layout)
+        body_layout.addRow("",cam_export_layout)
+        body_layout.addRow("",cam_export_btn_layout)
+        
         #main dialog button layout
         d_btn_layout = QtWidgets.QHBoxLayout()
         d_btn_layout.addStretch()
         d_btn_layout.addWidget(self.refresh_btn)
+        # d_btn_layout.addWidget(self.export_geo)
+        # d_btn_layout.addWidget(self.export_cam)
         d_btn_layout.addWidget(self.export_btn)
         d_btn_layout.addWidget(self.cancel_btn)
 
@@ -141,19 +154,147 @@ class PcSceneExporter(QtWidgets.QDialog):
 
     def createConnections(self):
         
-        self.export_btn.clicked.connect(lambda : export_helpers.pc_ABCExporter()) 
-        self.refresh_btn.clicked.connect(lambda : pyside2_helpers.refreshPysideTableWidget())
+        self.geo_export_path_btn.clicked.connect(lambda : self.showFileDialog(self.geo_export_path))
+        # self.cam_export_path_btn.clicked.connect(lambda : self.showFileDialog(self.cam_export_path))
+        self.export_btn.clicked.connect(lambda : self.runExportGeo(self.geo_table))
+        # self.export_btn.clicked.connect(self.buttontest)
+        # self.refresh_btn.clicked.connect(lambda : pyside2_helpers.refreshPysideTableWidget())
+        self.refresh_btn.clicked.connect(lambda : self.refreshPysideTableWidget(self.geo_table,export_helpers.getExportSet()))
         self.cancel_btn.clicked.connect(self.close)
        
 
     #START OF CUSTOM METHODS
+
+    def showFileDialog(self,lineedit):
+        myd = QtWidgets.QFileDialog.getExistingDirectory(self,"Select export directory",dir=pm.sceneName())
+        if myd:
+            lineedit.setText(myd)
     
-    def refreshPysideTableWidget():
-        print("TODO: implement the table refresh")
 
-        self.geo_table.setRowCount(0)
-        self.cam_table.setRowCount(0)
+        
+        
+    def getStartingPath(self):
+        
+        maya_file = pm.sceneName()
+        startpath = os.path.split(maya_file)[0]
 
+        return startpath
+
+    def buttontest(self):
+
+        myitem = self.geo_table.item(0,1)
+        myitemflags = myitem.flags()
+        myitemflags
+        myindex = QtWidgets.QTableWidget.indexFromItem(self.geo_table,myitem)
+        print(myindex.isValid)
+        print(myindex)
+        print(myitem.text())
+        print(myitem.data(self.ATTR_ROLE))
+        print(myitem.data(self.VALUE_ROLE))
+        print(myitem.checkState())
+
+    def runExportGeo(self,table):
+
+        
+        explist = export_helpers.getExportList(table)
+
+        for i in explist:
+            
+            exportname = i.data(self.VALUE_ROLE)
+            exportpath = self.geo_export_path.text()
+            start = 1
+            end = 10
+            singlframe = False
+
+            print("\n {0} will be exported".format(exportname))
+
+            pc_abc_exporter.pcAbcExporter(exportname,exportpath,start,end,singlframe)
+
+        
+
+        
+
+    #this is overwriting the QtWidjet showEvent() method. So that when the window show() event is triggered it automtically refreshes
+    def showEvent(self,e):
+        super(PcSceneExporter,self).showEvent(e)
+        self.refreshPysideTableWidget(self.geo_table,export_helpers.getExportSet())
+
+    def refreshPysideTableWidget(self,table,table_data):
+        """
+        Takes in a table and a list of items, sets the rows to 0 then re builds the rows from the list.\n
+        First argument : a table object \n
+        Second argument : a list of row entries
+        """
+        print("Running table refresh")
+
+        if table_data:
+            
+            table.setRowCount(0)
+            
+            for i in range(len(table_data)):
+                table.insertRow(i)
+                geogroup = table_data[i]
+                self.insertTableItem(i,0,"","Exportme",True,True)
+                self.insertTableItem(i,1,geogroup.name(),"groupname",geogroup.name(),False)
+                self.insertTableItem(i,2,"","Single Frame",False,True)
+        else:
+            print("An export set could not be found")
+       
+    def insertTableItem(self,row,column,text,attr,value,checkable):
+        
+        item = QtWidgets.QTableWidgetItem(text)
+        item.setFlags(QtCore.Qt.ItemIsEnabled)                  #not sure wht this modifier doesnt let the user edit. But it works
+        self.setItemAttr(item,attr)
+        self.setItemValue(item,value)
+        
+        if checkable:
+            item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            self.setItemChecked(item,value)
+
+        self.geo_table.setItem(row,column,item)
+
+    def setItemText(self,item,text):
+        """
+        Sets the text of a QtWidjet table item \n
+        Takes a QT Table item as an argument and a text string\n
+        eg : setItemText(self, mytableitem,"this is an items text")
+        """
+        item.setText(text)
+
+    def getItemText(self,item):
+        """
+        Gets the text of a QtWidget table item
+        Takes a QT Table item as an argument
+        """
+
+        return item.text()
+
+    def setItemChecked(self,item,checked):
+        """
+        Sets the state of a checkbox to a QT state to whether it is checked or not \n
+        Works with the isItemChecked helper
+        """
+
+        if checked:
+            item.setCheckState(QtCore.Qt.Checked)
+        else:
+            item.setCheckState(QtCore.Qt.Unchecked)
+
+    def isItemChecked(self,item):
+
+        return item.checkState() == QtCore.Qt.Checked
+
+    def setItemAttr(self,item,attr):
+        item.setData(self.ATTR_ROLE,attr)
+
+    def getItemAttr(self,item):
+        return item.data(self.ATTR_ROLE)
+    
+    def setItemValue(self,item,value):
+        item.setData(self.VALUE_ROLE, value)
+    
+    def getItemValue(self,item):
+        return item.data(self.VALUE_ROLE)
 
 
 
