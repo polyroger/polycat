@@ -1,7 +1,8 @@
 import os
-mylist = [0,1,2,3,4]
-mylen = len(mylist)
-myrange = range(5)
+from pipeline_utilities import file_manipulation
 
-print mylen
-print myrange
+version = file_manipulation.getLatestVersion("F:/projects/aaa/tst/tst0010","boxes")
+print version
+print type(version)
+
+

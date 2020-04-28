@@ -26,7 +26,7 @@ def checkFileVersion(afile):
 
 def getLatestVersion(filepath,assetname):
     
-    versionlist = []
+    versionlist = [0]
     contents = os.listdir(filepath)
     
     for file in contents:
@@ -37,10 +37,12 @@ def getLatestVersion(filepath,assetname):
 
             fileversion = checkFileVersion(file)
             versionlist.append(fileversion)
-            versionlist.sort()
-            latestinfolder = versionlist[-1]
-
-    return int(latestinfolder)
+    
+    versionlist.sort()
+    
+    return versionlist[-1]
+  
+  
         
 def versionPlusOne(version):
 
