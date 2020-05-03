@@ -64,7 +64,7 @@ class PcSceneExporter(QtWidgets.QDialog):
         print("this is the init")
 
         self.setWindowTitle("Polycat Exporter")
-        self.setMinimumSize(1000,120)
+        self.setMinimumSize(500,120)
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
 
         self.createWidgets()
@@ -83,24 +83,26 @@ class PcSceneExporter(QtWidgets.QDialog):
         self.geo_table_header = self.geo_table.horizontalHeader()
         self.geo_table_header.setSectionResizeMode(1,QtWidgets.QHeaderView.Stretch)
    
-
+        #export path widgets
         self.geo_export_path = QtWidgets.QLineEdit()
         self.geo_export_path.setText(path_manipulation.goFindDirectory(self.getStartingPath(),"0_sourcegeo"))
         self.geo_export_path_label = QtWidgets.QLabel("Export Directory :")
         self.geo_export_path_btn = QtWidgets.QPushButton()
         self.geo_export_path_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.geo_export_path_btn.setToolTip("select file")
-        self.export_geo = QtWidgets.QPushButton(" Export Geo ")
 
-        self.cam_export_path = QtWidgets.QLineEdit()
-        self.cam_export_path.setText(path_manipulation.goFindDirectory(self.getStartingPath(),"0_camera"))
-        self.cam_export_path_label = QtWidgets.QLabel("Camera Directory")
-        self.cam_export_path_btn = QtWidgets.QPushButton()
-        self.cam_export_path_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
-        self.cam_export_path_btn.setToolTip("select file")
-        self.export_cam = QtWidgets.QPushButton(" Export Camera ")
-        
-        
+        #frame range widgetts
+        self.frame_range_label = QtWidgets.QLabel("Frame Range : ")
+        self.frame_range_start = QtWidgets.QLineEdit("1001")
+        self.frame_range_start.setMaximumWidth(75)
+        self.frame_range_end = QtWidgets.QLineEdit("1100")
+        self.frame_range_end.setMaximumWidth(75)
+
+        intvalidator = QtGui.QIntValidator(-99999,99999,self)
+        self.frame_range_start.setValidator(intvalidator)
+        self.frame_range_end.setValidator(intvalidator)
+
+        #button widgets
         self.refresh_btn = QtWidgets.QPushButton("Refresh")
         self.export_btn = QtWidgets.QPushButton("Export All")
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
@@ -119,30 +121,20 @@ class PcSceneExporter(QtWidgets.QDialog):
         geo_export_layout.addWidget(self.geo_export_path)
         geo_export_layout.addWidget(self.geo_export_path_btn)
 
-        geo_export_btn_layout = QtWidgets.QHBoxLayout()
-        geo_export_btn_layout.addWidget(self.export_geo)
-
-        cam_export_layout = QtWidgets.QHBoxLayout()
-        cam_export_layout.addWidget(self.cam_export_path_label)
-        cam_export_layout.addWidget(self.cam_export_path)
-        cam_export_layout.addWidget(self.cam_export_path_btn)
-
-        cam_export_btn_layout = QtWidgets.QHBoxLayout()
-        cam_export_btn_layout.addWidget(self.export_cam)
+        frame_range_layout = QtWidgets.QHBoxLayout()
+        frame_range_layout.addWidget(self.frame_range_label)
+        frame_range_layout.addWidget(self.frame_range_start)
+        frame_range_layout.addWidget(self.frame_range_end)
 
         body_layout = QtWidgets.QFormLayout()
         body_layout.addRow("",geo_table_layout)
         body_layout.addRow("",geo_export_layout)
-        body_layout.addRow("",geo_export_btn_layout)
-        body_layout.addRow("",cam_export_layout)
-        body_layout.addRow("",cam_export_btn_layout)
+        body_layout.addRow("",frame_range_layout)
         
         #main dialog button layout
         d_btn_layout = QtWidgets.QHBoxLayout()
         d_btn_layout.addStretch()
         d_btn_layout.addWidget(self.refresh_btn)
-        # d_btn_layout.addWidget(self.export_geo)
-        # d_btn_layout.addWidget(self.export_cam)
         d_btn_layout.addWidget(self.export_btn)
         d_btn_layout.addWidget(self.cancel_btn)
 

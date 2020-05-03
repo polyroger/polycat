@@ -1,5 +1,17 @@
 # General helper functions
 
+#pyside2 imports
+from PySide2 import QtWidgets
+from PySide2 import QtCore
+
+#shiboken imports 
+from shiboken2 import wrapInstance
+
+#maya imports
+import pymel.core as pm
+import maya.OpenMayaUI as omui
+
+
 def mayaMainWindow():
     """
     Helper function that returns a python object for maya's main window, so that you can use this python object as the parent for qt widgets 
