@@ -6,8 +6,8 @@ import os
 import sys
 
 #package dependencies, not sure if this is the best way to do this.
-#sys.path.append("F:\\projects\\pipeline\\packages") - this is for offsite dev
-sys.path.append("Y:\\pipeline\\packages")
+# sys.path.append("F:\\projects\\pipeline\\packages") # for remote use
+sys.path.append("\\\\YARN\\projects\\pipeline\\packages")
 
 #external packages, after path append
 import scandir
