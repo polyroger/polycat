@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh.
+#!/usr/bin/env pwsh
 
 $myvar = $Env:OCIO
 $on = "Y:\pipeline\utilities\ocio\aces\OpenColorIO-Configs\aces_1.1\config.ocio"

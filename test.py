@@ -1,8 +1,15 @@
+from pipeline_utilities import path_manipulation
+import scandir
 import os
-from pipeline_utilities import file_manipulation
 
-version = file_manipulation.getLatestVersion("F:/projects/aaa/tst/tst0010","boxes")
-print version
-print type(version)
+x = "C:\\Users\\roger\\Documents\\maya\\projects\\default\\scenes"
+y = "ASSETS"
+
+test = path_manipulation.goFindDirectory(x,y)
+print test
 
 
+# mytest = scandir.scandir("Y://")
+
+# for i in mytest:
+#     print i

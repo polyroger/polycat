@@ -158,7 +158,7 @@ class PcSceneExporter(QtWidgets.QDialog):
     #START OF CUSTOM METHODS
 
     def showFileDialog(self,lineedit):
-        myd = QtWidgets.QFileDialog.getExistingDirectory(self,"Select export directory",dir=pm.sceneName())
+        myd = QtWidgets.QFileDialog.getExistingDirectory(self,"Select export directory",dir=self.geo_export_path.text())
         if myd:
             lineedit.setText(myd)
     
@@ -168,7 +168,13 @@ class PcSceneExporter(QtWidgets.QDialog):
     def getStartingPath(self):
         
         maya_file = pm.sceneName()
-        startpath = os.path.split(maya_file)[0]
+
+        try:
+            print(os.path.isfile(maya_file[0]))
+            startpath = os.path.split(maya_file)[0]
+        except IndexError:
+            print "The current scene has not been saved"
+            startpath = "Y:\\"
 
         return startpath
 
@@ -210,6 +216,7 @@ class PcSceneExporter(QtWidgets.QDialog):
     def showEvent(self,e):
         super(PcSceneExporter,self).showEvent(e)
         self.refreshPysideTableWidget(self.geo_table,export_helpers.getExportSet())
+        self.geo_export_path.setText(path_manipulation.goFindDirectory(self.getStartingPath(),"0_sourcegeo"))
 
     def refreshPysideTableWidget(self,table,table_data):
         """

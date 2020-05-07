@@ -25,22 +25,22 @@ def createStructure(justgeo,groupname,freezetrans,delhistory):
         except:
             assetname = "no group name " + namesuffix
     
-
         transgroup = pm.group(empty=True,world=True,n=transname)
+        
+        asset = pm.group(empty=True,world=True,n=assetname)
+        asset.addAttr("referenceVersion",dt="string")
         
         #nested to prevent suffixing _geo on the GGRP
         for i in selectedgeo:
             
             if i.nodeType() == "transform" and i.getShape() == None:
                 print("The selected node is a group, skipping _geo suffix")
+                pm.parent(i,transgroup)
             
             else:
                 snippets.addGeoSuffix(i,geosuffix)
             
                 pm.parent(i,transgroup)
-
-        asset = pm.group(empty=True,world=True,n=assetname)
-        asset.addAttr("referenceVersion",dt="string")
 
         pm.parent(transgroup,asset)
 
