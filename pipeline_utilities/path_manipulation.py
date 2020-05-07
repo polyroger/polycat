@@ -10,6 +10,7 @@ def goFindDirectory(start_path,folder):
 
     mydirs = scandir.scandir(start_path)
 
+
     geopath = False
     
     while not geopath:
@@ -23,9 +24,9 @@ def goFindDirectory(start_path,folder):
 
         start_path = os.path.abspath(os.path.join(start_path,"../"))
         
-        if start_path == "Y:\\":
+        if start_path == os.path.realpath(os.path.join(start_path,"../")):
             print("the path could not be found")
-            break      
+            geopath = start_path     
        
         mydirs = scandir.scandir(start_path)
     
