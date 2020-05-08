@@ -174,7 +174,7 @@ class PcSceneExporter(QtWidgets.QDialog):
             startpath = os.path.split(maya_file)[0]
         except IndexError:
             print "The current scene has not been saved"
-            startpath = "Y:\\"
+            startpath = "\\\\YARN\projects"
 
         return startpath
 

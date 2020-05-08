@@ -8,11 +8,13 @@ def goFindDirectory(start_path,folder):
     RETURNS : STRING - path to folder if found
     """
 
-    mydirs = scandir.scandir(start_path)
-
-
-    geopath = False
-    origpath = start_path
+    if not start_path:
+        geopath = "\\\\YARN\\projects"
+    else:
+        geopath = False
+        mydirs = scandir.scandir(start_path)
+        origpath = start_path
+    
     
     while not geopath:
         
@@ -49,4 +51,4 @@ def checkForPath(basepath,assetname):
     
     else:
         return assetpath
-       
+
