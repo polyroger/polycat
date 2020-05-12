@@ -7,6 +7,9 @@ def goFindDirectory(start_path,folder):
     Goes up from a starting directory and tries to find a folder
     RETURNS : STRING - path to folder if found
     """
+    print "trying to find directory"
+    print start_path
+    print folder
 
     if not start_path:
         geopath = "\\\\YARN\\projects"
@@ -26,7 +29,7 @@ def goFindDirectory(start_path,folder):
                 break
 
         start_path = os.path.abspath(os.path.join(start_path,"../"))
-        print start_path
+  
         
         if start_path == os.path.realpath(os.path.join(start_path,"../")):
             print "the path could not be found"
@@ -34,15 +37,16 @@ def goFindDirectory(start_path,folder):
         else:
             mydirs = scandir.scandir(start_path)
     
+   
     return geopath
 
-def checkForPath(basepath,assetname):
+def checkForPath(basepath,assetname,refversion):
     """
     Checks for a path + assetname, if it doesnt exist it makes it. If somthing goes wrong it returns None
     """
-    
+    foldername = assetname + refversion
     basepath = os.path.normpath(basepath)
-    assetpath = os.path.join(basepath,assetname)
+    assetpath = os.path.join(basepath,foldername)
 
     if not os.path.exists(assetpath):
         os.mkdir(assetpath)

@@ -1,15 +1,12 @@
-from pipeline_utilities import path_manipulation
-import scandir
+# from pipeline_utilities import path_manipulation
+# import scandir
 import os
 
-x = "C:\\Users\\roger\\Documents\\maya\\projects\\default\\scenes"
-y = "ASSETS"
+# x = "C:\\Users\\roger\\Documents\\maya\\projects\\default\\scenes"
+# y = "ASSETS"
 
-test = path_manipulation.goFindDirectory(x,y)
-print test
+# test = path_manipulation.goFindDirectory(x,y)
 
-
-# mytest = scandir.scandir("Y://")
-
-# for i in mytest:
-#     print i
+name = "CHAR:CHAR@:CHARAFD:anothernamespace:apples_and_oranges"
+newname = name.split(":")
+print newname[-1]
