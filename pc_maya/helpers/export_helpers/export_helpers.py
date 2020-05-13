@@ -86,8 +86,6 @@ def getReferenceVersion(nodename):
         print("No referenceVersion attrubute value was found, returing an empty string")
         return ""
 
-
-
 def getItemValue(item):
     return item.data(self.VALUE_ROLE)
 
