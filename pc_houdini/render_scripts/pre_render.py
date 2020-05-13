@@ -14,7 +14,7 @@ def saveSimHip():
     fullfilepath = node.parm("file").eval()
     (path,filename) = os.path.split(fullfilepath)
     noext = os.path.splitext(filename)[0]
-    noframe =  re.sub(".\\d+","",noext)
+    noframe =  re.sub("\.\\d+","",noext)
     ext = ".hip"
     simname = noframe + "_simsave" + ext
     savefolder = "simsave"
