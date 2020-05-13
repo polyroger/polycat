@@ -22,16 +22,23 @@ def pcAbcExporter(rootname,assetpath,start,end,single):
     #pm.AbcExport(help=True)   use this in maya for the pm.AbcExporter help
 
     ext = ".abc"
-    exportname = rootname.replace("_GGRP", "")
-    exportpath = path_manipulation.checkForPath(assetpath,exportname)
+    
+    stripns = export_helpers.stripNameSpace(rootname)
+    refversion = export_helpers.getReferenceVersion(rootname)
+    exportname = stripns.replace("_GGRP", "")
+
+    exportpath = path_manipulation.checkForPath(assetpath,exportname,refversion)
+    refattr = "referenceVersion"
 
     latest = file_manipulation.getLatestVersion(exportpath,exportname)
     latestplus = file_manipulation.versionPlusOne(latest)
     
     exportgeoflag = "-root " + rootname
-    exportpathflag = "-file " + exportpath + "\\" + exportname + latestplus + ext
+    exportpathflag = "-file " + exportpath + "\\"  + exportname + refversion + latestplus + ext
     exportrangeflag = "-framerange " + str(start) + " " + str(end)   
-    exportflags = exportgeoflag + " " + exportpathflag + " " + "-worldspace -eulerFilter -stripNamespaces" + " " + exportrangeflag
+    exportattrflag = "-userAttr " + refattr
+    
+    exportflags = exportgeoflag + " " + exportpathflag + " " + "-worldspace -eulerFilter -stripNamespaces" + " " + exportrangeflag + " " + exportattrflag
 
 
     print (exportflags)

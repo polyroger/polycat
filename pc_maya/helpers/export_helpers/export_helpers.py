@@ -64,6 +64,30 @@ def getExportList(table):
     
     return exportlist  
 
+def stripNameSpace(name):
+    
+    if ":" in name:
+        nons = name.split(":")[-1]
+        return nons
+    else:
+        return name
+
+def getReferenceVersion(nodename):
+    """
+    Expexts the name of the node that contains the referenceVersion attribute
+    """
+    reference = pm.ls(nodename)[0]
+    getver = reference.referenceVersion.get()
+
+    if getver:
+        refver = "_" + getver
+        return refver
+    else:
+        print("No referenceVersion attrubute value was found, returing an empty string")
+        return ""
+
+
+
 def getItemValue(item):
     return item.data(self.VALUE_ROLE)
 

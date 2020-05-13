@@ -149,13 +149,16 @@ class PcSceneExporter(QtWidgets.QDialog):
         self.geo_export_path_btn.clicked.connect(lambda : self.showFileDialog(self.geo_export_path))
         # self.cam_export_path_btn.clicked.connect(lambda : self.showFileDialog(self.cam_export_path))
         self.export_btn.clicked.connect(lambda : self.runExportGeo(self.geo_table))
-        # self.export_btn.clicked.connect(self.buttontest)
-        # self.refresh_btn.clicked.connect(lambda : pyside2_helpers.refreshPysideTableWidget())
+        # self.export_btn.clicked.connect(self.testme)
+        # self.refresh_btn.clicked.connect(self.testme)
         self.refresh_btn.clicked.connect(lambda : self.refreshPysideTableWidget(self.geo_table,export_helpers.getExportSet()))
         self.cancel_btn.clicked.connect(self.close)
        
 
     #START OF CUSTOM METHODS
+
+    def testme(self):
+        print("this is from testme")
 
     def showFileDialog(self,lineedit):
         myd = QtWidgets.QFileDialog.getExistingDirectory(self,"Select export directory",dir=self.geo_export_path.text())
@@ -174,7 +177,7 @@ class PcSceneExporter(QtWidgets.QDialog):
             startpath = os.path.split(maya_file)[0]
         except IndexError:
             print "The current scene has not been saved"
-            startpath = "Y:\\"
+            startpath = "\\\\YARN\projects"
 
         return startpath
 
@@ -193,6 +196,7 @@ class PcSceneExporter(QtWidgets.QDialog):
 
     def runExportGeo(self,table):
 
+        print "running export geo"
         
         explist = export_helpers.getExportList(table)
 
@@ -208,9 +212,7 @@ class PcSceneExporter(QtWidgets.QDialog):
 
             pc_abc_exporter.pcAbcExporter(exportname,exportpath,start,end,singlframe)
 
-        
 
-        
 
     #this is overwriting the QtWidjet showEvent() method. So that when the window show() event is triggered it automtically refreshes
     def showEvent(self,e):
