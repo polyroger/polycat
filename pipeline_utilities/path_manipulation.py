@@ -44,12 +44,15 @@ def checkForPath(basepath,assetname,refversion):
     """
     Checks for a path + assetname, if it doesnt exist it makes it. If somthing goes wrong it returns None
     """
+    print("running checkForPath()")
+    
     foldername = assetname + refversion
     basepath = os.path.normpath(basepath)
-    assetpath = os.path.join(basepath,foldername)
+    assetpath = os.path.abspath(os.path.join(basepath,foldername,"mod"))
 
     if not os.path.exists(assetpath):
-        os.mkdir(assetpath)
+        print "making path"
+        os.makedirs(assetpath)
         
         return assetpath
     

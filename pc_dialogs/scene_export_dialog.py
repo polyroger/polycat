@@ -93,9 +93,9 @@ class PcSceneExporter(QtWidgets.QDialog):
 
         #frame range widgetts
         self.frame_range_label = QtWidgets.QLabel("Frame Range : ")
-        self.frame_range_start = QtWidgets.QLineEdit("1001")
+        self.frame_range_start = QtWidgets.QLineEdit(str(export_helpers.getFrameRanges()[0]))
         self.frame_range_start.setMaximumWidth(75)
-        self.frame_range_end = QtWidgets.QLineEdit("1100")
+        self.frame_range_end = QtWidgets.QLineEdit(str(export_helpers.getFrameRanges()[1]))
         self.frame_range_end.setMaximumWidth(75)
 
         intvalidator = QtGui.QIntValidator(-99999,99999,self)
@@ -204,10 +204,10 @@ class PcSceneExporter(QtWidgets.QDialog):
             
             exportname = i.data(self.VALUE_ROLE)
             exportpath = self.geo_export_path.text()
-            start = 1
-            end = 10
-            singlframe = False
-
+            start = self.frame_range_start.text()
+            end = self.frame_range_end.text()
+            singlframe = export_helpers.checkBoxStateBool(table.item(i.row(),2))
+            
             print("\n {0} will be exported".format(exportname))
 
             pc_abc_exporter.pcAbcExporter(exportname,exportpath,start,end,singlframe)

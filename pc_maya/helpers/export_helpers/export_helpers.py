@@ -40,12 +40,6 @@ def getExportSet():
         print("Export Set could not be found")
         return False
 
-def freezeTransforms():
-    print("freeze me")  
-
-def deleteHistory():
-    print("delete my history") 
-
 def getExportList(table):
 
     print ("export list cleared")
@@ -77,17 +71,42 @@ def getReferenceVersion(nodename):
     Expexts the name of the node that contains the referenceVersion attribute
     """
     reference = pm.ls(nodename)[0]
-    getver = reference.referenceVersion.get()
-
-    if getver:
-        refver = "_" + getver
-        return refver
-    else:
-        print("No referenceVersion attrubute value was found, returing an empty string")
+    
+    try:
+        getver = reference.referenceVersion.get()
+        
+        if getver:
+            refver = "_" + getver
+            return refver
+        else:
+            return ""
+    except:
+        print("There is no ref version attr, returning an empty string")
         return ""
+
+   
 
 def getItemValue(item):
     return item.data(self.VALUE_ROLE)
+
+def getFrameRanges():
+    """
+    Returns a tuple of (int playbackstart, int playbackend)
+    """
+
+    start = int(pm.playbackOptions(query=True, min=True) - 1)
+    end = int(pm.playbackOptions(query=True, max=True))
+
+    return (start,end)
+
+def checkBoxStateBool(checkboxitem):
+    """
+    Returns True or False depening on whether a pyside2 checkbox is checked or not rather that a pyside2 state
+    """
+    if checkboxitem.checkState() == QtCore.Qt.CheckState.Checked:
+        return True
+    else:
+        return False
 
 
    
