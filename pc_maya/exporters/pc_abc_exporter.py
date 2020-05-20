@@ -38,7 +38,7 @@ def pcAbcExporter(rootname,assetpath,start,end,single):
     exportrangeflag = "-framerange " + str(start) + " " + str(end)   
     exportattrflag = "-userAttr " + refattr
     
-    exportflags = exportgeoflag + " " + exportpathflag + " " + "-worldspace -eulerFilter -stripNamespaces" + " " + exportrangeflag + " " + exportattrflag
+    exportflags = exportgeoflag + " " + exportpathflag + " " + "-worldspace -eulerFilter -stripNamespaces -uv" + " " + exportrangeflag + " " + exportattrflag
 
 
     print (exportflags)
