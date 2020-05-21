@@ -45,6 +45,7 @@ class PcProject():
         self.jobEdit = self.makeLevelPath(self.jobroot,"jobLevel","jobEdit")
         self.jobLitterBox = self.makeLevelPath(self.jobroot,"jobLevel","jobLitterbox")
 
+        #asset level paths
         self.assetAudio = self.makeLevelPath(self.jobAssets,"assetLevel","assetAudio")
         self.assetCharacters = self.makeLevelPath(self.jobAssets,"assetLevel","assetCharacters")
         self.assetEnvironment = self.makeLevelPath(self.jobAssets,"assetLevel","assetEnvironment")
@@ -77,9 +78,6 @@ class PcProject():
             print("could not get the path, check that you have entered the correct data into makeLevelPath")
             return None
         
-# These are the main creation methods, most of them calll the similar methods but with different arguments
-# I did this just so that there are better names when using object methods
-   
     def getSequence(self,seqname):
         """
         This just returns a pathlib path of new sequence, it does not make the path!. To be used in the makeCuts method
@@ -201,16 +199,6 @@ class PcProject():
 
         self.makeNestedStructure(parentlevel,path)
 
-
-# These are the main functions for folder creation
-    def makeCustomLevel(self,parentpath,clevelname):
-        
-        name = parentpath / clevelname
-        return name
-  
-
-        self.makeLevelDictItems(parentlevel,path)
-
     def makeLevelDictItems(self,parentlevel,path):
         
         for key,value in self.JLEVELS[parentlevel].items():
@@ -241,21 +229,15 @@ class PcProject():
             self.makeLevelListItems(foldername,childpath)
 
 
-uvw = PcProject("uvw","xyz")
-uvw.makeSequence("scn0010_library_interior",1)
-
-
+## The base commands
+# uvw = PcProject("uvw","xyz")
+# uvw.makeSequence("scn0010_library_interior",1)
 # uvw.makeCuts(uvw.getSequence("scn0010_library_interior"),1)
 # uvw.makeACut(uvw.getSequence("scn0010_library_interior"),"cut0025")
 # uvw.makeAsset(uvw.assetCharacters,"emprtyasset")
 
-
-
-
-
 #TODO:
 """
-update users when the projcet is re run
 
 """
 
