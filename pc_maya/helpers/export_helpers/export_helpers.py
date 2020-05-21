@@ -84,8 +84,6 @@ def getReferenceVersion(nodename):
         print("There is no ref version attr, returning an empty string")
         return ""
 
-   
-
 def getItemValue(item):
     return item.data(self.VALUE_ROLE)
 
