@@ -1,40 +1,6 @@
-
 import hou
 import os
 import re
-
-# phsudocode for generating the folders / paramater templates, need to work on how to set the paramater values. Currently using a list wich wont work
-# so nice now, look at setting the path before doing any udim tagging
-
-# create paramater group
-
-# def createTemplates(parmGroup):
-
-# 	for folder in os.listdir(texture catagory):
-		
-# 		for name in os.listdir(texture catagory + folder)
-			
-# 			foldertemplate = mynode.folderParmTemplate()
-# 			foldertemp.setName(name)
-			
-# 			for root,dirs,files in os.walk(texture catagory + "/" + folder + "/" + name):
-				
-# 				for i in files:
-# 					parmtemplate = hou.StringParmTemplate()
-# 					parmtemplate.setName(i)
-# 					foldertemp.addParmTemplate(parmtemplate)
-
-# 			parmGroup.addFolderTemplate()
-
-# 	return parmGroup
-
-
-
-
-
-
-
-
 
 def getTextureCatagory(texpath):
 
@@ -55,31 +21,7 @@ def getTextureCatagory(texpath):
 
 
 
-def getTextureList(texpath):
-    """
-    Filters the given path for all files that DONT match certain extensions
-    Uses the os module, you will need to import it for this to work
-    Returns a list of files
-    
-    """
-    #filter through the texture folder and get only the textures
-    textures = []
-    for root,dirs,files in os.walk(texpath):
-        print root
-        print dirs
-        print files
-               
-        for i in files:
-            
-            filename,ext = os.path.splitext(i)
-            if ext != ".tx" and ext != ".db":
-                textures.append(i)
-       
-    textures.sort() 
-    
-    return textures    
-
-def udimCheck(texturelist):
+def udimCheck(texturedict):
     """
     Expects a list of texture files, checks the file for udim number padding eg file_1001.exr
     and replaces the 1001 with the arnold <udim> tag and removes all but one instance of the file with the new name
@@ -87,64 +29,122 @@ def udimCheck(texturelist):
     Returns: A sorted list of files, with udim handling
     
     """
-    for j,i in enumerate(texturelist):
+    for key,value in texturedict.items():
             
         #checks for udim and replaces the padding to the udim tag
-        edited = re.sub("[0-9]{4}","<udim>",i)
-        texturelist[j] = edited
+        edited = re.sub(r"[0-9]{4}","<udim>",value)
+        texturedict[key] = edited
     
-    texturelist = list(set(texturelist))
-    texturelist.sort()
+    cleanudim = {}
 
-    return texturelist
+    for key,value in texturedict.items():
+        if value not in cleanudim.values():
+            cleanudim[key] = value
+    
+
+#   use the get() method on a dictionary so that the code doesnt error when going through the loop. It will only find the dictionary entry if is exists in the current iteration
+#   of the loop.
+    # print cleanudim.get("frog_body_cavity_1002")
+
+    return cleanudim
     
       
-def createTextureParms(texturelist,parmgroup):
+def createTextureParms(texturecat,parmgroup):
     """
-    Creates a parmgroup that consists of string paramaters that are used a file paramaters, it will create as many paramaters as there are 
+    Creates a parmgroup that consists of string paramaters it will create as many paramaters as there are 
     files in texturelist, removes the <udim> tag for naming of the paramater
 
-    Expects a sorted texture list and a hou.parmTemplateGroup object
+    Expects a texture catagory path and the parmgroup of a node
 
-    Returns a parm group object that coinains a paramater entry for each item in the texture list
+    Returns a parm group object that coinains a paramater entry for each item in the texture catagory foder
         
     """
+    print("\n\nStart of createTextureParms \n **************************************************** \n")
+    
+    folderlist = os.listdir(texturecat)
+    textures = parmgroup.find("textures")
 
-    for i in texturelist:
-
-        f,ext = os.path.splitext(i)
-        name = f.replace("_<udim>","")
-        
-      # creates a unique instance of a string template and adds it into the folder parm
-        filetemplate = hou.StringParmTemplate(name,name,1,string_type=hou.stringParmType.FileReference)
-      # folderparm.addParmTemplate(filetemplate)    this is if you want to add to a folder, append this to the parm group
-        parmgroup.append(filetemplate)
-
+    pfolders = []
+    filelist = []
+    mydict = {}
   
-    return parmgroup   
-
-
-def setTextureParms(parmgroup,mynode,texpath,texturelist):
-    """
-    Sets the parms that are gernerated in the parmgroup to the texture path that they corrispond to
-
-    This is dirty...the parmgroup.parmTemplate will include all the paramaters that are in the otl. so the list that gets generated also includes the folder
-    "assettex" you have to bypass that to get to the parmtemplates that you have added, and then add that offset to the texturelist index to get the right value
-    This is not ideal and will most likely break in the future. A better way would be to construct a fully new parmfolder or group and add in the items there but
-    that creates another folder which I didnt want...just a heads up from me to you all these templates can get confusing.
-
-    """
-
-    #setting the texture path of the template
+    # makes the initial dictionary that consists of the names of all the folders in the base texture catagory and then assigns an empty list as its value
+    for folder in (folderlist):
         
-    for h,i in enumerate(parmgroup.parmTemplates()):
+        mydict[folder] = []
 
-         if i.name() == "assettex":
-             continue
-         else:
-             mynode.parm("./" + i.name()).set(texpath + texturelist[h-1])
+    # runs over every key (texture folder name) and finds all the files / file paths from that point down the folder structure
+    for key in mydict.keys():
+
+        texpath = os.path.abspath(os.path.join(texturecat,key))
+        
+        for root,dirs,files in os.walk(texpath):
+                    
+                for i in files:
+                    
+                    filepath = os.path.abspath(os.path.join(root,i))
+                    basepath = os.path.basename(filepath)
+                    filename,ext = os.path.splitext(basepath)
+                    
+                    # if the file is of the correct type it appends a [filename,filepath] list to the current dictionary key value. 
+                    if ext != ".tx" and ext != ".db":
+                        mydict[key].append([filename,filepath])
+
+    # at this stage mydict shoudl have this structure {texturefolder:[[filename,filepath],[filename,filepath],etc,etc]} - a dictionary that contains foldername key and a value of a list of lists
+    # this loops over the items in the dictionary
+    for key,value in mydict.items():
+     
+        # this loops over the value list [filename,filepath] and creates the houdini string paramater using the filename and sets the default value with to the filepath
+        for i in mydict[key]:
+
+            sparm = hou.StringParmTemplate(i[0].lower(),i[0].upper(),1,string_type=hou.stringParmType.FileReference)
+            sparm.setDefaultValue([i[1]])
+            # appends all the string paramaters that are ascociated with the current texture folder and stores them in a list
+            filelist.append(sparm)
+       
+        # creates the folder template with the dict key as the name and adds the list of ascociated string templates to it, this folder variable will be overwritten at each stage of the loop       
+        folder = hou.FolderParmTemplate(key.lower(),key.upper(),parm_templates=filelist)
+        # stores that folder template so it doesnt get lost in the loop
+        pfolders.append(folder)
+        # clears the filelist so that the new list can be built from the new key, if this isnt cleared you will just append the next paramater list and your last folder parm will contain all the files
+        filelist = []
+
+    
+    #  sets an in memory copy of the textures folder that now contains all the folders and the folders all the string paramaters, then replaces the current parmgroup textures folder with the in memory one
+    textures.setParmTemplates(pfolders)
+    parmgroup.replace("textures",textures)
+
+    #you need to return the parmgroup so you can set the parmgroup in the hda script.
+    return parmgroup
+       
+
+# #  START of the simple working setup that i used for a base understanding
+
+
+#     parm1 = hou.StringParmTemplate("parm1","parm1",1,string_type=hou.stringParmType.FileReference)
+#     parm2 = hou.StringParmTemplate("parm2","parm2",1,string_type=hou.stringParmType.FileReference)
+
+#     parm3 = hou.StringParmTemplate("parm3","parm3",1,string_type=hou.stringParmType.FileReference)
+#     parm4 = hou.StringParmTemplate("parm4","parm4",1,string_type=hou.stringParmType.FileReference)
+    
+    
+#     parmlist1 = [parm1,parm2]
+#     parmlist2 = [parm3,parm4]
+
+#     folder1 = hou.FolderParmTemplate("arrow_name","arrow_label",parm_templates=parmlist1)
+#     folder2 = hou.FolderParmTemplate("body_name","body_label",parm_templates=parmlist2)
+
+#     parmteplatelist = [folder1,folder2]
+
+#     textures.setParmTemplates(parmteplatelist)
+
+#     parmgroup.replace("textures",textures)     
+
+
+#     return parmgroup 
+
+
             
-             
         
        
 
