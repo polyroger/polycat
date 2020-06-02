@@ -1,0 +1,25 @@
+A QtWidget.QLlistWidget takes in Qlistwidgetitems.
+A Qlistwidgetitem is an object that is comprised of a list with two entries [a label, [custom data] ]. The custom data can be a list comprising of multiple things
+this allows a Qlistwidgetitem to have only two arguments.
+In order for you to set the data in the Qlistwidgetitem you have to use the setData() method, from the Qlistwidgetitem class.
+That means that you first have to create an item object EG : myitem = QtWidget.Qlistwidgetitem("this is the label")..
+Then you can call the setData method on that instnace EG myitem.setData(userRole, ["one bit of data",100,"another but of data"] )
+The set data method takes in a userRole as its first argument. The user role represents the object where the user data is stored in the item. 
+Each time you set data in an item the user role object gets updated. the data object is a list and the userRole essentially evaluates to an integer which gets the
+data stored in the list at that index.
+The .data method retrieves data from the UserRole.
+
+So now if you called iether index 0  or 1 of the item instance you will get its label or its data.
+You can now add the Qlistwidgetitem to your QLlistWidget.
+
+You can add multiple items this way by using a for loop. If you loop over a list of lists then you can allocate this structure to each element in the list EG
+
+item_lists = [ ["label_1",100,"label one data"], ["label_2",200,"label 2 data"], ["label_3", 300, "label 3 data] ]
+
+mylistwidget = QtWidget.QLlistWidget()
+
+for i in item_lists:
+
+    myitem = QtWidget.Qlistwidgetitem(i[0])             # makes an instace and calls it the label of the firs list in the list
+    myitem.data(QtCore.Qt.UserRole, i[1], i[2])
+    mylistwidget.addItem(myitem)

@@ -1,5 +1,7 @@
 import os
 import hou
+ 
+
 root =  hou.getenv("JOB") + "/"
 
 def createMenu(menu_path):
@@ -63,7 +65,7 @@ def resetParms():
     cut.setExpression(cutexp)   
     
     
-########################
+###############################     CAMERA            ########################
 
 def getlatest(path):
     for root,folder,files in os.walk(path):
@@ -126,8 +128,63 @@ def getAbcCamera():
     
     setshot.parm("camera").set(cameraSetup(cut,alembicCam))
     
-    
-    
+###############################     SAVE SCENE           ########################
+# check if the path is valid, if not in a houdini folder cancel
+# check if there is a hip file in the path,
+# if there is a hip file get the list of files
+# saveandincrementfilname
+
+# if not filelist:
+#     prompt for save name with open text dialouge
+#     check for name conflict
+#     save file
+
+
+def checkValidHipDir(hippath):
+
+    if os.path.exists(hippath):
+
+        filegroup = []
+        for f in os.listdir(hippath):
+            if os.path.isfile(hippath + "/" + f):
+                filegroup.append(f)
+
+        return filegroup
+
+        
+    else:
+        print "no"
+        return False
+   
+
+def showHipFiles(filelist):
+
+    return hou.ui.selectFromList(filelist,exclusive=True,message="If you want to version up a current hip file select one from the list")[0]
+
+
+
+    # """
+    # Takes a file path as an argumnet and checks if that path is a valid polycat hip file save location
+
+    # """
+    # print "running"
+
+    # if os.path.split(hippath[:-1])[1] == "houdini" or os.path.exists(hippath):
+
+    #     hou.ui.displayConfirmation("there is a valid `houdini` folder in this save path")
+    #     return True
+    # else:
+
+    #     hou.ui.displayConfirmation("There is not a `houdini` folder in this save path")
+        
+    #     return False 
+        
+    # print "done"
+
+
+
+
+
     
     
 

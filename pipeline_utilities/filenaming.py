@@ -2,6 +2,18 @@ import os
 import re
 import pymel.core as pm
 
+
+
+ 
+
+
+
+
+
+
+
+# all this belew is what I am calling legacy from the first camera exporter. It works but needs to be updated to better practices
+
 def getexportdir(asset):
     # this is a tempory way to idetify folders, find a better way. Maybe a global json file that gives you relative paths
     relpaths = {"cam":"../../","playblast":"../../0_Playblast"}
@@ -53,7 +65,6 @@ def getExportFilePath():
     print exportfilepath[0]    
     return exportfilepath[0]
 
-
 def buildFileName(app,exportfilepath):
 
     app = str(app).replace("1","")    
@@ -67,6 +78,5 @@ def buildFileName(app,exportfilepath):
     return (pathname,dirname)
 
 
-# need to find the file with the highest version
-# add in a better regex to get any numbered version, currently its only getting two platces , 1 - 99 addin int two /d seemed to do it but i think that its incorrect            
+
 
