@@ -3,7 +3,7 @@
         "jobClient":"0_aaa",
         "jobAssets":"1_assets",
         "jobSequences":"2_sequences",
-        "jobDevelopment":"3_developnent",
+        "jobDevelopment":"3_development",
         "jobEdit":"4_edit",
         "jobLitterbox":"5_litterbox"    
     },
@@ -19,6 +19,13 @@
         "assetEnvironment":"environment",
         "assetProps":"props",
         "assetVfx":"vfx"
+    },
+
+    "devLevel" : {
+        "devCharacters":"characters",
+        "devEnvironments":"environments",
+        "devFX":"fx",
+        "devPipeline":"pipeline_tools"
     },
 
     "editLevel" : {
@@ -37,6 +44,7 @@
         "cutRenders":"0_renders",
         "cutSim":"0_sim",
         "cutSourcegeo":"0_sourcegeo",
+        "cutRawgeo":"0_rawgeo",
         "cutSourceimages":"0_sourceimages",
         "cutUsers":"users"
     },

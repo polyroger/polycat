@@ -29,7 +29,7 @@ from math import floor
 
 class PcProject():
 
-    CLIENTROOT = pathlib.Path("C:/Users/Administrator/Desktop/YARN/projects")
+    CLIENTROOT = pathlib.Path("//YARN/projects")
 
     def __init__(self,client,job):
 
@@ -51,6 +51,13 @@ class PcProject():
         self.assetEnvironment = self.makeLevelPath(self.jobAssets,"assetLevel","assetEnvironment")
         self.assetProp = self.makeLevelPath(self.jobAssets,"assetLevel","assetProps")
         self.assetVfx = self.makeLevelPath(self.jobAssets,"assetLevel","assetVfx")
+
+        #dev level paths
+        self.devCharacters = self.makeLevelPath(self.jobDevelopment,"devLevel","devCharacters")
+        self.devEnvironment = self.makeLevelPath(self.jobDevelopment,"devLevel","devEnvironments")
+        self.devFX = self.makeLevelPath(self.jobDevelopment,"devLevel","devFX")
+        self.devPipeline = self.makeLevelPath(self.jobDevelopment,"devLevel","devPipeline")
+
 
         self.makeClient("clientLevel",self.jobAaa)
         self.makeEdit(self.jobEdit)
@@ -91,7 +98,7 @@ class PcProject():
             return False
         
     def makeSequence(self,seqname,numcuts):
-        
+
         parentpath = self.jobSequences / seqname
         self.makeDirs(parentpath)
         self.makeCuts(parentpath,numcuts)
@@ -104,10 +111,9 @@ class PcProject():
         devname = self.jobDevelopment / devname
         return devname
 
-    def makeDevelopment(self,devname,numcuts):
+    def makeDevelopment(self,devcat,devname):
 
-            parentpath = self.getDevelopment(devname)
-            self.makeCuts(parentpath,numcuts)
+            self.makeACut(devcat,devname)
 
     def makeCuts(self,parentpath,numcuts):
         """
@@ -153,7 +159,7 @@ class PcProject():
 
         repattern = r"\d+"
         cutlist = []
-        cutstart = int(10)
+        # cutstart = int(10)
 
         if parentpath:           
 
@@ -228,29 +234,36 @@ class PcProject():
             
             self.makeLevelListItems(foldername,childpath)
 
-
 ## The base commands
-# uvw = PcProject("uvw","xyz")
+uvw = PcProject("mov","eos")
+# uvw.makeDevelopment(uvw.devCharacters,"frogs")
 # uvw.makeSequence("scn0010_library_interior",1)
 # uvw.makeCuts(uvw.getSequence("scn0010_library_interior"),1)
 # uvw.makeACut(uvw.getSequence("scn0010_library_interior"),"cut0025")
-# uvw.makeAsset(uvw.assetCharacters,"emprtyasset")
-
-#TODO:
-"""
-
-"""
+uvw.makeACut(uvw.assetProp,"test")
+# uvw.makeAsset(uvw.assetProp,"loop_test_machine2")
 
 
-#ROADMAP
-"""
-Initial setup if a working project creation class,
 
-get the class working in a python shell
+# #TODO:
+# """
+# add seqential naming to sequence creation....maybe its better to have it auto increment unless you enter a new seqname
+# refresh all folders to update 
 
-Find a way to promote job variables to the working environment to auto set certain paths
+# add an empty base "copypaste" folder that has the structure with no files so that people can create shots / assets / seqences themselves.
+# When a project is initially populated there should be a "copypaste" in all the places where people would want.
+# """
 
-Making a web based local host GUI that can be deployed so that people with login rights can more easily use the class
+
+# #ROADMAP
+# """
+# Initial setup if a working project creation class,
+
+# get the class working in a python shell
+
+# Find a way to promote job variables to the working environment to auto set certain paths
+
+# Making a web based local host GUI that can be deployed so that people with login rights can more easily use the class
 
 
-"""
+# """
