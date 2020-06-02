@@ -234,34 +234,36 @@ class PcProject():
             
             self.makeLevelListItems(foldername,childpath)
 
-
 ## The base commands
 uvw = PcProject("mov","eos")
 # uvw.makeDevelopment(uvw.devCharacters,"frogs")
 # uvw.makeSequence("scn0010_library_interior",1)
 # uvw.makeCuts(uvw.getSequence("scn0010_library_interior"),1)
 # uvw.makeACut(uvw.getSequence("scn0010_library_interior"),"cut0025")
-uvw.makeAsset(uvw.assetEnvironment,"amphibia_ext")
-
-#TODO:
-"""
-add seqential naming to sequence creation....maybe its better to have it auto increment unless you enter a new seqname
-refresh all folders to update 
-
-add an empty base "copypaste" folder that has the structure with no files so that people can create shots / assets / seqences themselves.
-When a project is initially populated there should be a "copypaste" in all the places where people would want.
-"""
+uvw.makeACut(uvw.assetProp,"test")
+# uvw.makeAsset(uvw.assetProp,"loop_test_machine2")
 
 
-#ROADMAP
-"""
-Initial setup if a working project creation class,
 
-get the class working in a python shell
+# #TODO:
+# """
+# add seqential naming to sequence creation....maybe its better to have it auto increment unless you enter a new seqname
+# refresh all folders to update 
 
-Find a way to promote job variables to the working environment to auto set certain paths
+# add an empty base "copypaste" folder that has the structure with no files so that people can create shots / assets / seqences themselves.
+# When a project is initially populated there should be a "copypaste" in all the places where people would want.
+# """
 
-Making a web based local host GUI that can be deployed so that people with login rights can more easily use the class
+
+# #ROADMAP
+# """
+# Initial setup if a working project creation class,
+
+# get the class working in a python shell
+
+# Find a way to promote job variables to the working environment to auto set certain paths
+
+# Making a web based local host GUI that can be deployed so that people with login rights can more easily use the class
 
 
-"""
+# """
