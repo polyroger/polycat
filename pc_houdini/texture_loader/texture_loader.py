@@ -52,10 +52,38 @@ def udimRename(filename,replacewith):
 
     return newfilename
 
-def clearTextureParms(texturecat,parmgroup):
-    print texturecat
-    print parmgroup
+def clearTextureParms(node,parmgroup):
+    """
+    creates and empty folder template and replaces the current "textures" template so that the textures can be refreshed.
+    returns a copy of the input parmgroup that has an empty "textures" folder
+    """
 
+    texturefolder = parmgroup.findFolder("textures")
+    emptyfolder = hou.FolderParmTemplate("textures","textures")
+    parmgroup.replace(texturefolder,emptyfolder)
+
+    return parmgroup
+
+def createArnoldShader(node,foldername):
+
+    shop = node.parent()
+    children = []
+    
+    for child in shop.children():
+        children.append(child.name())
+    
+    if foldername in children:
+        print "there is already a shader with the same name as the texture folder" 
+        return None
+    else:
+        shader = shop.createNode("arnold_vopnet",foldername)
+        return shader
+
+def createImageNodes(shader,filename):
+
+    imagenode = shader.createNode("arnold::image",filename)
+
+    return imagenode
 
 
 def createTextureParms(node,texturecat,parmgroup):
@@ -68,33 +96,42 @@ def createTextureParms(node,texturecat,parmgroup):
     Returns a parm group object that coinains a paramater entry for each item in the texture catagory foder
         
     """
-    # print("refreshing texture contents....")
+    #this section removes any trailing slashes from the path and checks whether there are files or folders or both in the texturepath
+
+    if texturecat[-1] == "/" or texturecat[-1] == "\\":
+        texturecat = texturecat[:-1]
     
-    # textures = parmgroup.find("textures")
-    # emptyfolder = hou.FolderParmTemplate("textures","Textures")
-    # textures.setParmTemplates(emptyfolder)
-    # parmgroup.replace("textures",textures)
-    # node.setParmTemplateGroup(parmgroup)
-    
-    
-    
-    folderlist = os.listdir(texturecat)
+    folderlist = []
+
+    for i in os.listdir(texturecat):
+        path  = texturecat + "/" + i
+        if os.path.isdir(path):
+            folderlist.append(i)
+    if not folderlist:
+        folderlist.append(os.path.basename(texturecat))
+        
     textures = parmgroup.find("textures")
 
     pfolders = []
     filelist = []
     mydict = {}
-  
+
+    
     # makes the initial dictionary that consists of the names of all the folders in the base texture catagory and then assigns an empty list as its value
     for folder in (folderlist):
         
         mydict[folder] = []
 
-    # runs over every key (texture folder name) and finds all the files / file paths from that point down the folder structure
+    # runs over every key (texture folder name) and finds all the files / file paths from that point down the folder structure. If there are no folders in the
+    # texture path which should be iether laters or dev then use the texurepath as the path
     for key in mydict.keys():
 
-        texpath = os.path.abspath(os.path.join(texturecat,key))
+        if key == os.path.basename(texturecat):
+            texpath = os.path.abspath(texturecat)
+        else:
+            texpath = os.path.abspath(os.path.join(texturecat,key))
         
+
         for root,dirs,files in os.walk(texpath):
                     
                 for i in files:
@@ -124,6 +161,16 @@ def createTextureParms(node,texturecat,parmgroup):
        
         # creates the folder template with the dict key as the name and adds the list of ascociated string templates to it, this folder variable will be overwritten at each stage of the loop       
         folder = hou.FolderParmTemplate(key.lower(),key.upper(),parm_templates=filelist)
+        
+        # creating the shader and image nodes
+        shader = createArnoldShader(node,folder.name())
+        shader.createNode("arnold::standard_surface")
+        
+        for path in filelist:
+            imagefilename = path.name()
+            imagenode = createImageNodes(shader,imagefilename)
+            imagenode.parm("filename").set(path.defaultValue()[0])
+        
         # stores that folder template so it doesnt get lost in the loop
         pfolders.append(folder)
         # clears the filelist so that the new list can be built from the new key, if this isnt cleared you will just append the next paramater list and your last folder parm will contain all the files
@@ -141,7 +188,7 @@ def createTextureParms(node,texturecat,parmgroup):
 #TODO
 """
 Add in a way to create arnold image nodes that auto link to the texture path.
-some sort of reload or refresh
+some sort of reload or refresh - done
 
 """
 
