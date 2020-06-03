@@ -96,25 +96,42 @@ def createTextureParms(node,texturecat,parmgroup):
     Returns a parm group object that coinains a paramater entry for each item in the texture catagory foder
         
     """
-    print("refreshing texture contents....")
+    #this section removes any trailing slashes from the path and checks whether there are files or folders or both in the texturepath
 
-    folderlist = os.listdir(texturecat)
+    if texturecat[-1] == "/" or texturecat[-1] == "\\":
+        texturecat = texturecat[:-1]
+    
+    folderlist = []
+
+    for i in os.listdir(texturecat):
+        path  = texturecat + "/" + i
+        if os.path.isdir(path):
+            folderlist.append(i)
+    if not folderlist:
+        folderlist.append(os.path.basename(texturecat))
+        
     textures = parmgroup.find("textures")
 
     pfolders = []
     filelist = []
     mydict = {}
-  
+
+    
     # makes the initial dictionary that consists of the names of all the folders in the base texture catagory and then assigns an empty list as its value
     for folder in (folderlist):
         
         mydict[folder] = []
 
-    # runs over every key (texture folder name) and finds all the files / file paths from that point down the folder structure
+    # runs over every key (texture folder name) and finds all the files / file paths from that point down the folder structure. If there are no folders in the
+    # texture path which should be iether laters or dev then use the texurepath as the path
     for key in mydict.keys():
 
-        texpath = os.path.abspath(os.path.join(texturecat,key))
+        if key == os.path.basename(texturecat):
+            texpath = os.path.abspath(texturecat)
+        else:
+            texpath = os.path.abspath(os.path.join(texturecat,key))
         
+
         for root,dirs,files in os.walk(texpath):
                     
                 for i in files:
