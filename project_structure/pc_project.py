@@ -21,7 +21,7 @@ There are 3 main methods to be used in the class,
     -   makeAsset : adds in the structure for topLevel assets
 
 """
-
+import os
 import pathlib
 import json
 import re
@@ -124,7 +124,8 @@ class PcProject():
 
         """
         cutlist = self.createCutList(parentpath)
-        
+
+        # If you want to just add to current cuts, comment out the if else block
         if not cutlist:
             cutlist.append(10)
         else:
@@ -234,14 +235,30 @@ class PcProject():
             
             self.makeLevelListItems(foldername,childpath)
 
+def deleteDSstore(path):
+
+    for root,dirs,files in os.walk(path):
+        for f in files:
+            if f.endswith(".DS_Store"):
+                path = os.path.join(root,f)
+                print("{} was deleted".format(path))
+                os.remove(path)
+                
+                
+
+
+#deletes DS stores.
+# deleteDSstore("\\\\YARN\projects\mov")
+
+
 ## The base commands
 uvw = PcProject("mov","eos")
 # uvw.makeDevelopment(uvw.devCharacters,"frogs")
-# uvw.makeSequence("scn0010_library_interior",1)
+# uvw.makeSequence("scn0020_amphibia_exterior",25)
 # uvw.makeCuts(uvw.getSequence("scn0010_library_interior"),1)
 # uvw.makeACut(uvw.getSequence("scn0010_library_interior"),"cut0025")
-uvw.makeACut(uvw.assetProp,"test")
-# uvw.makeAsset(uvw.assetProp,"loop_test_machine2")
+# uvw.makeACut(uvw.assetProp,"test")
+# uvw.makeAsset(uvw.assetCharacters,"pan")
 
 
 
