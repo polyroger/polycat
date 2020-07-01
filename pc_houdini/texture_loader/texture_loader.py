@@ -139,6 +139,7 @@ def createTextureParms(node,texturecat,parmgroup):
                     filepath = os.path.abspath(os.path.join(root,i))
                     basepath = os.path.basename(filepath)
                     filename,ext = os.path.splitext(basepath)
+                    filename = filename.replace(" ","_")
                     
                     # if the file is of the correct type and it gets udim checked it appends a [filename,filepath] list to the current dictionary key value. 
                     if ext != ".tx" and ext != ".db" and findUdim(i):
