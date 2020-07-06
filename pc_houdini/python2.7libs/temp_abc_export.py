@@ -21,16 +21,18 @@ def scaleDownCut(nullscale):
 def setFrameRange(cutname):
     print("running set frame range")
 
-    with open(r"\\YARN\projects\mov\eos\2_sequences\scn0010_wizardlodge_interior\sdata.json") as jdata:
+    with open(r"\\YARN\projects\mov\eos\0_aaa\0_internal\0_project_data\scn0010_data.json") as jdata:
         data = json.load(jdata)
         jdata.close()
 
-    start = data["frameranges"][cutname]["start"]
-    end = data["frameranges"][cutname]["end"]
+    start = data["sequence_data"][cutname]["frame_in"]
+    end = data["sequence_data"][cutname]["frame_out"]
 
-    hou.playbar.setFrameRange(int(start),int(end))
+    print(start)
+    print(end)
+    # hou.playbar.setFrameRange(int(start),int(end))
 
-    print("set frame range end")
+    # print("set frame range end")
 
     
 
