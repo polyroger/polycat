@@ -7,7 +7,7 @@ CLIENT = hou.parm("client").eval()
 PROJECT = hou.parm("project").eval()
 LEVEL = hou.parm("level").eval()
 
-
+#these need to be functions so that they can be updated dynamically.
 def getScene():
     return hou.parm("scene").eval()
 
@@ -22,7 +22,7 @@ def setFrameRange(cutname=getCut(),scenename=getScene()):
     that has been selected
     """
 
-    with open(r"\\YARN\projects\mov\eos\0_aaa\0_internal\0_project_data\\kdata.json","r") as jdata:
+    with open(r"\\YARN\projects\mov\eos\0_aaa\0_internal\0_project_data\\kshotdata.json","r") as jdata:
         data = json.load(jdata)
         jdata.close()
 

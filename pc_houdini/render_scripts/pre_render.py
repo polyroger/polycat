@@ -29,3 +29,14 @@ def saveSimHip():
     hou.hipFile.setName(currenthip)
     
 
+def checkForFiles(renderpath):
+    
+    if hou.ui.displayConfirmation("There are files in the render folder, you may be overwriting them..are you sure you want to continue ? ", title="WARNING!"):
+        pass
+    else:
+        raise Exception("Stopping the render")
+
+
+
+
+

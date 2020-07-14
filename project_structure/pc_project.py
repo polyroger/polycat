@@ -257,7 +257,7 @@ uvw = PcProject("mov","eos")
 # uvw.makeSequence("scn0020_amphibia_exterior",25)
 # uvw.makeCuts(uvw.getSequence("scn0010_library_interior"),1)
 # uvw.makeACut(uvw.getSequence("scn0010_library_interior"),"cut0025")
-# uvw.makeACut(uvw.assetProp,"test")
+uvw.makeACut(uvw.getDevelopment("test"),"test")
 # uvw.makeAsset(uvw.assetCharacters,"pan")
 
 

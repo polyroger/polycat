@@ -47,7 +47,7 @@ def udimRename(filename,replacewith):
     Just a function to be used with replaceing the 1001 to arnolds <udim>
     """
 
-    pattern = r"(1001)"
+    pattern = r"\d{4}"
     newfilename = re.sub(pattern,replacewith,filename)
 
     return newfilename

@@ -5,7 +5,7 @@ import os
 USERNAME = os.getenv("KUSER")
 PASSWORD = os.getenv("KPWORD")
 
-gazu.set_host("https://polycat-visual-effects-pty-ltd.cg-wire.com/api")
+gazu.set_host("https://polycat.cg-wire.com/api")
 gazu.log_in(USERNAME, PASSWORD) 
 
 project = gazu.project.get_project_by_name("Eosis")
