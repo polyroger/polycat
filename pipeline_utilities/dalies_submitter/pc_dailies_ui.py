@@ -1,6 +1,4 @@
-import sys,json,subprocess
-import json
-import yaml
+import os,pathlib,sys,json,re,subprocess
 
 from PySide2 import QtWidgets,QtCore,QtGui
 
@@ -9,6 +7,7 @@ class PcDailiesGui(QtWidgets.QDialog):
 
     FFMPEG = r"\\YARN\projects\pipeline\utilities\ffmpeg\bin\ffmpeg.exe"
     OIIO = r"\\YARN\projects\pipeline\utilities\OpenImageIO-1.5.0-OCIO\bin\oiiotool.exe"
+    LOGO  = r"\\YARN\projects\pipeline\utilities\images\logos\polycat_white_1024x1024.png"
 
     FILEFILTERS = "jpeg (*.jpg *.jpeg);;png (*.png);;exr (*.exr);; all files (*.*)"
     defaultfilter = "all files (*.*)"
@@ -65,14 +64,12 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.output_file_btn.setFocusPolicy(QtCore.Qt.NoFocus)
         self.select_file_btn.setToolTip("Choose the export path")
 
-
         #comment box
         self.comment_box_label = QtWidgets.QLabel("Comments")
         self.comment_box_label.setAlignment(QtCore.Qt.AlignBottom)
         self.comment_box_1 = QtWidgets.QLineEdit()
         self.comment_box_2 = QtWidgets.QLineEdit()
         self.comment_box_3 = QtWidgets.QLineEdit()
-
 
         #button widgets
         self.submit_btn = QtWidgets.QPushButton("Submit")
@@ -101,7 +98,6 @@ class PcDailiesGui(QtWidgets.QDialog):
         output_file_layout.addWidget(self.output_file_label)
         output_file_layout.addWidget(self.output_file)
         output_file_layout.addWidget(self.output_file_btn)
-
 
         #comment layout
         comment_layout = QtWidgets.QVBoxLayout()
@@ -148,8 +144,11 @@ class PcDailiesGui(QtWidgets.QDialog):
         # print(data)
         return data
     
-    
     def refreshAssetTypeCBox(self,level):
+        """
+        These refresh methods are there to update the combo box values based off of the kitsue json data.
+        Remember any call to a widget that has a valid signal will call the widgets slot. That is why you have to block / enable the signal.
+        """
 
         itemlist = []
 
@@ -162,7 +161,6 @@ class PcDailiesGui(QtWidgets.QDialog):
             self.createCBoxItems(self.asset_type_box,itemlist)
             self.asset_type_box.blockSignals(False)
             
-        
         elif level == "Shots":
             
             for key,value in self.KSHOTDATA.items():
@@ -179,7 +177,10 @@ class PcDailiesGui(QtWidgets.QDialog):
             return None
 
     def refreshAssetCBox(self,assettype):
-
+        """
+        These refresh methods are there to update the combo box values based off of the kitsue json data.
+        Remember any call to a widget that has a valid signal will call the widgets slot. That is why you have to block / enable the signal.
+        """
 
         assetlist = []
         sequence = self.sequence_box.currentData()
@@ -198,7 +199,10 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.asset_box.blockSignals(False)
     
     def refreshTaskCBox(self,asset):
-
+        """
+        This refresh isnt technically dependent on any other cobmo box as the tasks section is build by getting all the available tasks on kitsu
+        This needs to eventually directly pull from the project to make it dynamic and only pull the tasks that are asigned to people
+        """
 
         tasklist = []
         sequence = self.sequence_box.currentData()
@@ -212,10 +216,13 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.task_box.clear()
         self.createCBoxItems(self.task_box,data[atype][asset]["tasks"])
         
-            
-    
     def createCBoxItems(self,combobox,itemlist):
-
+        """
+        Create the data in a combo box. At the moment it simple iterates through the list and assigns the label / value to an index in the list
+        args:
+        conbobox = a Qwidget.combobox 
+        itemlist = a list of strings that you want to add into the combobox
+        """
 
         if itemlist:
 
@@ -226,6 +233,12 @@ class PcDailiesGui(QtWidgets.QDialog):
             print("there are no items in the itemlist")
             return None
 
+        assettype = self.asset_type_box.currentData()
+        asset = self.asset_box.currentData()
+        
+        path = proj_root / seq
+
+        
 
     def selectFileDialog(self):
 
@@ -242,15 +255,177 @@ class PcDailiesGui(QtWidgets.QDialog):
         if output_path:
             self.output_file.setText(output_path)
        
-    def convertImage(self):
-        pass
+    def detectImageSeq(self,filepath):
+        """
+        Detects if there is an image sequece for the given filepath and returns a dict of useful info:
+        ARGS:
+            filepath : (str) full path to file. 
+        RETURNS : dict
+        
+        Keys:
+            start   :start frame
+            end     :end frame
+            total   :total frames
+            oiiop   :filepath for openimageIO padding
+            ffmpegp : filepath for ffmpeg padding
+
+        """
+
+        #this is here just to quickly detect if the input path is a container format, and just skip this if it is
+        video_formats = [".mp4",".mov",".avi"]
+
+        filelist = []
+        
+        path = pathlib.Path(filepath)
+        filename = path.name
+        parent = path.parent
+
+        if path.suffix in video_formats:
+            return None
+
+        #This looks for 1 group of of any series of 4 numbers together. Begins the search starting at the end of the string
+        research = r"(\d{4})(?!.*\d)"
+
+        #creates the regex patterns for searching. Splitting the search means that you are 99.9% certain that you will get the correct file
+        split = re.split(research,filename)
+
+        if len(split) == 1:
+            return None
+
+        #creating a more comprehensive pattern
+        pattern = split[0] + r"(\d+)" + split[2]
+
+        oiio =  split[0] + "#" + split[2]
+        ffmpeg = split[0] + r"%04d" + split[2]
+
+        oiiopath = str(parent / oiio)
+        ffmpegpath = str(parent / ffmpeg)
+
+        #builds the filelist for getting the start and end frames
+        for child in parent.iterdir():
+
+            match = re.search(pattern,str(child))
+            
+            try:
+                frame = match.group(1)
+                filelist.append(int(frame))
+            except:
+                None
+
+        filelist.sort()
+        
+        start = filelist[0]
+        end = filelist[-1]
+        total = end - (start-1)
+
+        filedict = {"start":start,"end":end,"total":total,"parentpath":parent,"oiiop":oiiopath,"ffmpegp":ffmpegpath}
+
+        return filedict
+
 
     def submitToDailies(self):
-        print("TODO: implement the backend")
+        """
+        The FFMPEG conversion.
+        """
+                
+        input_path = self.select_file.text()
+        
+        if not input_path:
+            QtWidgets.QMessageBox.critical(self, "Transcode Error", "Input path not set")
+            return
+        if not os.path.exists(input_path):
+            QtWidgets.QMessageBox.critical(self, "Transcode Error", "Input path does not exist")
+            return
 
-    def printTest(self,test):
-        print("the printTest function is returning a {0} type \n its value is {1}".format(type(test),test))
-        print(self.sequence_box.currentData())
+        output_path = self.output_file.text()
+        if not output_path:
+            QtWidgets.QMessageBox.critical(self, "Transcode Error", "Output path not set")
+            return
+
+        pathdict = self.detectImageSeq(input_path)
+
+        if pathdict == None:
+            
+            self.runFfmpegContainer(input_path,output_path)
+        
+        else:
+
+            temppath = self.runOiio(pathdict)
+            filedict = self.detectImageSeq(temppath)
+            self.runFfmpegSeq(filedict["ffmpegp"],output_path)
+
+    def runOiio(self,pathdict):
+        # oiiotool basic command to export file and color convert
+        # oiiotool --frames 1001-1050 --colorconvert "ACES - ACEScg" "Output - rec709" .\scientific_wizard_lodge_pangolin_lodge_test_v01_#.exr -ch R,G,B -o test.#.jpeg
+
+        args = [self.OIIO]                                                                      #oiio path
+        args.extend(["--frames",str(pathdict["start"]) + "-" + str(pathdict["end"])])           #globals
+        args.extend(["--colorconvert","ACES - ACEScg","Output - Rec.709"])                      #globals    
+        args.extend([pathdict["oiiop"]])                                                        #input
+        args.extend(["-ch","R,G,B"])                                                            #locals
+        
+        #create temp directory
+        tempdir = pathdict["parentpath"] / "conversion_temp"
+        if not tempdir.exists():
+            tempdir.mkdir()
+        
+        args.extend(["-o",str(pathdict["parentpath"] / "conversion_temp" / "conversion_temp.#.png")])              #output    
+
+        subprocess.call(args)
+
+        QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")
+
+        temppath = str(tempdir / os.listdir(tempdir)[0])
+
+        return temppath
+
+    def runFfmpegSeq(self,input_path,output_path):
+
+        preset = "medium"
+
+        args = [self.FFMPEG]                                                    
+        args.extend(["-hide_banner", "-y"])
+        args.extend(["-start_number","1001","-framerate","24"])                                    
+        args.extend(["-i", input_path ,"-i",self.LOGO])
+        args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+        args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
+        args.extend(["-map","[final]"])
+        args.append(output_path)  
+        
+        
+        subprocess.call(args)
+        QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")        
+        
+        # preset = "medium"
+
+        # args = [self.FFMPEG]                                                    # executable path
+        # args.extend(["-hide_banner", "-y"])                                     # global options
+        # args.extend(["-start_number","1001","-framerate","24"])
+        # args.extend(["-i", input_path])                                         # input path
+        # args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium"])     # video output options
+        # args.append(output_path)  
+        
+        
+        # subprocess.call(args)
+        # QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")
+
+    def runFfmpegContainer(self,input_path,output_path):
+        
+        preset = "medium"
+
+        args = [self.FFMPEG]                                                    
+        args.extend(["-hide_banner", "-y"])                                    
+        args.extend(["-i", input_path ,"-i",self.LOGO])
+        args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+        args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
+        args.extend(["-map","[final]"])
+        args.append(output_path)  
+        
+        
+        subprocess.call(args)
+        QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")
+    
+
 
 
 # Requirements for the gui to launch
@@ -271,3 +446,20 @@ sys.exit(app.exec_())
     # -vf "scale=1280:-2" scales the video so the width is 1280 and the -2 adjusts the height to maintain the aspect ratio.
     # -pix_fmt sets the pixel format for the codec. Google tells me that yuv420p is a good one.
 
+
+#ffmpeg cheat sheet
+"""
+to avoide any complications makes sure that the one output always is the input to the next filter [outfilter][outfilter]
+ins and outs can only be used once in combination one out and one in
+"""
+
+
+""" overlay logo with scale and opacity """
+# ffmpeg -hide_banner -y -i .\scn0010_cut0010_comp_v01.mp4 -i '\\YARN\projects\pipeline\utilities\images\logos\polycat_white_1024x1024.png' -filter_complex "[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[render]" -map "[render]" ./complex_filter_test.mp4
+""" draw box for text clarity """
+# ffmpeg -hide_banner -y -i .\scn0010_cut0010_comp_v01.mp4 -filter_complex "drawbox=y=ih*.9:color=black@0.4:width=iw:height=ih*0.1:t=fill" drawbox_test_v01.mp4
+""" frame number overlay !!! remember to escape the slashes and colons in the path especially when in quotes"""
+# ffmpeg -hide_banner -y -i .\scn0010_cut0010_comp_v01.mp4 -filter_complex "drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%{frame_num}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white:fontsize=50" text_test_v01.mp4
+
+""" all together - no draw box """
+# ffmpeg -hide_banner -y -i .\scn0010_cut0010_comp_v01.mp4 -i '\\YARN\projects\pipeline\utilities\images\logos\polycat_white_1024x1024.png' -filter_complex "[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%{frame_num}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]" -map "[final]" .\allsettings.mp4
