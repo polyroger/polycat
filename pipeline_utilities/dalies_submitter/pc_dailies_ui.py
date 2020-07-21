@@ -8,6 +8,11 @@ class PcDailiesGui(QtWidgets.QDialog):
     FFMPEG = r"\\YARN\projects\pipeline\utilities\ffmpeg\bin\ffmpeg.exe"
     OIIO = r"\\YARN\projects\pipeline\utilities\OpenImageIO-1.5.0-OCIO\bin\oiiotool.exe"
     LOGO  = r"\\YARN\projects\pipeline\utilities\images\logos\polycat_white_1024x1024.png"
+    ICON =  r"\\YARN\projects\pipeline\utilities\images\logos\polycat_black_50x50.png"
+
+    ACES_FROM_SPACE = ["ACES - ACEScg"]
+    ACES_TO_SPACE = ["Output - Rec.709"]
+    
 
     FILEFILTERS = "jpeg (*.jpg *.jpeg);;png (*.png);;exr (*.exr);; all files (*.*)"
     defaultfilter = "all files (*.*)"
@@ -33,11 +38,24 @@ class PcDailiesGui(QtWidgets.QDialog):
     def windowAttributes(self):
         
         # self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
-        self.setWindowTitle("Polycat Dailies Submitter")
+        self.setWindowTitle("Polycat Transcoder")
         self.setGeometry(int(800),int(200),int(500),int(100))
         self.setWindowFlags(QtCore.Qt.WindowType.Window)
+        
+        self.pcicon = QtGui.QIcon(self.ICON)
+        self.setWindowIcon(self.pcicon)
 
     def createWidgets(self):
+         
+        #comboboxes
+        self.sequence_box = QtWidgets.QComboBox()
+        self.createCBoxItems(self.sequence_box,self.ASSETLIST)
+        self.asset_type_box = QtWidgets.QComboBox()
+        self.asset_type_box.addItems(["Asset Type"])
+        self.asset_box = QtWidgets.QComboBox()
+        self.asset_box.addItems(["Asset"])
+        self.task_box = QtWidgets.QComboBox()
+        self.task_box.addItems(["Task"])
         
         #file selection
         self.select_file_label = QtWidgets.QLabel("Import :")
@@ -45,24 +63,22 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.select_file_btn = QtWidgets.QPushButton("...")
         self.select_file_btn.setFocusPolicy(QtCore.Qt.NoFocus)
         self.select_file_btn.setToolTip("Choose the file to be dailied")
-        
-        #comboboxes
-        self.sequence_box = QtWidgets.QComboBox()
-        self.createCBoxItems(self.sequence_box,self.ASSETLIST)
-
-        self.asset_type_box = QtWidgets.QComboBox()
-        self.asset_type_box.addItems(["Asset Type"])
-        self.asset_box = QtWidgets.QComboBox()
-        self.asset_box.addItems(["Asset"])
-        self.task_box = QtWidgets.QComboBox()
-        self.task_box.addItems(["Task"])
-
+       
         #output line edit
         self.output_file_label = QtWidgets.QLabel("Export :")
         self.output_file = QtWidgets.QLineEdit("Export file")
         self.output_file_btn = QtWidgets.QPushButton("...")
         self.output_file_btn.setFocusPolicy(QtCore.Qt.NoFocus)
         self.select_file_btn.setToolTip("Choose the export path")
+
+        #color management
+        self.enable_col_man = QtWidgets.QCheckBox("Enable Color management")
+        self.from_space = QtWidgets.QComboBox()
+        self.createCBoxItems(self.from_space,self.ACES_FROM_SPACE)
+        self.from_space.setEnabled(False)
+        self.to_space = QtWidgets.QComboBox()
+        self.createCBoxItems(self.to_space,self.ACES_TO_SPACE)
+        self.to_space.setEnabled(False)
 
         #comment box
         self.comment_box_label = QtWidgets.QLabel("Comments")
@@ -72,7 +88,7 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.comment_box_3 = QtWidgets.QLineEdit()
 
         #button widgets
-        self.submit_btn = QtWidgets.QPushButton("Submit")
+        self.submit_btn = QtWidgets.QPushButton("Convert")
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
 
     def createLayouts(self):
@@ -80,12 +96,6 @@ class PcDailiesGui(QtWidgets.QDialog):
         #main layout
         main_layout = QtWidgets.QVBoxLayout(self)
         
-        #select_file
-        select_file_layout = QtWidgets.QHBoxLayout()
-        select_file_layout.addWidget(self.select_file_label)
-        select_file_layout.addWidget(self.select_file)
-        select_file_layout.addWidget(self.select_file_btn)
-
         #cobobox layout
         combobox_layout = QtWidgets.QHBoxLayout()
         combobox_layout.addWidget(self.sequence_box)
@@ -93,11 +103,22 @@ class PcDailiesGui(QtWidgets.QDialog):
         combobox_layout.addWidget(self.asset_box)
         combobox_layout.addWidget(self.task_box)
 
+        #select_file
+        select_file_layout = QtWidgets.QHBoxLayout()
+        select_file_layout.addWidget(self.select_file_label)
+        select_file_layout.addWidget(self.select_file)
+        select_file_layout.addWidget(self.select_file_btn)
+      
         #export_file
         output_file_layout = QtWidgets.QHBoxLayout()
         output_file_layout.addWidget(self.output_file_label)
         output_file_layout.addWidget(self.output_file)
         output_file_layout.addWidget(self.output_file_btn)
+
+        color_man_layout = QtWidgets.QHBoxLayout()
+        color_man_layout.addWidget(self.enable_col_man)
+        color_man_layout.addWidget(self.from_space)
+        color_man_layout.addWidget(self.to_space)
 
         #comment layout
         comment_layout = QtWidgets.QVBoxLayout()
@@ -112,10 +133,11 @@ class PcDailiesGui(QtWidgets.QDialog):
         d_btn_layout.addWidget(self.submit_btn)
         d_btn_layout.addWidget(self.cancel_btn)
         
-        main_layout.addLayout(combobox_layout)
+        # main_layout.addLayout(combobox_layout)
         main_layout.addLayout(select_file_layout)
         main_layout.addLayout(output_file_layout)
-        main_layout.addLayout(comment_layout)
+        main_layout.addLayout(color_man_layout)
+        # main_layout.addLayout(comment_layout)
         main_layout.addLayout(d_btn_layout)
     
     def createConnections(self):
@@ -123,10 +145,12 @@ class PcDailiesGui(QtWidgets.QDialog):
         
         self.select_file_btn.clicked.connect(self.selectFileDialog)
         self.output_file_btn.clicked.connect(self.exportFileDialog)
+
+        self.enable_col_man.stateChanged.connect(self.toggleColorMan)
         
-        self.sequence_box.currentTextChanged.connect(self.refreshAssetTypeCBox)
-        self.asset_type_box.currentTextChanged.connect(self.refreshAssetCBox)
-        self.asset_box.currentTextChanged.connect(self.refreshTaskCBox)      
+        # self.sequence_box.currentTextChanged.connect(self.refreshAssetTypeCBox)
+        # self.asset_type_box.currentTextChanged.connect(self.refreshAssetCBox)
+        # self.asset_box.currentTextChanged.connect(self.refreshTaskCBox)      
         
         self.submit_btn.clicked.connect(self.submitToDailies)
         self.cancel_btn.clicked.connect(self.close)
@@ -134,6 +158,16 @@ class PcDailiesGui(QtWidgets.QDialog):
      
     #*************************************************
     #START OF DIAOLOG METHODS
+
+    def toggleColorMan(self,state):
+
+        if state:
+            self.from_space.setEnabled(True)
+            self.to_space.setEnabled(True)
+        else:
+            self.from_space.setEnabled(False)
+            self.to_space.setEnabled(False)
+
 
     def loadJdata(self,jfile):
         
@@ -360,7 +394,10 @@ class PcDailiesGui(QtWidgets.QDialog):
 
         args = [self.OIIO]                                                                      #oiio path
         args.extend(["--frames",str(pathdict["start"]) + "-" + str(pathdict["end"])])           #globals
-        args.extend(["--colorconvert","ACES - ACEScg","Output - Rec.709"])                      #globals    
+    
+        if self.enable_col_man.isChecked():
+            args.extend(["--colorconvert",self.from_space.currentData(),self.to_space.currentData()])                      #globals    
+    
         args.extend([pathdict["oiiop"]])                                                        #input
         args.extend(["-ch","R,G,B"])                                                            #locals
         
@@ -392,23 +429,10 @@ class PcDailiesGui(QtWidgets.QDialog):
         args.extend(["-map","[final]"])
         args.append(output_path)  
         
-        
         subprocess.call(args)
         QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")        
         
-        # preset = "medium"
-
-        # args = [self.FFMPEG]                                                    # executable path
-        # args.extend(["-hide_banner", "-y"])                                     # global options
-        # args.extend(["-start_number","1001","-framerate","24"])
-        # args.extend(["-i", input_path])                                         # input path
-        # args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium"])     # video output options
-        # args.append(output_path)  
-        
-        
-        # subprocess.call(args)
-        # QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")
-
+   
     def runFfmpegContainer(self,input_path,output_path):
         
         preset = "medium"

@@ -4,6 +4,7 @@ import json
 import os
 
 
+
 def kLogin():
     """
     A login function to make logging in to the kitsu api a little faster.
@@ -67,7 +68,6 @@ def writeCutKdata():
     project = gazu.project.get_project_by_name("Eosis")
     sequences = gazu.shot.all_sequences_for_project(project)
     
-    print(project)
 
     #Write shot data
     cutdata = {}
