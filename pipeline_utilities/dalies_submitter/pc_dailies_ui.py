@@ -1,6 +1,43 @@
 import os,pathlib,sys,json,re,subprocess
-
 from PySide2 import QtWidgets,QtCore,QtGui
+import time
+
+class WorkerSignals(QtCore.QObject):
+    """
+    These are the signals that can be emitted from the worker in another thread.
+
+    """
+    finished = QtCore.Signal()
+    error = QtCore.Signal(tuple)
+    result = QtCore.Signal(object)
+
+
+class Worker(QtCore.QRunnable):
+    '''
+    Worker thread, this is the class that allows functions to be passed in to be executed in other threads so that the main gui thread is left alone.
+    To make a more versitle function you could add *args and **kwargs
+    '''
+    def __init__(self,parent,function,pathdict=None):
+       
+        super().__init__()
+        self.function = function
+        self.pathdict = pathdict
+        self.parent = parent
+        self.signals = WorkerSignals()
+
+
+    @QtCore.Slot()
+    def run(self):
+        '''
+        Your code goes in this function
+        '''
+        print("Thread start") 
+        result = self.function(self.pathdict)
+        #emits the returned value of the function back to the main gui thread.
+        self.signals.result.emit(result)
+        print("Thread complete")
+
+
 
 
 class PcDailiesGui(QtWidgets.QDialog):
@@ -21,6 +58,8 @@ class PcDailiesGui(QtWidgets.QDialog):
 
     KASSETDATAPATH = r"\\YARN\projects\mov\eos\0_aaa\0_internal\0_project_data\kassetdata.json"
     KSHOTDATAPATH = r"\\YARN\projects\mov\eos\0_aaa\0_internal\0_project_data\kshotdata.json"
+
+    CONVERSION_TEMP = "conversion_temp"
     
     def __init__(self):
         super().__init__()
@@ -32,6 +71,9 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.createWidgets()
         self.createLayouts()
         self.createConnections()
+
+        self.threadpool = QtCore.QThreadPool()
+        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
         self.show()
 
@@ -356,17 +398,19 @@ class PcDailiesGui(QtWidgets.QDialog):
 
         return filedict
 
+    def printTest(self):
+        print("apples")
 
     def submitToDailies(self):
         """
         The FFMPEG conversion.
         """
-                
         input_path = self.select_file.text()
-        
+
         if not input_path:
             QtWidgets.QMessageBox.critical(self, "Transcode Error", "Input path not set")
             return
+        
         if not os.path.exists(input_path):
             QtWidgets.QMessageBox.critical(self, "Transcode Error", "Input path does not exist")
             return
@@ -377,17 +421,28 @@ class PcDailiesGui(QtWidgets.QDialog):
             return
 
         pathdict = self.detectImageSeq(input_path)
-
+        
         if pathdict == None:
             
             self.runFfmpegContainer(input_path,output_path)
         
         else:
+            #start the thread for oiio and create the slots that listen for the oiio funtion to return a result
+            worker = Worker(self,self.runOiio,pathdict)
+            worker.signals.result.connect(self.runTranscode) # this waits to be exexuted by the returned result of the runoiio function
+            self.threadpool.start(worker)
+            #update the progress bar in the gui thread
+            self.oiioProgress(pathdict)
+        
+        
 
-            temppath = self.runOiio(pathdict)
-            filedict = self.detectImageSeq(temppath)
-            self.runFfmpegSeq(filedict["ffmpegp"],output_path)
+    def runTranscode(self,result):
+        
+        output_path = self.output_file.text()
+        filedict = self.detectImageSeq(result)
+        self.runFfmpegSeq(filedict["ffmpegp"],output_path)
 
+    
     def runOiio(self,pathdict):
         # oiiotool basic command to export file and color convert
         # oiiotool --frames 1001-1050 --colorconvert "ACES - ACEScg" "Output - rec709" .\scientific_wizard_lodge_pangolin_lodge_test_v01_#.exr -ch R,G,B -o test.#.jpeg
@@ -396,22 +451,28 @@ class PcDailiesGui(QtWidgets.QDialog):
         args.extend(["--frames",str(pathdict["start"]) + "-" + str(pathdict["end"])])           #globals
     
         if self.enable_col_man.isChecked():
-            args.extend(["--colorconvert",self.from_space.currentData(),self.to_space.currentData()])                      #globals    
+            args.extend(["--colorconvert",self.from_space.currentData(),self.to_space.currentData()])                      #globals
+        else:
+            #no color conversion so just pass return the input file to be used in the detect sequence method
+            basefile = self.select_file.text()
+            return basefile
     
         args.extend([pathdict["oiiop"]])                                                        #input
         args.extend(["-ch","R,G,B"])                                                            #locals
         
         #create temp directory
-        tempdir = pathdict["parentpath"] / "conversion_temp"
+        tempdir = pathdict["parentpath"] / self.CONVERSION_TEMP
         if not tempdir.exists():
             tempdir.mkdir()
-        
-        args.extend(["-o",str(pathdict["parentpath"] / "conversion_temp" / "conversion_temp.#.png")])              #output    
 
-        subprocess.call(args)
+        tempfilename = pathdict["parentpath"] / self.CONVERSION_TEMP / self.CONVERSION_TEMP
+        tempfilename = tempfilename.with_suffix(".#.png")
 
-        QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")
+        args.extend(["-o",str(tempfilename)])              #output    
 
+        subprocess.run(args)
+
+        # QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")
         temppath = str(tempdir / os.listdir(tempdir)[0])
 
         return temppath
@@ -429,9 +490,29 @@ class PcDailiesGui(QtWidgets.QDialog):
         args.extend(["-map","[final]"])
         args.append(output_path)  
         
-        subprocess.call(args)
+        subprocess.run(args)
+        self.deleteConversionTemp(self.select_file.text())
         QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")        
-        
+    
+    def deleteConversionTemp(self,input_path):
+
+        mypath = pathlib.Path(input_path)
+        parent = mypath.parent
+        temp = parent / self.CONVERSION_TEMP
+        contents = list(temp.glob("*.*"))
+        print(mypath, parent, temp)
+        print(contents)
+
+        if temp.exists():
+            try:
+                for i in contents:
+                    i.unlink()
+                    print(f"{i.name} unlinked successfully")
+                temp.rmdir()
+            except :
+                print("there was an error removing temp files")
+
+
    
     def runFfmpegContainer(self,input_path,output_path):
         
@@ -446,14 +527,55 @@ class PcDailiesGui(QtWidgets.QDialog):
         args.append(output_path)  
         
         
-        subprocess.call(args)
+        subprocess.run(args)
         QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")
     
+    def oiioProgress(self,pathdict):
+
+        #if no color management required then dont do the progress check
+        if not self.enable_col_man.isChecked():
+            return
+
+        start = int(pathdict["start"])
+        end = int(pathdict["end"])
+        total = int(pathdict["total"]) #total frames not frame number
+        print(start,end,total)
+        oiio_progress_bar = QtWidgets.QProgressDialog("Colour conversion","Cancel",start,end,self)
+        oiio_progress_bar.setWindowTitle("OIIO progress")
+        oiio_progress_bar.setValue(start)
+        oiio_progress_bar.setWindowModality(QtCore.Qt.WindowModal)
+
+        time.sleep(.2)   #sleeping to make sure that the oiio thread starts running and that there is a conversion temp folder
+        oiio_progress_bar.show()
+
+        
+        conversion_path = pathdict["parentpath"] / self.CONVERSION_TEMP
+        filesinpath = len(os.listdir(conversion_path))
+        print(conversion_path, filesinpath)
+
+        while filesinpath < total:
+
+            time.sleep(0.2)
+
+            try:
+
+                filelist = os.listdir(conversion_path)
+                filelist.sort()
+                filesinpath = int(len(filelist))
+                progress = start + filesinpath
+                oiio_progress_bar.setLabelText("converting frame {0} of {1}".format(str(progress),str(start+total)))
+                oiio_progress_bar.setValue(progress)
+
+            except:
+                print("waiting on temp files")
+        
+        oiio_progress_bar.close()
+        
 
 
 
 # Requirements for the gui to launch
-app = QtWidgets.QApplication()
+app = QtWidgets.QApplication([])
 pcds = PcDailiesGui()
 sys.exit(app.exec_())
 
