@@ -4,14 +4,6 @@ import pymel.core as pm
 
 
 
- 
-
-
-
-
-
-
-
 # all this belew is what I am calling legacy from the first camera exporter. It works but needs to be updated to better practices
 
 def getexportdir(asset):

@@ -37,9 +37,11 @@ def pcAbcExporter(rootname,assetpath,start,end,single):
     exportpathflag = "-file " + exportpath + "\\"  + exportname + refversion + latestplus + ext
     exportrangeflag = "-framerange " + str(start) + " " + str(end)   
     exportattrflag = "-userAttr " + refattr
+    abcflags = "-worldspace -eulerFilter -stripNamespaces -uv -wv"
     
-    exportflags = exportgeoflag + " " + exportpathflag + " " + "-worldspace -eulerFilter -stripNamespaces -uv" + " " + exportrangeflag + " " + exportattrflag
-
+    sep = " "
+    flaglist = [exportgeoflag,exportpathflag,abcflags,exportrangeflag,exportattrflag]
+    exportflags = sep.join(flaglist)
 
     print (exportflags)
     pm.AbcExport(j=exportflags)

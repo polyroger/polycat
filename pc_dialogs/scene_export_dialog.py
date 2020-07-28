@@ -165,8 +165,6 @@ class PcSceneExporter(QtWidgets.QDialog):
         if myd:
             lineedit.setText(myd)
     
-
-        
         
     def getStartingPath(self):
         

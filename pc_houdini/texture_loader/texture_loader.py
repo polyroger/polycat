@@ -47,7 +47,7 @@ def udimRename(filename,replacewith):
     Just a function to be used with replaceing the 1001 to arnolds <udim>
     """
 
-    pattern = r"(1001)"
+    pattern = r"\d{4}"
     newfilename = re.sub(pattern,replacewith,filename)
 
     return newfilename
@@ -139,6 +139,7 @@ def createTextureParms(node,texturecat,parmgroup):
                     filepath = os.path.abspath(os.path.join(root,i))
                     basepath = os.path.basename(filepath)
                     filename,ext = os.path.splitext(basepath)
+                    filename = filename.replace(" ","_")
                     
                     # if the file is of the correct type and it gets udim checked it appends a [filename,filepath] list to the current dictionary key value. 
                     if ext != ".tx" and ext != ".db" and findUdim(i):
