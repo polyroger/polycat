@@ -9,3 +9,5 @@ pc_nuke/plugins/
 sample_files/
 mov_eos_cred.json
 *.lnk
+zshotmask.py
+zshotmask_ui.py
