@@ -1,11 +1,11 @@
 # POLYCAT
-POLYCAT PIPELINE REPO
+POLYCAT ANIMATION PIPELINE REPO
 
 !! WORK IN A LOCAL DEV THAT IS A BRANCH OF DEVELOPMENT, DONT MESS UP THINGS FOR  PRODUCTION !!
 
 >" Hidden between the lines of risk and failure, you will find greatness, " - Roger Wellard, October, 2019
 
-This repo is separated by software.
+Each folder should contain all that is needed for the respected folder name.
 All scripts specifically relating to each software should be in their respective folders, and then separated into a specific sub folder.
 All utilities that are cross platform to be placed in the " pipeline_utilities " folder.
 Standalone polycat software should be packaged in its own unique folder under its name. 
