@@ -20,6 +20,8 @@ def createMayaMenus():
     pm.menuItem(label="Scene Exporter",command="from pc_dialogs.scene_export_dialog import PcSceneExporter;PcSceneExporter.openExportDialog()")
     pm.menuItem(label="Export Camera",command="from pc_maya.menus import menu_gui;menu_gui.initCameraExportGui()")
     pm.menuItem(label="Playblast Camera",command="menu_gui.initPlayblastCameraGui()")
+    pm.menuItem(label="Set Frame Range",command="pullframerange.makeRange()")
+
     # sets the parent back to the specified menu
     pm.setParent("..",menu=True)
 
