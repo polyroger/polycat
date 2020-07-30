@@ -63,6 +63,7 @@ def setkData():
         gazu.shot.update_shot(shot)
 
 
+
 if __name__ == "__main__":
 
     print("Connecting to google sheet api....")
