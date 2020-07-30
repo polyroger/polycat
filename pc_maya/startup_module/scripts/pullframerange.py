@@ -1,21 +1,27 @@
 import os
-from pipeline_utilities.conform import sequence_data
-from pipeline_utilities import path_manipulation
 import pymel.core as pm
+import json
 
 def makeRange():
 
-    try:
+    seqlevel = 7
+    cutlevel = 8
+    jfile = r"\\YARN\projects\mov\eos\0_aaa\0_internal\0_project_data\kshotdata.json"
 
-        jfile = "\\\\YARN\\projects\\mov\\eos\\2_sequences\\scn0010_wizardlodge_interior\\sdata.json"
-        data = sequence_data.getJData(jfile)
-        asspath = path_manipulation.goFindDirectory(os.path.dirname(pm.sceneName()),"0_assfile")
-        cutname =  os.path.basename(os.path.abspath(os.path.join(asspath,"../")))
-        framerange = sequence_data.getFrameRange(data,cutname)
-        s = framerange["start"]
-        e = framerange["end"]
-        pm.playbackOptions(ast=s,minTime=s,aet=e,maxTime=e)
-    
-    except :
-        print("There was an error when attempting to get the cuts frames range data. Setting range [1001 - 1100]")
-        pm.playbackOptions(ast=s,minTime=1001,aet=e,maxTime=1100)
+    try:
+        name = pm.sceneName()
+        pathsplit = name.split("/")
+        sequence =  pathsplit[seqlevel]
+        cut = pathsplit[cutlevel]
+
+        with open(jfile,"r") as f:
+            jdata = json.load(f)
+
+        fstart = jdata[sequence][cut]["frame_in"]
+        fend = jdata[sequence][cut]["frame_out"]
+
+        pm.playbackOptions(minTime=fstart,animationStartTime=fstart,maxTime=fend,animationEndTime=fend)
+
+    except:
+        print("Could not find shot data, setting to 1001 - 1100")
+        pm.playbackOptions(minTime=1001,animationStartTime=1001,maxTime=1100,animationEndTime=1100)
