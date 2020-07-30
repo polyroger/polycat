@@ -1,6 +1,7 @@
 import hou
 import os
 import re
+import clique
 
 def replaceYarn(filepath):
     
@@ -116,7 +117,8 @@ def createTextureParms(node,texturecat,parmgroup):
     filelist = []
     mydict = {}
 
-    
+    exclusionlist = [".tx",".db"]
+
     # makes the initial dictionary that consists of the names of all the folders in the base texture catagory and then assigns an empty list as its value
     for folder in (folderlist):
         
@@ -130,25 +132,41 @@ def createTextureParms(node,texturecat,parmgroup):
             texpath = os.path.abspath(texturecat)
         else:
             texpath = os.path.abspath(os.path.join(texturecat,key))
-        
 
-        for root,dirs,files in os.walk(texpath):
-                    
-                for i in files:
-                   
-                    filepath = os.path.abspath(os.path.join(root,i))
-                    basepath = os.path.basename(filepath)
-                    filename,ext = os.path.splitext(basepath)
-                    filename = filename.replace(" ","_")
-                    
-                    # if the file is of the correct type and it gets udim checked it appends a [filename,filepath] list to the current dictionary key value. 
-                    if ext != ".tx" and ext != ".db" and findUdim(i):
-                        
-                        filepath = udimRename(filepath,"<udim>")
-                        filename = udimRename(filename,"")
-                        mydict[key].append([filename,filepath])
+        #creates dict with key of folder name and value as a list of lists that have a filenam and filepath for every texture in the folder.
+        filecollection = os.listdir(texpath)
+        collections,single = clique.assemble(filecollection,minimum_items=1)
 
-    # at this stage mydict shoudl have this structure {texturefolder:[[filename,filepath],[filename,filepath],etc,etc]} - a dictionary that contains foldername key and a value of a list of lists
+        for i in collections:
+
+            if i.tail in exclusionlist:
+                continue
+
+            head = i.head
+            tail = i.tail
+            tag = "<udim>"
+
+            # if len(i.indexes) == 1:
+            #     tag = str(list(i.indexes)[0])
+
+            fname = head + tag + tail
+            filepath = os.path.abspath(os.path.join(texpath,fname))
+            filename = str(head.replace(" ","_"))
+            mydict[key].append([filename,filepath])
+
+        for i in single:
+
+            head,tail = os.path.splitext(i)
+            
+            if tail in exclusionlist:
+                continue
+            
+            filepath = os.path.abspath(os.path.join(texpath,i))
+            filename = str(head.replace(" ","_"))
+            mydict[key].append([filename,filepath])
+
+
+    # at this stage mydict should have this structure {texturefolder:[[filename,filepath],[filename,filepath],etc,etc]} - a dictionary that contains foldername key and a value of a list of lists
     # this loops over the items in the dictionary
     for key,value in mydict.items():
      
