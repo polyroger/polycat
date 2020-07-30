@@ -4,7 +4,6 @@ import json
 import os
 
 
-
 def kLogin():
     """
     A login function to make logging in to the kitsu api a little faster.
