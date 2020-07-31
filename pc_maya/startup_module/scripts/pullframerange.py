@@ -9,10 +9,31 @@ def makeRange():
     jfile = r"\\YARN\projects\mov\eos\0_aaa\0_internal\0_project_data\kshotdata.json"
 
     try:
+
+        
         name = pm.sceneName()
         pathsplit = name.split("/")
-        sequence =  pathsplit[seqlevel]
-        cut = pathsplit[cutlevel]
+
+        if not pathsplit[0] and not pathsplit[1] and pathsplit[2].upper() == "YARN":
+            
+            print("probably yarn")
+            
+            seqlevel = 7
+            cutlevel = 8
+            
+            sequence =  pathsplit[seqlevel]
+            cut = pathsplit[cutlevel]
+
+
+        else:
+            print("probably not yarn")
+            
+            seqlevel = 4
+            cutlevel = 5
+            
+            sequence =  pathsplit[seqlevel]
+            cut = pathsplit[cutlevel]
+
 
         with open(jfile,"r") as f:
             jdata = json.load(f)
