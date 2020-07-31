@@ -6,7 +6,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 # Google sheets info
 
-def getGSheetdata(sheetname,rstart,rend,colstart,colend):
+def getGSheetdata(sheetname):
 
     """
     opens a google sheet and gets the data in the specifiec range and returns a dictionaty of data.
@@ -27,22 +27,19 @@ def getGSheetdata(sheetname,rstart,rend,colstart,colend):
     client = gspread.authorize(creds)
     sheet = client.open("Eosis 10 Production Sheet").worksheet(sheetname)
 
-    scenedict = {}
+    sheetdict = sheet.get_all_records(head=5)
+    tempdict = {}
+    
+    for i in sheetdict:
+       tempdict[i["name"]] = {"shot-order":str(i["shot order"]).zfill(4),"frame_in":i["in"],"frame_out":i["out"],"frames":i["frames"],"description":i["description"]}
 
-    for i in range(rstart,rend+1):
-
-        tempdict = {}
-        row = str(i)    
-        datarange = colstart+row+":"+colend+row
-        head = sheet.get(datarange,major_dimension="ROWS")
-        tempdict[head[0][0]] = {"frame_in":head[0][1],"frame_out":head[0][2],"frames":head[0][3]}
-        scenedict.update(tempdict)
-        print("running row {} our of 64".format(i))
-        
-    return scenedict     
+    return tempdict
 
 
-def setkData():
+def setkData(datadict):
+    """
+    There is often data duplication where the key does not form part of the data dictionary, in this case it will put the data in both.
+    """
 
     # Kitsu login
     USERNAME = os.getenv("KUSER")
@@ -53,28 +50,26 @@ def setkData():
     project = gazu.project.get_project_by_name("Eosis")
     scn = gazu.shot.get_sequence_by_name(project,"scn0010_wizardlodge_interior")
 
-
     #sets the frame ranges
-    for key,value in scenedict.items():
+    for key,value in datadict.items():
         
         shot = gazu.shot.get_shot_by_name(scn,key)
         shot["data"].update(value)
         shot["nb_frames"] = value["frames"]
+        shot["description"]= value["description"]
         gazu.shot.update_shot(shot)
-
 
 
 if __name__ == "__main__":
 
     print("Connecting to google sheet api....")
     try:
-        scenedict = getGSheetdata("scn0010",6,63,"b","e")
+        scenedict = getGSheetdata("scn0010")
         print("Created scenedict")
         print("Connecting to the Kitsu api")
-        setkData()
+        setkData(scenedict)
         print("finished setting kitsu data")
 
-    except:
-        print("There was an error ..exiting)
-        break
+    except Exception as error:
+        print("There was a {} error, when running".format(error))
 
