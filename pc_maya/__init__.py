@@ -1,1 +1,1 @@
-print("{} imported, loading polycat pipeline".format(__file__))
+print("\n LOADING POLYCAT PIPELINE {}\n".format(__file__))
