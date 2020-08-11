@@ -21,18 +21,18 @@
     },
 
     "1_assets" : {
-        "assetAudio":"audio",
-        "assetCharacters":"characters",
-        "assetEnvironment":"environment",
-        "assetProps":"props",
-        "assetVfx":"vfx"
+         "assetAudio":"audio",
+         "assetCharacters":"characters",
+         "assetEnvironment":"environment",
+         "assetProps":"props",
+         "assetVfx":"vfx"
     },
 
     "3_development" : {
-        "devCharacters":"characters",
-        "devEnvironments":"environments",
-        "devFX":"vfx",
-        "devPipeline":"pipeline_tools"
+         "devCharacters":"characters",
+         "devEnvironments":"environments",
+         "devFX":"vfx",
+         "devPipeline":"pipeline_tools"
     },
     
     "4_edit" : {
@@ -42,12 +42,15 @@
     },
 
     "cutLevel": {
+        "cutConcept":"0_concept",
         "cutAss":"0_assfile",
         "cutAudio":"0_audio",
         "cutCamera":"0_camera",
-        "cutComp":"0_comp",
+        "cutLightComp":"0_comp/lightcomp",
+        "cutComp":"0_comp/comp",
+        "cutLatestComp":"0_comp/latest",
         "cutFeedback":"0_feedback",
-        "cutPlayblast":"0_playblast",
+        "cutPlayblast":"0_playblast/v01",
         "cutRenders":"0_renders",
         "cutSim":"0_sim",
         "cutSourcegeo":"0_sourcegeo",
@@ -64,8 +67,7 @@
         "jackie",
         "samantha",
         "arzel",
-        "ruan",
-        "keanu"
+        "ruan"
     ],
     "software":[
         "maya",
