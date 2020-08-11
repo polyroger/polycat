@@ -97,7 +97,7 @@ def makeDir(path):
         print("there was an error making {0} directory".format(path))
         return None     
 
-
+#THE CREATION FUNCTION TO RUN
 def createNewProject(serverclient,servername,kprojectname):
     
     JFILE = r"pc_project\json\structure.json"
@@ -113,26 +113,25 @@ def createNewProject(serverclient,servername,kprojectname):
     kfunctions.kLogin()
     project = kfunctions.getKProject(kprojectname)
     sequences = kfunctions.getKProjectSequences(project)
+    assettypes = kfunctions.getKProjectAssetTypes(project)
+
 
     #CREATING ALL THE CUTS BASED OFF THE KITSU PROJECT
     for seqname,seqdict in sequences.items():
         sequence = createSequence(base,structure["jobLevel"]["jobSequences"],seqname)
         cuts = kfunctions.getKSequenceCuts(seqdict)
-        for i in cuts:
-            createCut(structure,sequence,name=i["name"])
+        for cut in cuts:
+            createCut(structure,sequence,name=cut["name"])
+
+    #CREATING ALL THE ASSETS IN THE KITSU PROJECT    
+    for atype,adict in assettypes.items():
+        assetsequence = createSequence(base,structure["jobLevel"]["jobAssets"],atype)
+        assets = kfunctions.getKProjectAssets(project,adict)
+        for asset in assets:
+            createCut(structure,assetsequence,name=asset["name"])
+
         
 
 if __name__ == "__main__":
-    
-    createNewProject("mov","test","Eosis")
 
-
-
-
-
-
-
-    
-
-
-    
+    createNewProject("mov","test","gracie_and_pedro")
