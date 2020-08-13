@@ -4,8 +4,6 @@ import re
 from pipeline_utilities import path_manipulation
 
 def importAlembicFile():
-
-
     """
     Tries to get to the first source geo folder by going up from your maya file. Opens an alembic import dialog
     """
@@ -25,10 +23,14 @@ def importAlembicFile():
         abcfilter = "alembic (*.abc)"
 
         try:
-            abc_file = pm.fileDialog2(fileFilter=abcfilter,dialogStyle=2,startingDirectory=asset_path,fileMode=1)[0]
-            pm.AbcImport(abc_file,mode="import")
+            abcfile = pm.fileDialog2(fileFilter=abcfilter,dialogStyle=2,startingDirectory=asset_path,fileMode=1)[0]
+            importAlembic(abcfile)
         except:
             print("The import alembic operation was cancelled by user")
+
+def importAlembic(abcfile):
+    pm.AbcImport(abcfile,mode="import")
+
 
 def addGeoSuffix(geoselection,geosuffix):
     repattern = r"_geo$"            #checks if the string ends in _geo
