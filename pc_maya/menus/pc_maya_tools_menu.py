@@ -15,7 +15,7 @@ def createMayaMenus():
     custom_tools_menu = pm.menu(menu_obj, label=menu_label, parent=main_window, tearOff=True)
     
     #start of Scene tools
-    pm.menuItem(label="Scene tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
+    pm.menuItem(label="Scene Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
     pm.menuItem(label="Import Alembic",command="from pc_maya.snippets import snippets;snippets.importAlembicFile()")
     pm.menuItem(label="Scene Exporter",command="from pc_dialogs.scene_export_dialog import PcSceneExporter;PcSceneExporter.openExportDialog()")
     pm.menuItem(label="Export Camera",command="from pc_maya.menus import menu_gui;menu_gui.initCameraExportGui()")
@@ -26,7 +26,7 @@ def createMayaMenus():
     pm.setParent("..",menu=True)
 
     #start of Model tools
-    pm.menuItem(label="Model tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
+    pm.menuItem(label="Model Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
     pm.menuItem(label="Model Prep",command="from pc_dialogs.export_prep_dialog import NameGGRP;NameGGRP.openNameGGRP_dialog()")
     pm.menuItem(label="Create Export Set", command="from pc_maya.helpers.export_helpers import export_helpers;export_helpers.createExportSet()")
     pm.menuItem(label="Scale Reference",subMenu=True,tearOff=True)
@@ -36,10 +36,15 @@ def createMayaMenus():
     pm.menuItem(label="Measurement Woman Rig",command="pm.importFile('//YARN/projects/gen/models/measurement_man/female/rig/mw_rig_02.ma')")
 
 
-
-
     # sets the parent back to the specified menu
     pm.setParent("..",menu=True)
+
+    #start of Animation Tools
+    pm.menuItem(label="Animation Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
+    pm.menuItem(label="Studio Library",command="from pc_maya.studio_lib import pc_studiolibrary;pc_studiolibrary.launchSL()")
+
+
+
 
 
     # add in other pm.menu and pm.menuItem after this to create more menus

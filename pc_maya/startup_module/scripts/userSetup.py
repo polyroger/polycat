@@ -10,6 +10,7 @@ import pc_maya
 # package dependencies, not sure if this is the best way to do this.
 # sys.path.append("F:\\projects\\pipeline\\packages") # for remote use
 sys.path.append("\\\\YARN\\projects\\pipeline\\packages")
+sys.path.append("\\\\YARN\\projects\\pipeline\\utilities\\studiolibrary\\src")
 
 # #external packages, after path append
 import scandir
