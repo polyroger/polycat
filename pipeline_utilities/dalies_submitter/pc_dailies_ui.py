@@ -89,15 +89,15 @@ class PcDailiesGui(QtWidgets.QDialog):
 
     def createWidgets(self):
          
-        #comboboxes
-        self.sequence_box = QtWidgets.QComboBox()
-        self.createCBoxItems(self.sequence_box,self.ASSETLIST)
-        self.asset_type_box = QtWidgets.QComboBox()
-        self.asset_type_box.addItems(["Asset Type"])
-        self.asset_box = QtWidgets.QComboBox()
-        self.asset_box.addItems(["Asset"])
-        self.task_box = QtWidgets.QComboBox()
-        self.task_box.addItems(["Task"])
+        #comboboxes commented out until there is better kitsu intergrations
+        # self.sequence_box = QtWidgets.QComboBox()
+        # self.createCBoxItems(self.sequence_box,self.ASSETLIST)
+        # self.asset_type_box = QtWidgets.QComboBox()
+        # self.asset_type_box.addItems(["Asset Type"])
+        # self.asset_box = QtWidgets.QComboBox()
+        # self.asset_box.addItems(["Asset"])
+        # self.task_box = QtWidgets.QComboBox()
+        # self.task_box.addItems(["Task"])
         
         #file selection
         self.select_file_label = QtWidgets.QLabel("Import :")
@@ -122,12 +122,16 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.createCBoxItems(self.to_space,self.ACES_TO_SPACE)
         self.to_space.setEnabled(False)
 
-        #comment box
-        self.comment_box_label = QtWidgets.QLabel("Comments")
-        self.comment_box_label.setAlignment(QtCore.Qt.AlignBottom)
-        self.comment_box_1 = QtWidgets.QLineEdit()
-        self.comment_box_2 = QtWidgets.QLineEdit()
-        self.comment_box_3 = QtWidgets.QLineEdit()
+        #overlay toggle
+        self.overlay_toggle = QtWidgets.QCheckBox("Overlays")
+        self.overlay_toggle.setChecked(True)
+
+        #comment box commented out until there is better kitsu intergration
+        # self.comment_box_label = QtWidgets.QLabel("Comments")
+        # self.comment_box_label.setAlignment(QtCore.Qt.AlignBottom)
+        # self.comment_box_1 = QtWidgets.QLineEdit()
+        # self.comment_box_2 = QtWidgets.QLineEdit()
+        # self.comment_box_3 = QtWidgets.QLineEdit()
 
         #button widgets
         self.submit_btn = QtWidgets.QPushButton("Convert")
@@ -138,12 +142,12 @@ class PcDailiesGui(QtWidgets.QDialog):
         #main layout
         main_layout = QtWidgets.QVBoxLayout(self)
         
-        #cobobox layout
-        combobox_layout = QtWidgets.QHBoxLayout()
-        combobox_layout.addWidget(self.sequence_box)
-        combobox_layout.addWidget(self.asset_type_box)
-        combobox_layout.addWidget(self.asset_box)
-        combobox_layout.addWidget(self.task_box)
+        #cobobox layout commented out until there is better kitsu intergrations
+        # combobox_layout = QtWidgets.QHBoxLayout()
+        # combobox_layout.addWidget(self.sequence_box)
+        # combobox_layout.addWidget(self.asset_type_box)
+        # combobox_layout.addWidget(self.asset_box)
+        # combobox_layout.addWidget(self.task_box)
 
         #select_file
         select_file_layout = QtWidgets.QHBoxLayout()
@@ -162,12 +166,16 @@ class PcDailiesGui(QtWidgets.QDialog):
         color_man_layout.addWidget(self.from_space)
         color_man_layout.addWidget(self.to_space)
 
-        #comment layout
-        comment_layout = QtWidgets.QVBoxLayout()
-        comment_layout.addWidget(self.comment_box_label)
-        comment_layout.addWidget(self.comment_box_1)
-        comment_layout.addWidget(self.comment_box_2)
-        comment_layout.addWidget(self.comment_box_3)
+        #ovelay toggle
+        overlay_toggle_layout = QtWidgets.QHBoxLayout()
+        overlay_toggle_layout.addWidget(self.overlay_toggle)
+
+        #comment layout commented out untile there is better kitsu intergrations
+        # comment_layout = QtWidgets.QVBoxLayout()
+        # comment_layout.addWidget(self.comment_box_label)
+        # comment_layout.addWidget(self.comment_box_1)
+        # comment_layout.addWidget(self.comment_box_2)
+        # comment_layout.addWidget(self.comment_box_3)
     
         #button layout
         d_btn_layout = QtWidgets.QHBoxLayout()
@@ -179,6 +187,7 @@ class PcDailiesGui(QtWidgets.QDialog):
         main_layout.addLayout(select_file_layout)
         main_layout.addLayout(output_file_layout)
         main_layout.addLayout(color_man_layout)
+        main_layout.addLayout(overlay_toggle_layout)
         # main_layout.addLayout(comment_layout)
         main_layout.addLayout(d_btn_layout)
     
@@ -318,7 +327,7 @@ class PcDailiesGui(QtWidgets.QDialog):
 
     def selectFileDialog(self):
 
-        filename,filefilter = QtWidgets.QFileDialog.getOpenFileName(self,"select file",r"\\YARN\projects\mov\eos\3_development\pipeline_tools\dailies_submitter\test_files\sequences\render",self.FILEFILTERS,self.defaultfilter )
+        filename,filefilter = QtWidgets.QFileDialog.getOpenFileName(self,"select file",r"\\YARN\projects",self.FILEFILTERS,self.defaultfilter )
         if filename:
             self.select_file.setText(filename)
     
@@ -484,8 +493,15 @@ class PcDailiesGui(QtWidgets.QDialog):
         args = [self.FFMPEG]                                                    
         args.extend(["-hide_banner", "-y"])
         args.extend(["-start_number","1001","-framerate","24"])                                    
-        args.extend(["-i", input_path ,"-i",self.LOGO])
-        args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+
+        if self.overlay_toggle.isChecked():
+
+            args.extend(["-i", input_path ,"-i",self.LOGO])
+            args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+        else:
+            args.extend(["-i", input_path])            
+            args.extend(["-filter_complex","[0]scale=1920:-2[final]"])
+
         args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
         args.extend(["-map","[final]"])
         args.append(output_path)  
@@ -520,8 +536,14 @@ class PcDailiesGui(QtWidgets.QDialog):
 
         args = [self.FFMPEG]                                                    
         args.extend(["-hide_banner", "-y"])                                    
-        args.extend(["-i", input_path ,"-i",self.LOGO])
-        args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+        
+        if self.overlay_toggle.isChecked():
+            args.extend(["-i", input_path ,"-i",self.LOGO])
+            args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+        else:
+            args.extend(["-i", input_path])
+            args.extend(["-filter_complex","[0]scale=1920:-2[final]"])
+            
         args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
         args.extend(["-map","[final]"])
         args.append(output_path)  
