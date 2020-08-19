@@ -40,8 +40,8 @@ def createMayaMenus():
     pm.setParent("..",menu=True)
 
     #start of Animation Tools
-    pm.menuItem(label="Animation Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
-    pm.menuItem(label="Studio Library",command="from pc_maya.studio_lib import pc_studiolibrary;pc_studiolibrary.launchSL()")
+    # pm.menuItem(label="Animation Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
+    # pm.menuItem(label="Studio Library",command="from pc_maya.studio_lib import pc_studiolibrary;pc_studiolibrary.launchSL()")
 
 
 
