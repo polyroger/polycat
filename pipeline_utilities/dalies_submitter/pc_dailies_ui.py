@@ -449,7 +449,7 @@ class PcDailiesGui(QtWidgets.QDialog):
         
         output_path = self.output_file.text()
         filedict = self.detectImageSeq(result)
-        self.runFfmpegSeq(filedict["ffmpegp"],output_path)
+        self.runFfmpegSeq(filedict["ffmpegp"],output_path,filedict["start"])
 
     
     def runOiio(self,pathdict):
@@ -486,18 +486,18 @@ class PcDailiesGui(QtWidgets.QDialog):
 
         return temppath
 
-    def runFfmpegSeq(self,input_path,output_path):
+    def runFfmpegSeq(self,input_path,output_path,startframe):
 
         preset = "medium"
 
         args = [self.FFMPEG]                                                    
         args.extend(["-hide_banner", "-y"])
-        args.extend(["-start_number","1001","-framerate","24"])                                    
+        args.extend(["-start_number",str(startframe),"-framerate","24"])                                    
 
         if self.overlay_toggle.isChecked():
 
             args.extend(["-i", input_path ,"-i",self.LOGO])
-            args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+            args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.2[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=" + f"{startframe}" + ":x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
         else:
             args.extend(["-i", input_path])            
             args.extend(["-filter_complex","[0]scale=1920:-2[final]"])
