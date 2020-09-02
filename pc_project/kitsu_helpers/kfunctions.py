@@ -36,6 +36,7 @@ def getKProjectAssetTypes(kproject):
     returns a kdict for each assettype name
     """
     kassettypes = gazu.asset.all_asset_types_for_project(kproject)
+
     assettypes = {}
 
     for assetdict in kassettypes:

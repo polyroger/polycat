@@ -11,12 +11,11 @@
     "0_aaa" : {
         "clientaudio":"0_client/0_audio",
         "clientfeedback":"0_client/0_feedback",
-        "clientreference":"0_client/0_reference",
+        "clientreference":"0_client/0_reference/client",
+        "internalreference":"0_client/0_reference/internal",
         "clientupload":"0_client/0_upload",
-        "internaldailies":"0_internal/0_dailies",
-        "internalfeedback":"0_internal/0_feedback",
+        "internaldailies":"0_internal/0_dailies/latest",
         "internalprojectdata":"0_internal/0_project_data",
-        "internalreference":"0_internal/0_reference",
         "internalscript":"0_internal/0_script"
     },
 
@@ -24,7 +23,6 @@
          "assetAudio":"audio",
          "assetCharacters":"characters",
          "assetEnvironment":"environment",
-         "assetProps":"props",
          "assetVfx":"vfx"
     },
 
@@ -49,7 +47,6 @@
         "cutLightComp":"0_comp/lightcomp",
         "cutComp":"0_comp/comp",
         "cutLatestComp":"0_comp/latest",
-        "cutFeedback":"0_feedback",
         "cutPlayblast":"0_playblast/v01",
         "cutRenders":"0_renders",
         "cutSim":"0_sim",
@@ -67,7 +64,9 @@
         "jackie",
         "samantha",
         "arzel",
-        "ruan"
+        "ruan",
+        "zoy",
+        "elia"
     ],
     "software":[
         "maya",

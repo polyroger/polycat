@@ -18,8 +18,7 @@ def createMayaMenus():
     pm.menuItem(label="Scene Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
     pm.menuItem(label="Import Alembic",command="from pc_maya.snippets import snippets;snippets.importAlembicFile()")
     pm.menuItem(label="Scene Exporter",command="from pc_dialogs.scene_export_dialog import PcSceneExporter;PcSceneExporter.openExportDialog()")
-    pm.menuItem(label="Export Camera",command="from pc_maya.menus import menu_gui;menu_gui.initCameraExportGui()")
-    pm.menuItem(label="Playblast Camera",command="menu_gui.initPlayblastCameraGui()")
+    pm.menuItem(label="Export Camera",command="from pc_maya.camera_exporter.pc_camera_exporter_ui import CameraExporter;CameraExporter.openCameraExportDialog()")
     pm.menuItem(label="Set Frame Range",command="pullframerange.makeRange()")
 
     # sets the parent back to the specified menu
@@ -41,6 +40,7 @@ def createMayaMenus():
 
     #start of Animation Tools
     pm.menuItem(label="Animation Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
+    pm.menuItem(label="Playblast Camera",command="from pc_maya.playblast.pc_playblast_ui import PcPlayblast;PcPlayblast.openPcPlayblast_dialog()")
     pm.menuItem(label="Studio Library",command="from pc_maya.studio_lib import pc_studiolibrary;pc_studiolibrary.launchSL()")
 
 
