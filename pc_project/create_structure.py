@@ -51,7 +51,7 @@ def createSequence(job_base,parent,sequence_name):
 
     return sequence
 
-def createCut(jobject,sequence,name="cut0010"):
+def createCut(jobject,sequence,name=""):
     """
     Creates the cut structure for a sequece
     Args
@@ -103,11 +103,29 @@ def createNewProject(serverclient,servername,kprojectname):
     JFILE = r"pc_project\json\structure.json"
     ROOT = pathlib.Path("//YARN/projects")
 
-    n = serverclient + "/" + servername
+    structure = getStructure(JFILE)
+
+    proj = serverclient + "/" + servername
+    serverassets = ROOT / proj / structure["jobLevel"]["jobAssets"]
+    serverseq = ROOT / proj / structure["jobLevel"]["jobSequences"]
+    serverdev = ROOT / proj / structure["jobLevel"]["jobDevelopment"]
+    serveredit = ROOT / proj / structure["jobLevel"]["jobEdit"]
+    serverelitter = ROOT / proj / structure["jobLevel"]["jobLitterbox"]
 
     #CREATING THE JOBLEVEL FOLDERS
-    structure = getStructure(JFILE)
-    base = createJobBase(structure,ROOT,n)
+    base = createJobBase(structure,ROOT,proj)
+
+    #CREATING STAND ALONE CUTS OUTSIDE OF ASSETS OR SEQUENCES
+    #edit cuts
+    for folder in serveredit.iterdir():
+        createCut(structure,folder)
+    #dev cut to copy
+    createCut(structure,serverdev,"0_cut_to_copy")
+    #litterbox users
+    for user in structure["users"]:
+        userpath = serverelitter / user
+        userpath.mkdir(exist_ok=True)
+
 
     #PULLING KITSU DATA
     kfunctions.kLogin()
@@ -115,23 +133,41 @@ def createNewProject(serverclient,servername,kprojectname):
     sequences = kfunctions.getKProjectSequences(project)
     assettypes = kfunctions.getKProjectAssetTypes(project)
 
+    #EXCLUSION LIST FOR ANYTHING THAT NEEDS TO BE IGNORED
+    exclusion = ["0_character_props"]
 
-    #CREATING ALL THE CUTS BASED OFF THE KITSU PROJECT
+
+    # CREATING ALL THE CUTS BASED OFF THE KITSU PROJECT
     for seqname,seqdict in sequences.items():
-        sequence = createSequence(base,structure["jobLevel"]["jobSequences"],seqname)
+        sequence = createSequence(base,serverseq,seqname)
         cuts = kfunctions.getKSequenceCuts(seqdict)
         for cut in cuts:
             createCut(structure,sequence,name=cut["name"])
 
-    #CREATING ALL THE ASSETS IN THE KITSU PROJECT    
+    # CREATING ALL THE ASSETS IN THE KITSU PROJECT    
     for atype,adict in assettypes.items():
-        assetsequence = createSequence(base,structure["jobLevel"]["jobAssets"],atype)
-        assets = kfunctions.getKProjectAssets(project,adict)
-        for asset in assets:
-            createCut(structure,assetsequence,name=asset["name"])
-
         
+        if not str(atype).startswith("0") and atype not in exclusion:
+            
+            parent = serverassets / structure["1_assets"]["assetEnvironment"]
+            assetsequence = createSequence(base,parent,atype)
+            cutpath = createCut(structure,assetsequence)
+        
+        #THIS IS FOR EVERYTHING THAT STARTS WITH 0_ 
+        else:
+            if atype in exclusion:
+                continue
+            
+            newatype = str(atype).replace("0_","")
+            parent = serverassets / newatype
+            assets = kfunctions.getKProjectAssets(project,adict)
+
+            for asset in assets:
+                cutpath = createCut(structure,parent,asset["name"])
+
+            
 
 if __name__ == "__main__":
 
-    createNewProject("mov","test","gracie_and_pedro")
+    # createNewProject("ply","nod","noodle_and_bun")
+    # createNewProject("mov","gra","gracie_and_pedro")
