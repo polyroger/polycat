@@ -28,10 +28,6 @@ def getLatestFromList(filelist):
     """
     Given a list of files return an int of the latest version file
     """
-    if not filelist:
-        print("The file list is empty")
-        return None
-    
     collections,remainder = clique.assemble(filelist,minimum_items=1)
 
     if not collections:
