@@ -1,46 +1,9 @@
+"""
+The polycat playblast camera backend
+"""
+
+#maya imports
 import pymel.core as pm
-
-def getRGlobals():
-    
-    rglobals = {}
-    inchtomm = 25.4
-
-    #resolution
-    rglobals["resx"] = float(pm.getAttr("defaultResolution.width")) 
-    rglobals["resy"] = float(pm.getAttr("defaultResolution.height"))
-    rglobals["aspect"] = round(rglobals["resx"] / rglobals["resy"],2)
-
-    #frame range
-    rglobals["fstart"] =  pm.playbackOptions(q=True,minTime=True)
-    rglobals["fend"] =  pm.playbackOptions(q=True,maxTime=True)
-
-    #background color
-    allcols = pm.displayRGBColor(list=True)
-    bg = allcols[0]
-    rglobals["bgrgb"] = bg.split(" ")[1:]
-
-    return rglobals
-
-def getSelectedCamera():
-
-    cam = pm.ls(selection=True)[0]
-    camshape = cam.getShape()
-    
-    if pm.nodeType(camshape) != "camera":
-        return None
-
-    return camshape
-
-def checkRenderSettings(camerashape,rglobals):
-    camaspect = round(camerashape.getAspectRatio(),2)
-    globalaspect = rglobals["aspect"]
-
-    if camaspect != globalaspect:
-        print("The camera aspect ({0}) and the render aspect ({1}) do not match".format(camaspect,globalaspect))
-        return False
-
-    print("all good")
-    return True
 
 
 def setTempGlobals():
@@ -74,7 +37,7 @@ def createPBWindow(windowname,camera):
                     nurbsCurves=False,
                     displayAppearance="smoothShaded")
     
-    pm.showWindow(pbwindow)
+    # pbwindow.show()
     pm.setFocus(blastpanel)
 
     return windowname
@@ -112,37 +75,3 @@ def cleanUp(rglobals,windowname):
 
     return "Done with clean up"    
 
-#test run
-# savepath = "C:\\Users\\Administrator\\Documents\\0_LOCAL_DEV\\pipeline\\polycat\\sample_files\\playblast\\blast2.png"
-# camera = getSelectedCamera()
-# renderglobals = getRGlobals()
-# rendercheck = checkRenderSettings(camera,renderglobals)
-# setTempGlobals()
-# pbwindow = createPBWindow("pbwindow",camera)
-# runPlayblast(savepath,1001,1100,renderglobals)
-# cleanUp(renderglobals,pbwindow)
-
-
-
-"""
-WHITEBOARD
-
-the gui needs to set options for the defaultRenderGlobals and the defaultRenderingGlobals
-    -   resolution
-    -   sampling
-as well as the model editor
-    -   shading mode
-    -   show textures
-
-Needs to save the current hardware settings before they get changes so they can be set back to defaults after the playblast has ended
-
-The tool needs to be easiily sent off when packaging up shots.
-
-Should default to the shots playblast folder. Version up in the tag is the same or create a new folder if the tag is unique. 
-
-the camera aspect and the render aspect should match
-
-have a global size multiplyer
-
-
-"""
