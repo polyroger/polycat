@@ -21,7 +21,7 @@ from pc_helpers import pc_file_helpers as fhelp
 
 #maya helpers
 from pc_maya.maya_helpers import export_helpers as exhelp
-from pc_maya.maya_helpers import scene_helpers as scnhelp
+from pc_maya.maya_helpers import scene_helpers as shelp
 from pc_maya.maya_helpers import pyside2_helpers as py2help
 
 class CameraExporter(QtWidgets.QDialog):
@@ -148,7 +148,7 @@ class CameraExporter(QtWidgets.QDialog):
     def getExportPath(self):
         
         cameradir = "0_camera"
-        export_label_path = phelp.goFindFolder(scnhelp.getScenePath(),cameradir)
+        export_label_path = phelp.goFindFolder(shelp.getScenePath(),cameradir)
 
         return export_label_path
 
@@ -161,16 +161,16 @@ class CameraExporter(QtWidgets.QDialog):
 
     def runAbcExport(self):
 
-        if not camex.getSelectedCamera():
+        if not shelp.getSelectedCamera():
             return
         else:
-            selectedcam = camex.getSelectedCamera()
+            selectedcam = shelp.getSelectedCamera()
         
         #get the globals, change them if need be
-        mglobals = camex.getGlobals()
-        camex.checkCameraAspect(selectedcam,mglobals)
+        mglobals = shelp.getGlobals()
+        shelp.checkCameraAspect(selectedcam,mglobals)
         #update the global dict 
-        mglobals = camex.getGlobals()
+        mglobals = shelp.getGlobals()
 
         applist = [("maya","maya_camera",1),("houdini","houdini_camera",.1)]
         attrlist = ["resx","resy"]
@@ -211,7 +211,9 @@ class CameraExporter(QtWidgets.QDialog):
 
             except:
                 pm.confirmDialog(title="WARNING",message="There was an error when trying to export the {} camera".format(app[1]))
-
+                return
+        
+        pm.confirmDialog(title="SUCCESS",message="All cameras exported")
 
 
 
