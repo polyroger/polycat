@@ -4,7 +4,7 @@ Polcat camera exporter ui
 #system
 import os
 
-#pyside2 imports
+#pyside2 imports    
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 from PySide2 import QtGui
@@ -167,10 +167,10 @@ class CameraExporter(QtWidgets.QDialog):
             selectedcam = shelp.getSelectedCamera()
         
         #get the globals, change them if need be
-        mglobals = shelp.getGlobals()
+        mglobals = shelp.getRGlobals()
         shelp.checkCameraAspect(selectedcam,mglobals)
         #update the global dict 
-        mglobals = shelp.getGlobals()
+        mglobals = shelp.getRGlobals()
 
         applist = [("maya","maya_camera",1),("houdini","houdini_camera",.1)]
         attrlist = ["resx","resy"]
@@ -183,7 +183,6 @@ class CameraExporter(QtWidgets.QDialog):
         for app in applist:
 
             try:
-            
                 path = os.path.join(self.export_path.text(),app[0])
                 
                 if not os.path.exists(path):
@@ -199,8 +198,9 @@ class CameraExporter(QtWidgets.QDialog):
                 ext = ".abc"
                 filename = cut + "_camera_" + version + ext
                 filepath = os.path.join(path,filename)
-
                 camtobake = camex.createCamera(app[1],mglobals)
+                print("###########")
+                print(mglobals)
                 camex.bakeCamera(selectedcam,camtobake,mglobals,app[2])
                 command = exhelp.pcABCCameraArgs(camtobake.name(),filepath,int(self.frame_range_start.text()),int(self.frame_range_end.text()),attrlist,step=str(self.frame_step.text()))
 

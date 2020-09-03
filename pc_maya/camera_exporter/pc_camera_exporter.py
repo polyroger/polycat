@@ -27,7 +27,7 @@ def bakeCamera(originalcam,camtobake,mglobals,scene_scale):
     
     print("RUNNING BAKER")
 
-    start,end = (mglobals["fstart"],mglobals["fend"])
+    start,end = (int(mglobals["fstart"]),int(mglobals["fend"]))
     
     originalcamshape = originalcam.getShape()
     camtobakeshape = camtobake.getShape()
