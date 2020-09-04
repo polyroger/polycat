@@ -156,10 +156,11 @@ class PcPlayblast(QtWidgets.QDialog):
         
         #re setting globals if changed by the aspect check
         g = shelp.getRGlobals()
-
         pc_playblast.setTempGlobals()
+        
         blast_window = pc_playblast.createPBWindow("blastwindow",camshape)
         pc_playblast.runPlayblast(stripped_name,start,end,g)
+        
         pc_playblast.cleanUp(g,blast_window)
 
         pm.confirmDialog(title="SUCCESS",message="Done Blasting!")
