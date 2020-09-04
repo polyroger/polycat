@@ -21,8 +21,12 @@ def getRGlobals():
     #background color
     allcols = pm.displayRGBColor(list=True)
     bg = allcols[0]
+    bgtop = allcols[1]
+    bgbottom = allcols[2]
     rglobals["bgrgb"] = bg.split(" ")[1:]
-
+    rglobals["bgtoprgb"] = bgtop.split(" ")[1:]
+    rglobals["bgbottomrgb"] = bgbottom.split(" ")[1:]
+    
     return rglobals
 
 def getScenePath():
