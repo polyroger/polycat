@@ -1,9 +1,12 @@
-# 
 # Maya Playblast exporter
-# 
+
+# sysyem imports
+import os
+
 #pyside2 imports
 from PySide2 import QtWidgets
 from PySide2 import QtCore
+from PySide2 import QtGui
 
 #shiboken imports 
 from shiboken2 import wrapInstance
@@ -14,6 +17,11 @@ import maya.OpenMayaUI as omui
 
 #polycat imports
 import pc_playblast
+from pc_helpers import pc_file_helpers as fhelp
+from pc_helpers import pc_path_helpers as phelp
+
+#polycat maya import
+from pc_maya.maya_helpers import scene_helpers as shelp
 
 
 def mayaMainWindow():
@@ -27,6 +35,8 @@ def mayaMainWindow():
     return mainwindowobject
 
 class PcPlayblast(QtWidgets.QDialog):
+
+    FILE_FILTERS = "jpg (*.jpg)"
 
     pcplayblast_dialog = None
 
@@ -50,20 +60,28 @@ class PcPlayblast(QtWidgets.QDialog):
         super(PcPlayblast,self).__init__(parent)
         
         self.setWindowTitle("Polycat Playblast")
-        self.setMinimumSize(300,120)
+        self.setMinimumSize(600,120)
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
 
-        self.camera_selection_dialog()
+        # self.cameraSelectionDialog()
 
-        self.rglobals = pc_playblast.getRGlobals()
+        self.rglobals = shelp.getRGlobals()
 
         self.createWidgets()
         self.createLayouts()
         self.createConnetions()
 
     def createWidgets(self):
+
+        #export folder name
+        self.foldername = QtWidgets.QLineEdit("unnamed")
+
         #export path
-        self.exportpath = QtWidgets.QLineEdit("autofill the path")
+        self.exportpath = QtWidgets.QLineEdit()
+        self.exportpath.setText(phelp.goFindFolder(shelp.getScenePath(),"0_playblast"))
+        self.exportpath_btn = QtWidgets.QPushButton()
+        self.exportpath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
+        self.exportpath_btn.setToolTip("select file")
 
         #frame range widgetts
         self.frame_range_start = QtWidgets.QLineEdit(str(int(self.rglobals["fstart"])))
@@ -79,6 +97,12 @@ class PcPlayblast(QtWidgets.QDialog):
 
         main_layout = QtWidgets.QVBoxLayout(self)
 
+        #export path layout
+        exportpath_layout = QtWidgets.QHBoxLayout()
+        exportpath_layout.addWidget(self.exportpath)
+        exportpath_layout.addWidget(self.exportpath_btn)
+
+
         #frame range
         frame_range_layout = QtWidgets.QHBoxLayout()
         frame_range_layout.addWidget(self.frame_range_start)
@@ -88,7 +112,7 @@ class PcPlayblast(QtWidgets.QDialog):
         body_layout = QtWidgets.QFormLayout()
         body_layout.setLabelAlignment(QtCore.Qt.AlignLeft)
         body_layout.setVerticalSpacing(10)
-        body_layout.addRow("Export Path :",self.exportpath)
+        body_layout.addRow("Export Path :",exportpath_layout)
         body_layout.addRow("Frame Range :",frame_range_layout)
   
         #Ok Cancel buttons
@@ -103,15 +127,42 @@ class PcPlayblast(QtWidgets.QDialog):
     
     
     def createConnetions(self):
-        pass
+        self.exportpath_btn.clicked.connect(self.setExportFilePath)
+        self.blast_button.clicked.connect(self.blastMe)
+
+        self.cancel_button.clicked.connect(self.close)
     
-    #Custom UI
+    #Methods
 
-    def cameraSelectionDialog(self):
+    def setExportFilePath(self):
+    
+        filepath = QtWidgets.QFileDialog.getSaveFileName(self,"Name your playblast",dir=self.exportpath.text(),filter=self.FILE_FILTERS)
 
-        self.camera_selection_dialog = QtWidgets.QMessageBox(self,"Select Camera")
-        self.camera_selection_dialog.addButton("Ok",QtWidgets.QMessageBox.AcceptRole)
-        self.camera_selection_dialog.addButton("Cancel",QtWidgets.QMessageBox.RejectRole)
-
-
+        if filepath[0]:
+            self.exportpath.setText(filepath[0])
         
+    def blastMe(self):
+
+        g = shelp.getRGlobals()
+        stripped_name = os.path.splitext(self.exportpath.text())[0]
+        start = int(self.frame_range_start.text())
+        end = int(self.frame_range_end.text())
+        
+        cam = shelp.getSelectedCamera()
+        camshape = cam.getShape()
+        
+        if not shelp.checkCameraAspect(cam,g):
+            return
+        
+        #re setting globals if changed by the aspect check
+        g = shelp.getRGlobals()
+        pc_playblast.setTempGlobals()
+        
+        blast_window = pc_playblast.createPBWindow("blastwindow",camshape)
+        pc_playblast.runPlayblast(stripped_name,start,end,g)
+        
+        pc_playblast.cleanUp(g,blast_window)
+
+        pm.confirmDialog(title="SUCCESS",message="Done Blasting!")
+        self.close()
+      

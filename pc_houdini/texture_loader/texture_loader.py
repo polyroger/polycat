@@ -3,6 +3,9 @@ import os
 import re
 import clique
 
+#houdini python libs
+import nodegraphalign as nga
+
 def replaceYarn(filepath):
     
     editedfilepath = filepath.replace("\\","/")
@@ -86,6 +89,18 @@ def createImageNodes(shader,filename):
 
     return imagenode
 
+def getNetworkEditor():
+
+    
+    network_editor = None
+
+    for pane_tab in hou.ui.paneTabs():
+
+        if isinstance(pane_tab, hou.NetworkEditor):
+            
+            network_editor = pane_tab
+            return network_editor
+
 
 def createTextureParms(node,texturecat,parmgroup):
     """
@@ -97,8 +112,12 @@ def createTextureParms(node,texturecat,parmgroup):
     Returns a parm group object that coinains a paramater entry for each item in the texture catagory foder
         
     """
+    shadernodes = []
+    imagenodes = []
+    
+    
     #this section removes any trailing slashes from the path and checks whether there are files or folders or both in the texturepath
-
+    
     if texturecat[-1] == "/" or texturecat[-1] == "\\":
         texturecat = texturecat[:-1]
     
@@ -157,8 +176,8 @@ def createTextureParms(node,texturecat,parmgroup):
         for i in single:
 
             head,tail = os.path.splitext(i)
-            
-            if tail in exclusionlist:
+            #this exculdes what is in the list of if there are and directories in the folder
+            if tail in exclusionlist or not tail:
                 continue
             
             filepath = os.path.abspath(os.path.join(texpath,i))
@@ -183,34 +202,35 @@ def createTextureParms(node,texturecat,parmgroup):
         
         # creating the shader and image nodes
         shader = createArnoldShader(node,folder.name())
+        shadernodes.append(shader)
         shader.createNode("arnold::standard_surface")
         
+
         for path in filelist:
             imagefilename = path.name()
             imagenode = createImageNodes(shader,imagefilename)
+            imagenodes.append(imagenode)
             imagenode.parm("filename").set(path.defaultValue()[0])
         
         # stores that folder template so it doesnt get lost in the loop
         pfolders.append(folder)
+        
         # clears the filelist so that the new list can be built from the new key, if this isnt cleared you will just append the next paramater list and your last folder parm will contain all the files
         filelist = []
-
-   
-   
+    
+    # Aligns all the shaders
+    for node in shadernodes:
+        
+        node.setSelected(True)
+    
+    nga.alignConnected(getNetworkEditor(),None,hou.Vector2(1,1),"down")
+    
     #  sets an in memory copy of the textures folder that now contains all the folders and the folders all the string paramaters, then replaces the current parmgroup textures folder with the in memory one
     textures.setParmTemplates(pfolders)
     parmgroup.replace("textures",textures)
 
     #you need to return the parmgroup so you can set the parmgroup in the hda script.
     return parmgroup
-       
-#TODO
-"""
-Add in a way to create arnold image nodes that auto link to the texture path.
-some sort of reload or refresh - done
-
-"""
-
 
 
             

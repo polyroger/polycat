@@ -5,8 +5,10 @@ Polycat Maya pyside2 helpers
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 from PySide2 import QtGui
+
 #maya imports
 import maya.OpenMayaUI as omui
+
 #shiboken imports 
 from shiboken2 import wrapInstance
 
@@ -20,3 +22,6 @@ def mayaMainWindow():
     mainwindowobject = wrapInstance(long(mainwindowpointer),QtWidgets.QWidget)
 
     return mainwindowobject
+
+
+

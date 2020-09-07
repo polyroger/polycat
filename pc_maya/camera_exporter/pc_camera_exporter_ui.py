@@ -4,7 +4,7 @@ Polcat camera exporter ui
 #system
 import os
 
-#pyside2 imports
+#pyside2 imports    
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 from PySide2 import QtGui
@@ -21,7 +21,7 @@ from pc_helpers import pc_file_helpers as fhelp
 
 #maya helpers
 from pc_maya.maya_helpers import export_helpers as exhelp
-from pc_maya.maya_helpers import scene_helpers as scnhelp
+from pc_maya.maya_helpers import scene_helpers as shelp
 from pc_maya.maya_helpers import pyside2_helpers as py2help
 
 class CameraExporter(QtWidgets.QDialog):
@@ -148,7 +148,7 @@ class CameraExporter(QtWidgets.QDialog):
     def getExportPath(self):
         
         cameradir = "0_camera"
-        export_label_path = phelp.goFindFolder(scnhelp.getScenePath(),cameradir)
+        export_label_path = phelp.goFindFolder(shelp.getScenePath(),cameradir)
 
         return export_label_path
 
@@ -161,16 +161,16 @@ class CameraExporter(QtWidgets.QDialog):
 
     def runAbcExport(self):
 
-        if not camex.getSelectedCamera():
+        if not shelp.getSelectedCamera():
             return
         else:
-            selectedcam = camex.getSelectedCamera()
+            selectedcam = shelp.getSelectedCamera()
         
         #get the globals, change them if need be
-        mglobals = camex.getGlobals()
-        camex.checkCameraAspect(selectedcam,mglobals)
+        mglobals = shelp.getRGlobals()
+        shelp.checkCameraAspect(selectedcam,mglobals)
         #update the global dict 
-        mglobals = camex.getGlobals()
+        mglobals = shelp.getRGlobals()
 
         applist = [("maya","maya_camera",1),("houdini","houdini_camera",.1)]
         attrlist = ["resx","resy"]
@@ -183,7 +183,6 @@ class CameraExporter(QtWidgets.QDialog):
         for app in applist:
 
             try:
-            
                 path = os.path.join(self.export_path.text(),app[0])
                 
                 if not os.path.exists(path):
@@ -199,8 +198,9 @@ class CameraExporter(QtWidgets.QDialog):
                 ext = ".abc"
                 filename = cut + "_camera_" + version + ext
                 filepath = os.path.join(path,filename)
-
                 camtobake = camex.createCamera(app[1],mglobals)
+                print("###########")
+                print(mglobals)
                 camex.bakeCamera(selectedcam,camtobake,mglobals,app[2])
                 command = exhelp.pcABCCameraArgs(camtobake.name(),filepath,int(self.frame_range_start.text()),int(self.frame_range_end.text()),attrlist,step=str(self.frame_step.text()))
 
@@ -211,7 +211,9 @@ class CameraExporter(QtWidgets.QDialog):
 
             except:
                 pm.confirmDialog(title="WARNING",message="There was an error when trying to export the {} camera".format(app[1]))
-
+                return
+        
+        pm.confirmDialog(title="SUCCESS",message="All cameras exported")
 
 
 

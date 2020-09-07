@@ -5,22 +5,6 @@ Polycat camera exporter
 import os
 import pymel.core as pm
 
-def getGlobals():
-
-    mglobal = {}
-    
-    #resolution
-    mglobal["resx"] = pm.getAttr("defaultResolution.width")
-    mglobal["resy"] = pm.getAttr("defaultResolution.height")
-    mglobal["aspect"] = round(float(mglobal["resx"]) / float(mglobal["resy"]),3)
-
-    #frame range
-    mglobal["fstart"] =  int(pm.playbackOptions(q=True,minTime=True))
-    mglobal["fend"] =  int(pm.playbackOptions(q=True,maxTime=True))
-
-    return mglobal
-
-
 def createCamera(cameraname,mglobals):
 
     newcamera = pm.camera()[0]
@@ -36,62 +20,6 @@ def createCamera(cameraname,mglobals):
 
     return newcamera
 
-def getSelectedCamera():
-
-    try:
-        cam = pm.ls(selection=True)[0]
-        camshape = cam.getShape()
-        
-        if pm.nodeType(camshape) != "camera":
-
-            pm.confirmDialog(title="No Camera Selected",message="Please select a camera to export")
-            return None
-    except :
-        pm.confirmDialog(title="Nothing was selected",message="Please select a camera to export")
-        return None
-    
-    return cam
-
-def checkCameraAspect(camera,mglobals):
-
-    camshape = camera.getShape()
-    cancel = "Cancel"
-    changecam = "Change Camera"
-    changeglobal = "Change Global"
-
-    if round(camshape.getAspectRatio(),2) != round(mglobals["aspect"],2):
-
-        answer = pm.confirmDialog(  title="WARNING", 
-                                    message="The camera aspect does not match the global aspect", 
-                                    button=[changecam,changeglobal,cancel], 
-                                    defaultButton=changeglobal, 
-                                    cancelButton=cancel, 
-                                    dismissString=cancel )
-        
-        if answer == cancel:
-        
-            return None
-        
-        elif answer == changecam:
-        
-            camshape.setAspectRatio(mglobals["aspect"])
-            return True
-        
-        elif answer == changeglobal:
-
-            resy = int(pm.getAttr("defaultResolution.height"))
-            resx = int(resy * camshape.getAspectRatio())
-            pm.setAttr("defaultResolution.width",resx)
-            pm.setAttr("defaultResolution.deviceAspectRatio",camshape.getAspectRatio())
-            return True
-    
-    else:
-        return True
-
-    pm.confirmDialog(title="WARNING",message="The camera check failed")
-    return None    
-
-
 def bakeCamera(originalcam,camtobake,mglobals,scene_scale):
 
     if originalcam == None:
@@ -99,7 +27,7 @@ def bakeCamera(originalcam,camtobake,mglobals,scene_scale):
     
     print("RUNNING BAKER")
 
-    start,end = (mglobals["fstart"],mglobals["fend"])
+    start,end = (int(mglobals["fstart"]),int(mglobals["fend"]))
     
     originalcamshape = originalcam.getShape()
     camtobakeshape = camtobake.getShape()
