@@ -44,7 +44,7 @@ class PcDailiesGui(QtWidgets.QDialog):
 
     FFMPEG = r"\\YARN\projects\pipeline\utilities\ffmpeg\bin\ffmpeg.exe"
     OIIO = r"\\YARN\projects\pipeline\utilities\OpenImageIO-1.5.0-OCIO\bin\oiiotool.exe"
-    LOGO  = r"\\YARN\projects\pipeline\utilities\images\logos\polycat_white_1024x1024.png"
+    LOGO  = r"\\YARN\projects\pipeline\utilities\images\logos\polycat_blue_1024x1024.png"
     ICON =  r"\\YARN\projects\pipeline\utilities\images\logos\polycat_black_50x50.png"
 
     ACES_FROM_SPACE = ["ACES - ACEScg"]
