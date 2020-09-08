@@ -17,6 +17,10 @@ def getSetShot():
             
             return ss
 
+        else:
+            hou.ui.displayConfirmation("Could not find the set shot", title="error")
+            return None
+
 def getCutName(subnetpath):
 
     subnet = hou.node(subnetpath)
@@ -24,26 +28,35 @@ def getCutName(subnetpath):
     return subnet.name()
 
 
-#not yet implemented
-def checkIfPathExists(path):
+def checkSubnet(root,setshot,seqpath,subnetname):
+    
+    if setshot:
+    
+        cutlevel = root + seqpath
+    
+        if subnetname not in os.listdir(cutlevel):
 
-    if os.path.exists(path):
-        answer = hou.ui.displayConfirmation("That folder version already exists, are you sure you want to export?",title="WARNING")
-        return answer
+            hou.ui.displayConfirmation("The subnet cut name is not a shot in the sequence",title="ERROR")
 
-def createPath(path):
+            return False
 
-    if not os.path.exists():
-        
-        path = os.mkdir(path)
-        
-        return path
+        else:
+            return True
 
-    else:
-       
-       hou.ui.displayMessage("The export path could not be created")
+    print("there was an errot in the checkSubnet()")
+    
+    return None
 
-       return None
+def getRopnet():
+
+    for node in hou.node(".").children():
+        print(node)
+        if node.name() == "ropnet1":
+            abcrop = node.children()[0]
+            return abcrop
+        else:
+            return None
+
 
 
 
