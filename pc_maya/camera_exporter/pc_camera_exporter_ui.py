@@ -193,13 +193,13 @@ class CameraExporter(QtWidgets.QDialog):
                 cut = cutchild.split("\\")[-1]
                 
                 allfiles = fhelp.listAllFilesInFolder(path)
-                version = fhelp.versionPlusOne(fhelp.getLatestFromList(allfiles))
+                latestversion = fhelp.getLatestFromList(allfiles)
+                version = fhelp.versionPlusOne(latestversion)
 
                 ext = ".abc"
                 filename = cut + "_camera_" + version + ext
                 filepath = os.path.join(path,filename)
                 camtobake = camex.createCamera(app[1],mglobals)
-                print("###########")
                 print(mglobals)
                 camex.bakeCamera(selectedcam,camtobake,mglobals,app[2])
                 command = exhelp.pcABCCameraArgs(camtobake.name(),filepath,int(self.frame_range_start.text()),int(self.frame_range_end.text()),attrlist,step=str(self.frame_step.text()))
@@ -213,7 +213,8 @@ class CameraExporter(QtWidgets.QDialog):
                 pm.confirmDialog(title="WARNING",message="There was an error when trying to export the {} camera".format(app[1]))
                 return
         
-        pm.confirmDialog(title="SUCCESS",message="All cameras exported")
+        pm.confirmDialog(title="SUCCESS",message="All cameras exported",button=['Sweet!'], defaultButton='Sweet!')
+        self.close()
 
 
 
