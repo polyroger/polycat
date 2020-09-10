@@ -51,10 +51,10 @@ def getSelectedCamera():
         
         if pm.nodeType(camshape) != "camera":
 
-            pm.confirmDialog(title="No Camera Selected",message="Please select a camera to export")
+            pm.confirmDialog(title="No Camera Selected",message="Please select a camera to export",button=['Let me select a camera'], defaultButton='Let me select a camera')
             return None
     except :
-        pm.confirmDialog(title="Nothing was selected",message="Please select a camera to export")
+        pm.confirmDialog(title="Nothing was selected",message="Please select a camera to export",button=['Let me select a camera'], defaultButton='Let me select a camera')
         return None
     
     return cam
