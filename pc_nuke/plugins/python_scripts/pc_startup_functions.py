@@ -5,7 +5,7 @@ import nuke
 
 def addResolutions():
 
-    reslist = ["2048 858 2K_DCP_cinescope","1080 1920 noodle_and_bun"]
+    reslist = ["2048 858 1 DCP_cinescope","1080 1920 1 noodle_and_bun"]
 
     for res in reslist:
         nuke.addFormat(res)
