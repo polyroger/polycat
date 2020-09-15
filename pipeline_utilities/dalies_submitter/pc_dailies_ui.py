@@ -44,7 +44,8 @@ class PcDailiesGui(QtWidgets.QDialog):
 
     FFMPEG = r"\\YARN\projects\pipeline\utilities\ffmpeg\bin\ffmpeg.exe"
     OIIO = r"\\YARN\projects\pipeline\utilities\OpenImageIO-1.5.0-OCIO\bin\oiiotool.exe"
-    LOGO  = r"\\YARN\projects\pipeline\utilities\images\logos\polycat_blue_1024x1024.png"
+    # LOGO  = r"\\YARN\projects\pipeline\utilities\images\logos\polycat_blue_1024x1024.png"
+    LOGO  = r"\\YARN\projects\pipeline\utilities\images\logos\polycat_tight_blue_650x933.png"
     ICON =  r"\\YARN\projects\pipeline\utilities\images\logos\polycat_black_50x50.png"
     
     #color list
@@ -52,7 +53,7 @@ class PcDailiesGui(QtWidgets.QDialog):
     ACES_TO_SPACE = ["Output - Rec.709"]
 
     #resolution list
-    RESOLUTIONS = ["1920","1280","420","240"]
+    RESOLUTIONS = ["1","0.75","0.5","0.1"]
     
 
     FILEFILTERS = "jpeg (*.jpg *.jpeg);;png (*.png);;exr (*.exr);; all files (*.*)"
@@ -229,8 +230,8 @@ class PcDailiesGui(QtWidgets.QDialog):
     #*************************************************
     #START OF DIAOLOG METHODS
 
-    def setResolution(self,res):
-        print(res)
+    def setResolution(self,scale):
+        print(scale)
 
     def toggleColorMan(self,state):
 
@@ -555,10 +556,10 @@ class PcDailiesGui(QtWidgets.QDialog):
         if self.overlay_toggle.isChecked():
 
             args.extend(["-i", input_path ,"-i",self.LOGO])
-            args.extend(["-filter_complex","[0]scale=" + self.resolution_box.currentText() + ":-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=" + f"{startframe}" + ":x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentText() + ":-2[preref];[1][preref]scale2ref=w=oh*mdar:h=ih/9[logo_scale][mainscale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w-10):(H-h-10)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=" + f"{startframe}" + ":x=10:y=h-th-10:fontcolor=white@0.5:fontsize=(h*.08)[final]"])
         else:
             args.extend(["-i", input_path])            
-            args.extend(["-filter_complex","[0]scale=" + self.resolution_box.currentText() + ":-2[final]"])
+            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentText() + ":-2[final]"])
 
         args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
         args.extend(["-map","[final]"])
@@ -578,10 +579,10 @@ class PcDailiesGui(QtWidgets.QDialog):
         
         if self.overlay_toggle.isChecked():
             args.extend(["-i", input_path ,"-i",self.LOGO])
-            args.extend(["-filter_complex","[0]scale=" + self.resolution_box.currentText() + ":-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentText() + ":-2[preref];[1][preref]scale2ref=w=oh*mdar:h=ih/9[logo_scale][mainscale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w-10):(H-h-10)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=10:y=h-th-10:fontcolor=white@0.5:fontsize=(h*.08)[final]"])
         else:
             args.extend(["-i", input_path])
-            args.extend(["-filter_complex","[0]scale=" + self.resolution_box.currentText() +":-2[final]"])
+            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentText() +":-2[final]"])
             
         args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
         args.extend(["-map","[final]"])
