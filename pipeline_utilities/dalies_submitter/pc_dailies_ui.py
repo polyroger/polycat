@@ -52,7 +52,7 @@ class PcDailiesGui(QtWidgets.QDialog):
     ACES_TO_SPACE = ["Output - Rec.709"]
 
     #resolution list
-    RESOLUTIONS = ["100","75","50","25"]
+    RESOLUTIONS = ["1920","1280","420","240"]
     
 
     FILEFILTERS = "jpeg (*.jpg *.jpeg);;png (*.png);;exr (*.exr);; all files (*.*)"
