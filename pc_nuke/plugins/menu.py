@@ -1,3 +1,11 @@
+"""
+Polycat Nuke menu and startup
+"""
+
+
+from python_scripts import pc_startup_functions as pstart
+
+
 #Polycat nuke menu
 
 toolbar = nuke.menu('Nodes')
@@ -27,4 +35,7 @@ def CreatePath():
       
 nuke.addBeforeRender(CreatePath, nodeClass = 'Write')
 #version up and save end
+
+#adding resolutions
+pstart.addResolutions()
 

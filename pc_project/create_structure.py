@@ -169,5 +169,5 @@ def createNewProject(serverclient,servername,kprojectname):
 
 if __name__ == "__main__":
 
-    # createNewProject("ply","nod","noodle_and_bun")
+    createNewProject("ply","nod","noodle_and_bun")
     # createNewProject("mov","gra","gracie_and_pedro")
