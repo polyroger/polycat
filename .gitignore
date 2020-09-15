@@ -9,6 +9,11 @@ notes.txt
 pc_nuke/plugins/**
 !pc_nuke/plugins/init.py
 !pc_nuke/plugins/menu.py
+!pc_nuke/plugins/python_scripts
+!pc_nuke/plugins/python_scripts/__init__.py
+!pc_nuke/plugins/python_scripts/pc_startup_functions.py
+
+
 
 sample_files/
 mov_eos_cred.json

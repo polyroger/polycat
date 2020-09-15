@@ -1,2 +1,2 @@
-nuke.pluginAddPath("//YARN/projects/pipeline/development/pc_nuke/plugins")
+nuke.pluginAddPath("//YARN/projects/pipeline/production/pc_nuke/plugins")
 

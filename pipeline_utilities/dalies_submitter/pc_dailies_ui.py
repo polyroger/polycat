@@ -46,9 +46,13 @@ class PcDailiesGui(QtWidgets.QDialog):
     OIIO = r"\\YARN\projects\pipeline\utilities\OpenImageIO-1.5.0-OCIO\bin\oiiotool.exe"
     LOGO  = r"\\YARN\projects\pipeline\utilities\images\logos\polycat_blue_1024x1024.png"
     ICON =  r"\\YARN\projects\pipeline\utilities\images\logos\polycat_black_50x50.png"
-
+    
+    #color list
     ACES_FROM_SPACE = ["ACES - ACEScg"]
     ACES_TO_SPACE = ["Output - Rec.709"]
+
+    #resolution list
+    RESOLUTIONS = ["100","75","50","25"]
     
 
     FILEFILTERS = "jpeg (*.jpg *.jpeg);;png (*.png);;exr (*.exr);; all files (*.*)"
@@ -126,6 +130,11 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.overlay_toggle = QtWidgets.QCheckBox("Overlays")
         self.overlay_toggle.setChecked(True)
 
+        #resolution toggle
+        self.resolution_box = QtWidgets.QComboBox()
+        self.resolution_box.setMaximumSize(200,500)
+        self.createResolutionItems(self.resolution_box,self.RESOLUTIONS)
+
         #comment box commented out until there is better kitsu intergration
         # self.comment_box_label = QtWidgets.QLabel("Comments")
         # self.comment_box_label.setAlignment(QtCore.Qt.AlignBottom)
@@ -170,6 +179,12 @@ class PcDailiesGui(QtWidgets.QDialog):
         overlay_toggle_layout = QtWidgets.QHBoxLayout()
         overlay_toggle_layout.addWidget(self.overlay_toggle)
 
+        #resolution toggle
+
+        resolution_box_layout = QtWidgets.QHBoxLayout()
+        resolution_box_layout.addWidget(self.resolution_box)
+        resolution_box_layout.setAlignment(QtCore.Qt.AlignLeft)
+
         #comment layout commented out untile there is better kitsu intergrations
         # comment_layout = QtWidgets.QVBoxLayout()
         # comment_layout.addWidget(self.comment_box_label)
@@ -186,8 +201,10 @@ class PcDailiesGui(QtWidgets.QDialog):
         # main_layout.addLayout(combobox_layout)
         main_layout.addLayout(select_file_layout)
         main_layout.addLayout(output_file_layout)
+        main_layout.addLayout(resolution_box_layout)
         main_layout.addLayout(color_man_layout)
         main_layout.addLayout(overlay_toggle_layout)
+        
         # main_layout.addLayout(comment_layout)
         main_layout.addLayout(d_btn_layout)
     
@@ -198,6 +215,8 @@ class PcDailiesGui(QtWidgets.QDialog):
         self.output_file_btn.clicked.connect(self.exportFileDialog)
 
         self.enable_col_man.stateChanged.connect(self.toggleColorMan)
+
+        self.resolution_box.currentTextChanged.connect(self.setResolution)
         
         # self.sequence_box.currentTextChanged.connect(self.refreshAssetTypeCBox)
         # self.asset_type_box.currentTextChanged.connect(self.refreshAssetCBox)
@@ -209,6 +228,9 @@ class PcDailiesGui(QtWidgets.QDialog):
      
     #*************************************************
     #START OF DIAOLOG METHODS
+
+    def setResolution(self,res):
+        print(res)
 
     def toggleColorMan(self,state):
 
@@ -323,7 +345,21 @@ class PcDailiesGui(QtWidgets.QDialog):
         
         path = proj_root / seq
 
+    def createResolutionItems(self,combobox,resolutionlist):
         
+        if resolutionlist:
+
+            for resolution in resolutionlist:
+                combobox.addItem(resolution,resolution)
+            
+            return combobox
+        
+        else:
+
+            print("there are no items in the list")
+
+            return None
+    
 
     def selectFileDialog(self):
 
@@ -485,30 +521,6 @@ class PcDailiesGui(QtWidgets.QDialog):
         temppath = str(tempdir / os.listdir(tempdir)[0])
 
         return temppath
-
-    def runFfmpegSeq(self,input_path,output_path,startframe):
-
-        preset = "medium"
-
-        args = [self.FFMPEG]                                                    
-        args.extend(["-hide_banner", "-y"])
-        args.extend(["-start_number",str(startframe),"-framerate","24"])                                    
-
-        if self.overlay_toggle.isChecked():
-
-            args.extend(["-i", input_path ,"-i",self.LOGO])
-            args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=" + f"{startframe}" + ":x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
-        else:
-            args.extend(["-i", input_path])            
-            args.extend(["-filter_complex","[0]scale=1920:-2[final]"])
-
-        args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
-        args.extend(["-map","[final]"])
-        args.append(output_path)  
-        
-        subprocess.run(args)
-        self.deleteConversionTemp(self.select_file.text())
-        QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")        
     
     def deleteConversionTemp(self,input_path):
 
@@ -529,7 +541,34 @@ class PcDailiesGui(QtWidgets.QDialog):
                 print("there was an error removing temp files")
 
 
-   
+    def runFfmpegSeq(self,input_path,output_path,startframe):
+
+        preset = "medium"
+
+        args = [self.FFMPEG]                                                    
+        args.extend(["-hide_banner", "-y"])
+        args.extend(["-start_number",str(startframe),"-framerate","24"])
+
+        # just leaving this here incase one day we need to include letterboxing different resolutions
+        # ffmpeg -i input -vf "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2" output
+                           
+        if self.overlay_toggle.isChecked():
+
+            args.extend(["-i", input_path ,"-i",self.LOGO])
+            args.extend(["-filter_complex","[0]scale=" + self.resolution_box.currentText() + ":-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=" + f"{startframe}" + ":x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+        else:
+            args.extend(["-i", input_path])            
+            args.extend(["-filter_complex","[0]scale=" + self.resolution_box.currentText() + ":-2[final]"])
+
+        args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
+        args.extend(["-map","[final]"])
+        args.append(output_path)  
+        
+        subprocess.run(args)
+        self.deleteConversionTemp(self.select_file.text())
+        QtWidgets.QMessageBox.information(self, "Transcode Complete", "File transcode operation complete.")        
+    
+
     def runFfmpegContainer(self,input_path,output_path):
         
         preset = "medium"
@@ -539,10 +578,10 @@ class PcDailiesGui(QtWidgets.QDialog):
         
         if self.overlay_toggle.isChecked():
             args.extend(["-i", input_path ,"-i",self.LOGO])
-            args.extend(["-filter_complex","[0]scale=1920:-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
+            args.extend(["-filter_complex","[0]scale=" + self.resolution_box.currentText() + ":-2[mainscale];[1]scale=iw*.15:ih*.15[logo_scale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w):(H-h-20)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=(w*0.05):y=(h*0.9):fontcolor=white@0.5:fontsize=50[final]"])
         else:
             args.extend(["-i", input_path])
-            args.extend(["-filter_complex","[0]scale=1920:-2[final]"])
+            args.extend(["-filter_complex","[0]scale=" + self.resolution_box.currentText() +":-2[final]"])
             
         args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
         args.extend(["-map","[final]"])
