@@ -5,7 +5,11 @@
 notes.txt
 *.mod
 *.env
-pc_nuke/plugins/
+
+pc_nuke/plugins/**
+!pc_nuke/plugins/init.py
+!pc_nuke/plugins/menu.py
+
 sample_files/
 mov_eos_cred.json
 *.lnk
@@ -13,3 +17,4 @@ zshotmask.py
 zshotmask_ui.py
 pc_apps/
 pipeline_utilities/dalies_submitter/runtranscoder.ps1
+

@@ -43,5 +43,24 @@ def addGeoSuffix(geoselection,geosuffix):
     else:
         print("All the selected geo alredy ends with _geo")
 
+def duplicateAndMatch():
+    """
+    Rigging snippet just to copy multiple instances of one thing onto another, assumes that the target is in a heiracy that 
+    containts the transforms, if the target is frozen it wont do anything
 
+    """
+    
+    selection = pm.ls(selection=True)
+    objtocopy = selection[0]
+    objectstomatch = selection[1:]
+    
+    for obj in objectstomatch:
+        
+        source = pm.duplicate(objtocopy)[0]
+        
+        target = obj
+        transm = pm.xform(obj,q=True,ws=True,m=True)
+        pm.xform(source,ws=True,m=transm)
+           
+    pm.delete(objtocopy) 
 
