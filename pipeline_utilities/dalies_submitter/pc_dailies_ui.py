@@ -53,7 +53,7 @@ class PcDailiesGui(QtWidgets.QDialog):
     ACES_TO_SPACE = ["Output - Rec.709"]
 
     #resolution list
-    RESOLUTIONS = ["1","0.75","0.5","0.1"]
+    RESOLUTIONS = {"Original":"1","75%":"0.75","50%":"0.5","25%":"0.25"}
     
 
     FILEFILTERS = "jpeg (*.jpg *.jpeg);;png (*.png);;exr (*.exr);; all files (*.*)"
@@ -133,6 +133,7 @@ class PcDailiesGui(QtWidgets.QDialog):
 
         #resolution toggle
         self.resolution_box = QtWidgets.QComboBox()
+        self.resolution_label = QtWidgets.QLabel("Scale :")
         self.resolution_box.setMaximumSize(200,500)
         self.createResolutionItems(self.resolution_box,self.RESOLUTIONS)
 
@@ -183,6 +184,7 @@ class PcDailiesGui(QtWidgets.QDialog):
         #resolution toggle
 
         resolution_box_layout = QtWidgets.QHBoxLayout()
+        resolution_box_layout.addWidget(self.resolution_label)
         resolution_box_layout.addWidget(self.resolution_box)
         resolution_box_layout.setAlignment(QtCore.Qt.AlignLeft)
 
@@ -217,7 +219,7 @@ class PcDailiesGui(QtWidgets.QDialog):
 
         self.enable_col_man.stateChanged.connect(self.toggleColorMan)
 
-        self.resolution_box.currentTextChanged.connect(self.setResolution)
+        self.resolution_box.activated.connect(self.setResolution)
         
         # self.sequence_box.currentTextChanged.connect(self.refreshAssetTypeCBox)
         # self.asset_type_box.currentTextChanged.connect(self.refreshAssetCBox)
@@ -231,7 +233,7 @@ class PcDailiesGui(QtWidgets.QDialog):
     #START OF DIAOLOG METHODS
 
     def setResolution(self,scale):
-        print(scale)
+        print(self.resolution_box.currentData())
 
     def toggleColorMan(self,state):
 
@@ -346,18 +348,18 @@ class PcDailiesGui(QtWidgets.QDialog):
         
         path = proj_root / seq
 
-    def createResolutionItems(self,combobox,resolutionlist):
+    def createResolutionItems(self,combobox,resdict):
         
-        if resolutionlist:
+        if resdict:
 
-            for resolution in resolutionlist:
-                combobox.addItem(resolution,resolution)
+            for key,value in resdict.items():
+                combobox.addItem(key,value)
             
             return combobox
         
         else:
 
-            print("there are no items in the list")
+            print("there are no items in the dict")
 
             return None
     
@@ -556,10 +558,10 @@ class PcDailiesGui(QtWidgets.QDialog):
         if self.overlay_toggle.isChecked():
 
             args.extend(["-i", input_path ,"-i",self.LOGO])
-            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentText() + ":-2[preref];[1][preref]scale2ref=w=oh*mdar:h=ih/9[logo_scale][mainscale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w-10):(H-h-10)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=" + f"{startframe}" + ":x=10:y=h-th-10:fontcolor=white@0.5:fontsize=(h*.08)[final]"])
+            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentData() + ":-2[preref];[1][preref]scale2ref=w=oh*mdar:h=ih/9[logo_scale][mainscale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w-10):(H-h-10)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=" + f"{startframe}" + ":x=10:y=h-th-10:fontcolor=white@0.5:fontsize=(h*.08)[final]"])
         else:
             args.extend(["-i", input_path])            
-            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentText() + ":-2[final]"])
+            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentData() + ":-2[final]"])
 
         args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
         args.extend(["-map","[final]"])
@@ -579,10 +581,10 @@ class PcDailiesGui(QtWidgets.QDialog):
         
         if self.overlay_toggle.isChecked():
             args.extend(["-i", input_path ,"-i",self.LOGO])
-            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentText() + ":-2[preref];[1][preref]scale2ref=w=oh*mdar:h=ih/9[logo_scale][mainscale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w-10):(H-h-10)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=10:y=h-th-10:fontcolor=white@0.5:fontsize=(h*.08)[final]"])
+            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentData() + ":-2[preref];[1][preref]scale2ref=w=oh*mdar:h=ih/9[logo_scale][mainscale];[logo_scale]lut=a=val*.75[logo_overlay];[mainscale][logo_overlay]overlay=(W-w-10):(H-h-10)[overlay];[overlay]drawtext=fontfile='\/\/YARN\/projects\/pipeline\/utilities\/fonts\/arial.ttf':text=%\{frame_num\}:start_number=1001:x=10:y=h-th-10:fontcolor=white@0.5:fontsize=(h*.08)[final]"])
         else:
             args.extend(["-i", input_path])
-            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentText() +":-2[final]"])
+            args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentData() +":-2[final]"])
             
         args.extend(["-c:v", "libx264", "-crf", "23", "-preset", "medium","-r","24"])
         args.extend(["-map","[final]"])
