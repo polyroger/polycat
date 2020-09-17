@@ -144,25 +144,52 @@ class PcPlayblast(QtWidgets.QDialog):
     def blastMe(self):
 
         g = shelp.getRGlobals()
-        stripped_name = os.path.splitext(self.exportpath.text())[0]
-        start = int(self.frame_range_start.text())
-        end = int(self.frame_range_end.text())
-        
-        cam = shelp.getSelectedCamera()
-        camshape = cam.getShape()
-        
-        if not shelp.checkCameraAspect(cam,g):
+        blastdir,filename = os.path.split(self.exportpath.text())
+
+        if self.exportpath.text() == phelp.goFindFolder(shelp.getScenePath(),"0_playblast"):
+            
+            pm.confirmDialog(title="WARNING",message="Please export your playblast into a folder")
             return
         
-        #re setting globals if changed by the aspect check
-        g = shelp.getRGlobals()
-        pc_playblast.setTempGlobals()
-        
-        blast_window = pc_playblast.createPBWindow("blastwindow",camshape)
-        pc_playblast.runPlayblast(stripped_name,start,end,g)
-        
-        pc_playblast.cleanUp(g,blast_window)
+        try:
+            path,name_ext = os.path.split(self.exportpath.text())
+            name,ext = os.path.splitext(name_ext)
+            print(path,name_ext)
+            if not os.path.exists(path):
+                print("Creating export directory")
+                os.mkdir(path)
 
-        pm.confirmDialog(title="SUCCESS",message="Done Blasting!")
-        self.close()
+            if not name_ext:
+                pm.confirmDialog(title="WARNING",message="Please give your playblast a name")
+                return
+            
+            finalname = os.path.splitext(self.exportpath.text())[0]
+
+            print(finalname)
+            start = int(self.frame_range_start.text())
+            end = int(self.frame_range_end.text())
+            
+            cam = shelp.getSelectedCamera()
+            camshape = cam.getShape()
+            
+            if not shelp.checkCameraAspect(cam,g):
+                return
+            
+            #re setting globals if changed by the aspect check
+            g = shelp.getRGlobals()
+            pc_playblast.setTempGlobals()
+            
+            blast_window = pc_playblast.createPBWindow("blastwindow",camshape)
+            pc_playblast.runPlayblast(finalname,start,end,g)
+            
+            pc_playblast.cleanUp(g,blast_window)
+
+            pm.confirmDialog(title="SUCCESS",message="Done Blasting!")
+            self.close()
+        except :
+            pm.confirmDialog(title="ERROR",message="An Error occured, make sure that a valid export path and filename has been set")
+
       
+       
+        
+        
