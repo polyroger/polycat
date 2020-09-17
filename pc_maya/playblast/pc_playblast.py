@@ -71,7 +71,7 @@ def runPlayblast(savepath,start,end,rglobals):
         return True
     
     except :
-        
+        print(savepath)
         print("There was an error rendering the playblast")
         return False
 
