@@ -1,5 +1,6 @@
 import hou
 import os
+import json
 
 import abc_functions as pcabc
 from pc_helpers import pc_file_helpers as fhelp
@@ -156,3 +157,23 @@ def runSaveScene():
     
     print newfilename
        
+############# Frame range from file ##################
+
+RANGETEST = r"C:\Users\Administrator\Documents\0_LOCAL_DEV\pipeline\polycat\sample_files\json\frame_range_sample.json"
+
+def readFrameRangeFromFile(framerangefile):
+
+    cutname = hou.parm("shot").eval()
+
+    try:
+
+        with open(framerangefile) as f:
+            jdata = json.load(f)
+            start,end = jdata.get(cutname)
+            hou.playbar.setFrameRange(int(start),int(end))
+            hou.playbar.setPlaybackRange(int(start),int(end))
+    except :
+        hou.ui.displayConfirmation("There was an error reading the frame range file, Setting range to 1001-1100")
+        hou.playbar.setFrameRange(1001,1100)
+        hou.playbar.setPlaybackRange(1001,1100)
+
