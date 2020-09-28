@@ -2,11 +2,9 @@
 Polycat Nuke menu and startup
 """
 
+import nuke
+import pc_startup_functions as pstart
 
-from python_scripts import pc_startup_functions as pstart
-
-
-#Polycat nuke menu
 
 toolbar = nuke.menu('Nodes')
 
@@ -22,20 +20,16 @@ xToolMenu.addCommand("X_Tesla","nuke.createNode('X_Tesla')",icon = "X_Tesla.png"
 AFMenu = toolbar.addMenu('&Autoflare2.2')
 AFMenu.addCommand("AutoFlare 2.2", "nuke.createNode('AutoFlare2')")
 
-#version up and save startnuk
-def CreatePath():
-   file = nuke.filename(nuke.thisNode())
-   dir = os.path.dirname(file)
-   osdir = nuke.callbacks.filenameFilter(dir)
-   try:
-      os.makedirs (osdir)
-   except OSError:
-      pass
-      
-      
-nuke.addBeforeRender(CreatePath, nodeClass = 'Write')
-#version up and save end
+#Setting Global settings
+# Check out the nuke callbacks ( https://learn.foundry.com/nuke/developers/105/pythondevguide/callbacks.html ) these are loaded in order. and some of the names are not what they seem.
+nuke.addOnUserCreate(pstart.setNukeGlobalSettings)
+
+#Create directory before render
+nuke.addBeforeRender(pstart.CreatePath, nodeClass = 'Write')
 
 #adding resolutions
 pstart.addResolutions()
+
+
+
 
