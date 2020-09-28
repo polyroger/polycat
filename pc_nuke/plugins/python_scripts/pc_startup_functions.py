@@ -2,6 +2,7 @@
 Polycats nuke startup functions
 """
 import nuke
+import os
 
 def addResolutions():
     """
