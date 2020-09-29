@@ -14,72 +14,33 @@ def replaceYarn(filepath):
 
     return newfilepath
 
-
-def getTextureCatagory(texpath):
-
-    """
-    Create a Label ( folder name) / token (path of folder) pair to use in buildin a menu in the type properties.
-
-    Returns a even list of name and token value
-
-    TIP : hou.evalAsString() to the the string token value
-    """
-    
-    texcat = []
-    for i in os.listdir(texpath):
-        catpath = texpath + i
-        texcat.extend((catpath,i))
-
-    return texcat    
-
-
-def findUdim(filepath):
-    """
-   Expexts a texture path or filename and returns true if the file is a normal texture or it has 1001 in the name.
-   All UDIMS should start at 1001
-   Use udimRename() to replace the 1001 with <udim> for arnold
-    
-    """
-    udimpattern = r"(?!1001)\d{4}"
-    if not re.search(udimpattern,filepath):
-        return True
-    else:
-        return False
-
-def udimRename(filename,replacewith):
-    """
-    Just a function to be used with replaceing the 1001 to arnolds <udim>
-    """
-
-    pattern = r"\d{4}"
-    newfilename = re.sub(pattern,replacewith,filename)
-
-    return newfilename
-
-def clearTextureParms(node,parmgroup):
-    """
-    creates and empty folder template and replaces the current "textures" template so that the textures can be refreshed.
-    returns a copy of the input parmgroup that has an empty "textures" folder
-    """
-
-    texturefolder = parmgroup.findFolder("textures")
-    emptyfolder = hou.FolderParmTemplate("textures","textures")
-    parmgroup.replace(texturefolder,emptyfolder)
-
-    return parmgroup
-
 def createArnoldShader(node,foldername):
 
     shop = node.parent()
     children = []
     
     for child in shop.children():
+        
         children.append(child.name())
     
+    #checking for duplicates and renaming this will only work realaible until 9...there shouldnt be more than that
     if foldername in children:
-        print "there is already a shader with the same name as the texture folder" 
-        return None
+
+        foldername = foldername + "_1"
+
+        while foldername in children:
+            
+            nameinc = int(foldername[-1]) + 1
+            foldername = foldername[:-1]
+            foldername = foldername + str(nameinc)            
+        
+        print "Shader naming conflict. Renaming to {}".format(foldername)
+        shader = shop.createNode("arnold_vopnet",foldername)
+        
+        return shader 
+        
     else:
+        
         shader = shop.createNode("arnold_vopnet",foldername)
         return shader
 
@@ -91,7 +52,6 @@ def createImageNodes(shader,filename):
 
 def getNetworkEditor():
 
-    
     network_editor = None
 
     for pane_tab in hou.ui.paneTabs():
@@ -99,8 +59,8 @@ def getNetworkEditor():
         if isinstance(pane_tab, hou.NetworkEditor):
             
             network_editor = pane_tab
+            
             return network_editor
-
 
 def createTextureParms(node,texturecat,parmgroup):
     """
@@ -232,15 +192,102 @@ def createTextureParms(node,texturecat,parmgroup):
     #you need to return the parmgroup so you can set the parmgroup in the hda script.
     return parmgroup
 
+def importTextures(folderroot,node):
 
-            
-        
-       
-
-
-        
+    #Some checks to see if the texture path is valid or not
+    if not os.path.exists(folderroot) or not os.path.isdir(folderroot):
     
+        hou.ui.displayConfirmation("Please make sure that the texture path is a valid directory")
+    
+        return
+    
+    elif not os.listdir(folderroot):
+    
+        hou.ui.displayConfirmation("There are no textures in the selected texture path")
+    
+        return
+    
+    elif str(folderroot).endswith("/"):
 
+        folderroot = folderroot[:-1]
+    
+    
+    exclusionlist = [".tx",".db",".ass"]
+    folderexclusionlist = [".mayaSwatches"]
+    fixedfolderroot = folderroot.replace("/","\\")
+    nodex,nodey = node.position()
+    incx,incy = (5,0)
 
+    #stepping through all the files within the selected folderroot
+    for root,dirs,files in os.walk(fixedfolderroot):
+        
+        a = os.path.split(root)[1]
+        
+        if a in folderexclusionlist:
+            continue
 
-     
+        filelist = []
+
+        #creating a file list for a clique collection, this should iterate for each new root
+        for f in files:
+            
+            if os.path.splitext(f)[1] not in exclusionlist:
+
+                folder = os.path.split(root)[1]
+                filelist.append(f)
+        
+        collections,single = clique.assemble(filelist,minimum_items=1)
+        shader = createArnoldShader(node,a)
+        shader.setPosition((nodex + incx,nodey + incy))
+
+        #increments are for the node positions
+        incx += 0
+        incy += -1
+
+        if single:
+            
+            singlex = -10
+            singley = 0
+        
+            # iterating incase there is more than one single in a folder
+            for s in single:
+
+                filepath = replaceYarn(os.path.abspath(os.path.join(root,s)))
+                imagenode = createImageNodes(shader,s)
+                imagenode.setPosition((singlex,singley))
+                imagenode.parm("filename").set(filepath)
+
+                singlex += 0
+                singley += -2
+
+        collectionx = -10
+        collectiony = 0
+
+        #finding all the udim sequences
+        for i in collections:
+
+            head = i.head
+            tail = i.tail
+            tag = "<udim>"
+
+            # sequence of udims
+            if len(i.indexes) > 1:
+                
+                fname = head + tag + tail
+                filepath = replaceYarn(os.path.abspath(os.path.join(root,fname)))
+                imagenode = createImageNodes(shader,head)
+                imagenode.setPosition((collectionx,collectiony))
+                imagenode.parm("filename").set(filepath)
+            
+            # single udim
+            else:
+                
+                index = list(i.indexes)
+                fname = head + str(index[0]) + tail
+                filepath = replaceYarn(os.path.abspath(os.path.join(root,fname)))
+                imagenode = createImageNodes(shader,head)
+                imagenode.setPosition((collectionx,collectiony))
+                imagenode.parm("filename").set(filepath)
+
+                collectionx += 0
+                collectiony += -3
