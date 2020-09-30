@@ -24,9 +24,15 @@ def setNukeGlobalSettings():
     root = nuke.Root()
 
     # for nuke 9
-    root["defaultViewerLUT"].setValue(1)
+    try:
+        root["defaultViewerLUT"].setValue(1)
+    except:
+        print("Couldnt set defaultViewerLUT v9")
     # for nuke 12
-    root["colorManagement"].setValue(1)
+    try:
+        root["colorManagement"].setValue(1)
+    except:
+        print("couldnt set colorManagement - v12+")
 
     nuke.knobDefault("Viewer.viewerProcess","Rec.709 (ACES)") # this is the format if aces is loaded
 
