@@ -23,6 +23,7 @@ AFMenu.addCommand("AutoFlare 2.2", "nuke.createNode('AutoFlare2')")
 #Setting Global settings
 # Check out the nuke callbacks ( https://learn.foundry.com/nuke/developers/105/pythondevguide/callbacks.html ) these are loaded in order. and some of the names are not what they seem.
 nuke.addOnUserCreate(pstart.setNukeGlobalSettings)
+# nuke.addOnUserCreate(pstart.setWriteNodeSettings,(nuke.thisNode()),nodeClass="Write")
 
 #Create directory before render
 nuke.addBeforeRender(pstart.CreatePath, nodeClass = 'Write')

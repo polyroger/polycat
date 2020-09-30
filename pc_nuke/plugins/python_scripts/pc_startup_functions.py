@@ -14,7 +14,6 @@ def addResolutions():
     for res in reslist:
         nuke.addFormat(res)
         print("{} was added to the resolution list".format(res))
-
   
 def setNukeGlobalSettings():
     """
@@ -22,14 +21,13 @@ def setNukeGlobalSettings():
     https://community.foundry.com/discuss/topic/101873/execute-python-code-after-nuke-script-is-loaded?mode=Post&postID=889226
     
     """
-
-    print("running")
-
     root = nuke.Root()
 
+    # for nuke 9
     root["defaultViewerLUT"].setValue(1)
-    # viewer = nuke.ViewerProcess.node() # first viewer node it can find, give it a name to get a specific one.
-    # allviewprocesses = nuke.viewerProcess.registeredNames()
+    # for nuke 12
+    root["colorManagement"].setValue(1)
+
     nuke.knobDefault("Viewer.viewerProcess","Rec.709 (ACES)") # this is the format if aces is loaded
 
 def CreatePath():
@@ -46,8 +44,6 @@ def CreatePath():
     except OSError:
         pass
       
-
-
 def register_viewers(also_remove = "default"):
     """
     So OCIO's python api is called pyOpenColorIO - https://opencolorio.readthedocs.io/en/stable/developers/bindings/PythonAPI.html
@@ -110,3 +106,7 @@ def register_viewers(also_remove = "default"):
     nuke.knobDefault(
         "Viewer.viewerProcess",
         DISPLAY_UI_FORMAT % {'view': defaultView, "display": defaultDisplay})
+
+# def setWriteNodeSettings(nukenode):
+#     nuke.tprint("running write settings")
+#     nuke.tprint(nukenode.name())
