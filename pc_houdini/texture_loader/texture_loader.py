@@ -16,6 +16,7 @@ def replaceYarn(filepath):
 
 def createArnoldShader(node,foldername):
 
+    #checking for name conlficts in the shop
     shop = node.parent()
     children = []
     
@@ -35,13 +36,23 @@ def createArnoldShader(node,foldername):
             foldername = foldername + str(nameinc)            
         
         print "Shader naming conflict. Renaming to {}".format(foldername)
-        shader = shop.createNode("arnold_vopnet",foldername)
         
+        shader = shop.createNode("arnold_vopnet",foldername)
+        surface = shader.createNode("arnold::standard_surface")
+        surface.setPosition((-4,0))
+        mat = hou.node(shader.path() + "/OUT_material")
+        mat.setInput(0,surface,0)
+     
         return shader 
         
     else:
         
         shader = shop.createNode("arnold_vopnet",foldername)
+        surface = shader.createNode("arnold::standard_surface")
+        surface.setPosition((-4,0))
+        mat = hou.node(shader.path() + "/OUT_material")
+        mat.setInput(0,surface,0)
+        
         return shader
 
 def createImageNodes(shader,filename):
@@ -262,6 +273,8 @@ def importTextures(folderroot,node):
 
         collectionx = -10
         collectiony = 0
+        udimcollectionx = -10
+        udimcollectiony = 0
 
         #finding all the udim sequences
         for i in collections:
@@ -276,8 +289,13 @@ def importTextures(folderroot,node):
                 fname = head + tag + tail
                 filepath = replaceYarn(os.path.abspath(os.path.join(root,fname)))
                 imagenode = createImageNodes(shader,head)
-                imagenode.setPosition((collectionx,collectiony))
+                imagenode.setPosition((udimcollectionx,udimcollectiony))
                 imagenode.parm("filename").set(filepath)
+
+                print(udimcollectionx,udimcollectiony)
+
+                udimcollectionx += 0
+                udimcollectiony += -3
             
             # single udim
             else:
