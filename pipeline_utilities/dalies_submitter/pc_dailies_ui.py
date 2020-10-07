@@ -563,7 +563,7 @@ class PcDailiesGui(QtWidgets.QDialog):
             args.extend(["-i", input_path])            
             args.extend(["-filter_complex","[0]scale=iw*" + self.resolution_box.currentData() + ":-2[final]"])
 
-        args.extend(["-c:v", "libx264","-pix_fmt","yuv420p","-crf", "23", "-preset", "medium","-r","24","format=yuv420p"])
+        args.extend(["-c:v", "libx264","-pix_fmt","yuv420p","-crf", "23", "-preset", "medium","-r","24"])
         args.extend(["-map","[final]"])
         args.append(output_path)  
         
