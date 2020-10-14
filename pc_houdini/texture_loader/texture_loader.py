@@ -292,16 +292,16 @@ def importTextures(folderroot,node):
                 imagenode.setPosition((udimcollectionx,udimcollectiony))
                 imagenode.parm("filename").set(filepath)
 
-                print(udimcollectionx,udimcollectiony)
-
                 udimcollectionx += 0
                 udimcollectiony += -3
             
             # single udim
+            # this technically isnt neccesary as even a single udim should be renamed but keeping it here just so that we can seperate a single entry in a collection
+            # this regex  \d[0-9]+$ will find numbers at the end of a string.
             else:
                 
                 index = list(i.indexes)
-                fname = head + str(index[0]) + tail
+                fname = head + tag + tail
                 filepath = replaceYarn(os.path.abspath(os.path.join(root,fname)))
                 imagenode = createImageNodes(shader,head)
                 imagenode.setPosition((collectionx,collectiony))
