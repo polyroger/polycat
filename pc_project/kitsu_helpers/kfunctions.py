@@ -9,10 +9,6 @@ def kLogin():
     USERNAME = os.getenv("KUSER")
     PASSWORD = os.getenv("KPWORD")
 
-    #artist
-    # USERNAME = os.getenv("KAUSER")
-    # PASSWORD = os.getenv("KAPWORD")
-
     gazu.set_host("https://polycat.cg-wire.com/api")
     gazu.log_in(USERNAME, PASSWORD)
 
@@ -78,3 +74,4 @@ def getKSequenceCuts(ksequence):
     cuts = gazu.shot.all_shots_for_sequence(ksequence)
 
     return cuts
+
