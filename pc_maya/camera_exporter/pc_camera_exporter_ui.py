@@ -168,7 +168,10 @@ class CameraExporter(QtWidgets.QDialog):
         
         #get the globals, change them if need be
         mglobals = shelp.getRGlobals()
-        shelp.checkCameraAspect(selectedcam,mglobals)
+        
+        if not shelp.checkCameraAspect(selectedcam,mglobals):
+            return
+        
         #update the global dict 
         mglobals = shelp.getRGlobals()
 
