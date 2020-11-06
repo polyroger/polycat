@@ -13,6 +13,8 @@ pc_nuke/plugins/**
 !pc_nuke/plugins/python_scripts/__init__.py
 !pc_nuke/plugins/python_scripts/pc_startup_functions.py
 
+pc_maya/tool_loading*
+pc_maya/startup_module/presets*
 
 
 sample_files/
