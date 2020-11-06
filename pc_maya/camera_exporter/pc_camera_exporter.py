@@ -20,15 +20,13 @@ def createCamera(cameraname,mglobals):
 
     return newcamera
 
-def bakeCamera(originalcam,camtobake,mglobals,scene_scale):
+def bakeCamera(originalcam,camtobake,start,end,scene_scale):
 
     if originalcam == None:
         return None
     
     print("RUNNING BAKER")
 
-    start,end = (int(mglobals["fstart"]),int(mglobals["fend"]))
-    
     originalcamshape = originalcam.getShape()
     camtobakeshape = camtobake.getShape()
 

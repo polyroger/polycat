@@ -5,6 +5,7 @@ Remember to copy over the pc_plugins to the dev and production repos as they are
 """
 
 import nuke
+import DeadlineNukeClient
 import pc_startup_functions as pstart
 
 
@@ -13,6 +14,11 @@ toolbar = nuke.menu('Nodes')
 #Polycat Gizmos
 pc_menu = toolbar.addMenu('PC_Gizmos',icon=r"\\YARN\projects\pipeline\utilities\images\icons\nuke\polycat_tools\polycat_tools.png")
 pc_menu.addCommand("pc_matte_painting_setup", "nuke.createNode('matte_painting_setup')")
+
+# Deadline
+menubar = nuke.menu("Nuke")
+tbmenu = menubar.addMenu("&Thinkbox")
+tbmenu.addCommand("Submit Nuke To Deadline", DeadlineNukeClient.main, "")
 
 #Victor tools
 VMenu = toolbar.addMenu('V!ctor', icon='V_Victor.png')

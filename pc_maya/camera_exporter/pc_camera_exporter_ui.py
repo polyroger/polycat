@@ -67,6 +67,7 @@ class CameraExporter(QtWidgets.QDialog):
         
         #checkboxes
         self.singleframe = QtWidgets.QCheckBox()
+        self.openFolder = QtWidgets.QCheckBox()
         
         #frame range widgetts
         self.frame_range_start = QtWidgets.QLineEdit(str(int(pm.playbackOptions(q=True,minTime=True))))
@@ -94,8 +95,11 @@ class CameraExporter(QtWidgets.QDialog):
         filepath_layout.addWidget(self.export_path)
         filepath_layout.addWidget(self.export_path_btn)
         
-        checkbox_layout = QtWidgets.QVBoxLayout(self)
-        checkbox_layout.addWidget(self.singleframe)
+        checkbox_sf_layout = QtWidgets.QVBoxLayout(self)
+        checkbox_sf_layout.addWidget(self.singleframe)
+        
+        checkbox_of_layout = QtWidgets.QVBoxLayout(self)
+        checkbox_of_layout.addWidget(self.openFolder)
 
         frame_range_layout = QtWidgets.QHBoxLayout(self)
         frame_range_layout.addWidget(self.frame_range_start)
@@ -106,7 +110,8 @@ class CameraExporter(QtWidgets.QDialog):
         body_layout.setVerticalSpacing(10)
         body_layout.setLabelAlignment(QtCore.Qt.AlignLeft)
         body_layout.addRow("Export Path : ",filepath_layout)
-        body_layout.addRow("Single Frame : ",checkbox_layout)
+        body_layout.addRow("Single Frame : ",checkbox_sf_layout)
+        body_layout.addRow("Open file dialog : ",checkbox_of_layout)
         body_layout.addRow("Frame Range : ",frame_range_layout)
 
         button_layout = QtWidgets.QHBoxLayout(self)
@@ -183,6 +188,8 @@ class CameraExporter(QtWidgets.QDialog):
             pm.confirmDialog(title="WARNING",message="Please select a valid camera folder [ 0_camera ]")
             return None
         
+        pm.refresh(suspend=True)
+
         for app in applist:
 
             try:
@@ -203,20 +210,26 @@ class CameraExporter(QtWidgets.QDialog):
                 filename = cut + "_camera_" + version + ext
                 filepath = os.path.join(path,filename)
                 camtobake = camex.createCamera(app[1],mglobals)
-                print(mglobals)
-                camex.bakeCamera(selectedcam,camtobake,mglobals,app[2])
+                camex.bakeCamera(selectedcam,camtobake,int(self.frame_range_start.text()),int(self.frame_range_end.text()),app[2])
                 command = exhelp.pcABCCameraArgs(camtobake.name(),filepath,int(self.frame_range_start.text()),int(self.frame_range_end.text()),attrlist,step=str(self.frame_step.text()))
-
                 pm.AbcExport(j=command)
 
                 # delete camera
                 pm.delete(camtobake)
-
             except:
                 pm.confirmDialog(title="WARNING",message="There was an error when trying to export the {} camera".format(app[1]))
                 return
+
+        pm.refresh(suspend=False)
         
         pm.confirmDialog(title="SUCCESS",message="All cameras exported",button=['Sweet!'], defaultButton='Sweet!')
+
+        if self.openFolder.isChecked():
+            
+            correctedpath = str(self.export_path.text().replace("\\","/") + "/maya")
+            os.startfile(os.path.realpath(correctedpath))
+        
+
         self.close()
 
 

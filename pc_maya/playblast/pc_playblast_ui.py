@@ -83,6 +83,10 @@ class PcPlayblast(QtWidgets.QDialog):
         self.exportpath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.exportpath_btn.setToolTip("select file")
 
+        #combo box widgets
+        self.open_folder = QtWidgets.QCheckBox()
+        self.open_folder.setChecked(True)
+
         #frame range widgetts
         self.frame_range_start = QtWidgets.QLineEdit(str(int(self.rglobals["fstart"])))
         self.frame_range_start.setMaximumWidth(75)
@@ -102,6 +106,9 @@ class PcPlayblast(QtWidgets.QDialog):
         exportpath_layout.addWidget(self.exportpath)
         exportpath_layout.addWidget(self.exportpath_btn)
 
+        #combobox
+        open_folder_layout = QtWidgets.QHBoxLayout()
+        open_folder_layout.addWidget(self.open_folder)
 
         #frame range
         frame_range_layout = QtWidgets.QHBoxLayout()
@@ -113,6 +120,7 @@ class PcPlayblast(QtWidgets.QDialog):
         body_layout.setLabelAlignment(QtCore.Qt.AlignLeft)
         body_layout.setVerticalSpacing(10)
         body_layout.addRow("Export Path :",exportpath_layout)
+        body_layout.addRow("Open Folder :",open_folder_layout)
         body_layout.addRow("Frame Range :",frame_range_layout)
   
         #Ok Cancel buttons
@@ -186,6 +194,10 @@ class PcPlayblast(QtWidgets.QDialog):
         
 
         pm.confirmDialog(title="SUCCESS",message="Done Blasting!")
+
+        if self.open_folder.isChecked():
+            os.startfile(os.startfile(os.path.realpath(path)))
+
         self.close()
         
 
