@@ -22,4 +22,4 @@ mov_eos_cred.json
 *.lnk
 pc_apps/
 pipeline_utilities/dalies_submitter/runtranscoder.ps1
-
+pipeline_utilities/maya_audio_transcode/run_maya_wav.ps1
