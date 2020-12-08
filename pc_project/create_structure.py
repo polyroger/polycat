@@ -128,13 +128,17 @@ def createNewProject(serverclient,servername,kprojectname):
 
 
     #PULLING KITSU DATA
-    kfunctions.kLogin()
+    #local
+    kfunctions.k_local_Login()
+    #online
+    # kfunctions.kLogin()
+    
     project = kfunctions.getKProject(kprojectname)
     sequences = kfunctions.getKProjectSequences(project)
     assettypes = kfunctions.getKProjectAssetTypes(project)
 
     #EXCLUSION LIST FOR ANYTHING THAT NEEDS TO BE IGNORED
-    exclusion = ["0_character_props"]
+    exclusion = ["0_character_props","0_anim_test"]
 
 
     # CREATING ALL THE CUTS BASED OFF THE KITSU PROJECT
@@ -170,4 +174,12 @@ def createNewProject(serverclient,servername,kprojectname):
 if __name__ == "__main__":
 
     # createNewProject("ply","nod","noodle_and_bun")
-    createNewProject("gsk","aio","gskill")
+    # createNewProject("abc","123","rogerwilldelete")
+    # createNewProject("mov","gra","gracie")
+    # createNewProject("cdt","bre","beares")
+
+
+    ##### LOCAL ####
+
+    createNewProject("ogi","eas","easterland")
+
