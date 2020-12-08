@@ -5,7 +5,7 @@ maya specific changes they wont effect other apps.
 """
 
 
-from pc_logging import Pc_Logger
+from pc_logging.pc_logger import Pc_Logger
 
 class Maya_Logger(Pc_Logger):
 

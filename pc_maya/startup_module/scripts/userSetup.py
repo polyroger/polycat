@@ -15,6 +15,9 @@ sys.path.append("\\\\YARN\\projects\\pipeline\\utilities\\studiolibrary-2.7.1\\s
 # #external packages, after path append
 import scandir
 import pullframerange
+import node_defaults
+
+node_defaults.set_camera_aspect_default()
 
 # # these are deffered because they are required for the menu creation, if you are adding to the tools menu they must be added as deffered
 pm.evalDeferred("from pc_maya.menus import pc_maya_tools_menu;pc_maya_tools_menu.createMayaMenus()")
