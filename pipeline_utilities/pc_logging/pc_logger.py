@@ -27,7 +27,7 @@ class Pc_Logger(object):
     """
     LOGGER_NAME = "pc_log"
     DEFAULT = logging.DEBUG
-    FORMATTING = "[%(asctime)s] [%(levelname)s] [%(name)s]\n%(message)s"
+    FORMATTING = "------------------\n[%(asctime)s] [%(levelname)s] [%(name)s]\n%(message)s"
     PROPAGATE = True
 
     _log_obj = None
