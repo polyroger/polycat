@@ -27,3 +27,5 @@ def convert_to_wav(ffmpeg_path,filelist):
         map_inc += 1
     
     subprocess.run(ffmpeg_args)
+
+    return filelist[0]

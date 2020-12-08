@@ -11,6 +11,7 @@ class MayaAudioTranscode(QtWidgets.QDialog):
         super().__init__()
 
         self.selection = None
+        self.export_folder = r"\\YARN\projects"
 
         self.windowAttributes()
         self.createWidgets()
@@ -28,11 +29,14 @@ class MayaAudioTranscode(QtWidgets.QDialog):
     def createWidgets(self):
         #filepath
         self.inputfile_path = QtWidgets.QLineEdit()
-        self.inputfile_path.setText("what you want to convert")
+        self.inputfile_path.setText("Select a file(s) that you want to convert")
         self.inputfile_path.setMinimumWidth(250)
 
         self.select_file_btn = QtWidgets.QPushButton()
         self.select_file_btn.setText("...")
+
+        self.open_folder = QtWidgets.QCheckBox()
+        self.open_folder.setChecked(True)
 
         self.outputlogging = QtWidgets.QLineEdit()
         self.outputlogging.setMinimumSize(75,200)
@@ -50,11 +54,15 @@ class MayaAudioTranscode(QtWidgets.QDialog):
         filepath_layout.addWidget(self.inputfile_path)
         filepath_layout.addWidget(self.select_file_btn)
 
+        checkbox_layout = QtWidgets.QHBoxLayout()
+        checkbox_layout.addWidget(self.open_folder)
+
         logging_output_layout = QtWidgets.QHBoxLayout()
         logging_output_layout.addWidget(self.outputlogging)
         
         body_layout = QtWidgets.QFormLayout()
         body_layout.addRow("Select File",filepath_layout)
+        body_layout.addRow("Open folder after export",checkbox_layout)
         body_layout.addRow("Output",logging_output_layout)
 
         dialog_btn_layout = QtWidgets.QHBoxLayout()
@@ -75,7 +83,13 @@ class MayaAudioTranscode(QtWidgets.QDialog):
 
     def createMayaWavs(self):
         
-        mat.convert_to_wav(self.FFMPEG_PATH,self.selection)
+        selected = mat.convert_to_wav(self.FFMPEG_PATH,self.selection)
+        openfolder = os.path.realpath(str(pathlib.Path(selected).parent))
+        print("this is {}".format(openfolder))
+        
+        if self.open_folder.isChecked():
+            os.startfile(openfolder)
+
         self.selection = None
     
     def selectFileDialog(self):
@@ -85,7 +99,7 @@ class MayaAudioTranscode(QtWidgets.QDialog):
         if os.path.exists(self.inputfile_path.text()):
             startpath = self.inputfile_path.text()
         else:
-            startpath = r"\\YARN\projects\mov\gra\3_development\pipeline_tools\cut0010\0_audio"
+            startpath = r"\\YARN\projects"
 
         selection,filters = QtWidgets.QFileDialog.getOpenFileNames(self,"select a file or folder",startpath)
 
