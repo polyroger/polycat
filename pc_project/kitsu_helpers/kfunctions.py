@@ -14,6 +14,20 @@ def kLogin():
 
     return "Logged into the kitsu api"
 
+def k_local_Login():
+    """
+    A login function to make logging in to the kitsu api a little faster.
+    Returns None
+    """
+    #manager
+    USERNAME = os.getenv("KUSER")
+    PASSWORD = os.getenv("KPWORD")
+
+    gazu.set_host("http://192.168.4.11/api")
+    gazu.log_in(USERNAME, PASSWORD)
+
+    return "Logged into the kitsu api"
+
 def getKProject(projname):
     """
     Make sure that you log in to the kitsu api from the shell that you are running this from.
