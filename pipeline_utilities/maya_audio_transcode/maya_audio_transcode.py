@@ -22,6 +22,7 @@ def convert_to_wav(ffmpeg_path,filelist):
         ffmpeg_args.extend(["-i","{0}".format(f)])
         ffmpeg_args.extend(["-map","{0}:a".format(str(map_inc))])
         ffmpeg_args.extend(["-acodec","{0}".format(wavcodec)])
+        ffmpeg_args.extend(["-ar","44100","-ac","2"])
         ffmpeg_args.extend(["{0}".format(newpath)])
 
         map_inc += 1
