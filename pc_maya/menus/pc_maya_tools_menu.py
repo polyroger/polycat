@@ -41,11 +41,8 @@ def createMayaMenus():
 
     #start of Animation Tools
     pm.menuItem(label="Animation Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
-    pm.menuItem(label="Playblast Camera",command="from pc_maya.playblast.pc_playblast_ui import PcPlayblast;PcPlayblast.openPcPlayblast_dialog()")
+    pm.menuItem(label="Playblast Camera",command="from pc_maya.playblast.pc_playblast import PcPlayblastUi;PcPlayblastUi.show_dialog()")
     pm.menuItem(label="Studio Library",command="from pc_maya.studio_lib import pc_studiolibrary;pc_studiolibrary.launchSL()")
-
-
-
 
 
     # add in other pm.menu and pm.menuItem after this to create more menus

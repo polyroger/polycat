@@ -17,12 +17,15 @@ import scandir
 import pullframerange
 import node_defaults
 
+#setting pipeline variables
 node_defaults.set_camera_aspect_default()
+node_defaults.set_ffmpeg_path()
 
 # # these are deffered because they are required for the menu creation, if you are adding to the tools menu they must be added as deffered
 pm.evalDeferred("from pc_maya.menus import pc_maya_tools_menu;pc_maya_tools_menu.createMayaMenus()")
 
 # # Checking sequence data
 pm.evalDeferred("pullframerange.makeRange()")
+
 
 
