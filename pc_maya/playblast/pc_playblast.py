@@ -1043,6 +1043,7 @@ class PcPlayblastUi(QtWidgets.QDialog):
 
         self.camera_select_cmb = QtWidgets.QComboBox()
         self.camera_select_hide_defaults_cb = QtWidgets.QCheckBox("Hide defaults")
+        self.camera_select_hide_defaults_cb.setChecked(True)
         self.refresh_cameras()
 
         self.frame_range_cmb = QtWidgets.QComboBox()
