@@ -1010,7 +1010,7 @@ class PcPlayblastUi(QtWidgets.QDialog):
 
     def create_widgets(self):
         self.output_dir_path_le = QtWidgets.QLineEdit()
-        self.output_dir_path_le.setPlaceholderText("{project}/movies")
+        self.output_dir_path_le.setPlaceholderText("{project}/playblast")
 
         self.output_dir_path_select_btn = QtWidgets.QPushButton("...")
         self.output_dir_path_select_btn.setFixedSize(24, 19)
