@@ -8,7 +8,6 @@ def listAllFilesInFolder(folderpath):
     Need to import os module
     Returns a list of all the files in a folder.
     """
-
     try:
         dircontents = os.listdir(folderpath)
     except:
@@ -24,11 +23,9 @@ def listAllFilesInFolder(folderpath):
     return filelist
 
 def getLatestFromList(filelist):
-
     """
     Given a list of files return an int of the latest version file
     """
-    
     collections,remainder = clique.assemble(filelist,minimum_items=1,patterns=[r"\_v(?P<index>(?P<padding>0*)\d+)"])
 
     if not collections:
@@ -53,7 +50,6 @@ def getLatestFile(filelist):
     """
     Returns the highest versioned file in a file list
     """
-
     #if there is unexpoected results it is most likely the regex in paatters
     collections,remainder = clique.assemble(filelist,minimum_items=1,patterns=[r"\_v(?P<index>(?P<padding>0*)\d+)"])
    
@@ -76,12 +72,10 @@ def getLatestFile(filelist):
 
   
 def versionPlusOne(version):
-
     """
     Expects and integer version as an input
 
     RETURNS: str double padded version + 1
-
     """
     if version == None:
         return None

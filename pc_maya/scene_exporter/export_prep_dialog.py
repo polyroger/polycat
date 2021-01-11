@@ -1,4 +1,3 @@
-# 
 # Procedure for preparing models for export from maya
 # 
 #pyside2 imports
