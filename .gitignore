@@ -15,6 +15,7 @@ pc_nuke/plugins/**
 
 pc_maya/tool_loading*
 pc_maya/startup_module/presets*
+pc_maya/startup_module/scripts/sticky_controller/icons
 
 
 sample_files/
