@@ -26,5 +26,20 @@ def set_ffmpeg_path():
         print("setting PcPlayblastUiFFmpegPath to '\\\\YARN\\projects\\pipeline\\utilities\\ffmpeg\\bin\\ffmpeg.exe' ")
         cmds.optionVar(sv=('PcPlayblastUiFFmpegPath',r'\\YARN\projects\pipeline\utilities\ffmpeg\bin\ffmpeg.exe'))
     
+def import_default_arnold_shader():
+    """
+    imorts the default arnold polycat shader
+    """
+    default_shader = r"\\YARN\projects\pipeline\utilities\maya\shaders\pc_default\pc_default.mb"
+    shader_name = "pc_default"
+
+    if cmds.ls(shader_name):
+        return
+    else:
+        try:
+            print(default_shader)
+            cmds.file(default_shader, i=True)
+        except:
+            print("could not import default shader")
 
 

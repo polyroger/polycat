@@ -70,7 +70,6 @@ def getLatestFile(filelist):
 
     return latestversion
 
-  
 def versionPlusOne(version):
     """
     Expects and integer version as an input
@@ -85,14 +84,87 @@ def versionPlusOne(version):
 
     return versionplus
 
+def udim_check(filepath):
+    """
+    Checks the filepath for a udim extension.
+    Returns the regex match object if true, returns None if there is no match
+    This should work with a filename or a file path as splittext will strip the extension and the regex searches backwards
+    """
+    pattern = r"(\d{4})$" # this simply looks to see if the string ends in 4 numbers eg 1001
+    
+    name,ext = os.path.splitext(filepath) # split off the filename extension
+    
+    match = re.search(pattern,name)
+
+    return match
+
+def replace_udim_filepath(filepath,replace_string):
+    """
+    Given a **full filepath**, return the full file path with the new replacement string.
+    Use this when wanting to maintain the full file path, use replace_udim_file if you are just using a filename
+    """
+    pattern = r"(\d{4})$" # this simply looks to see if the string ends in 4 numbers eg 1001
+
+    filename = os.path.basename(filepath)
+    dirname = os.path.dirname(filepath)
+    name,ext = os.path.splitext(filename)
+
+    udim_name = re.sub(pattern, replace_string, name)
+    full_udim_path = os.path.join(dirname, udim_name)+ext
+
+    return full_udim_path
+
+def replace_udim_file(filename, replace_string):
+    """
+    Given a **filename**, return the file name with the new replacement string.
+    Use this when you are just working with file names and not the full path.
+    """
+    pattern = r"(\d{4})$" # this simply looks to see if the string ends in 4 numbers eg 1001
+    name,ext = os.path.splitext(filename)
+
+    udim_filename = re.sub(pattern, replace_string, name) + ext
+
+    return udim_filename
+
+
+def create_server_location(filepath,server_location=r"\\\\YARN\\projects"):
+    """
+    replaces an absolute path (d:\) with the UNC (unified naming convention) path.
+    """
+    pattern = r".+?:" # finds everything up to a :
+
+
+    
+    match = re.search(pattern,filepath)
+
+    if match:
+        new_path = re.sub(pattern,server_location,filepath)
+        if not os.path.isfile(new_path):
+            print("The filepath is not a valid path, make sure that you are using a file from the server")
+            raise Exception("The filepath: {0} is not valid".format(filepath)) 
+        
+        return new_path
+    elif not match:
+        print("A match could not be found, returning the origional filepath")
+        return filepath
+    else:
+        print("there was an error when attempting create a server location for {0}".format(filepath))
+        raise Exception("The filepath: {0} is not valid".format(filepath)) 
+
+
 # testpath = r"\\YARN\projects\mov\gra\3_development\pipeline_tools\cut0010\0_camera\maya"
 # # testpath = r"\\YARN\projects\ply\nod\3_development\pipeline_tools\cameratesting\0_camera\houdini"
+# testpath = r"//YARN/projects/mov/gra/1_assets/environment/house/0_sourcegeo/sophies_room/decor/vinyl_cover/tex/latest/vinyl_covers_col_1001.tif"
 
+# udim = udim_check(testpath)
 # allfiles = listAllFilesInFolder(testpath)
 # latestfile = getLatestFile(allfiles)
 # latestversion = getLatestFromList(allfiles)
 # versionplus = versionPlusOne(latestversion)
+# server_location = create_server_location(testpath)
 
+# print(udim)
+# print(server_location)
 # print(allfiles)
 # print(latestfile)
 # print(latestversion)

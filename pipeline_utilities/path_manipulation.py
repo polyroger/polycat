@@ -1,15 +1,12 @@
 import os
 import scandir
-import pymel.core as pm
 
 def goFindDirectory(start_path,folder):
     """
     Goes up from a starting directory and tries to find a folder
     RETURNS : STRING - path to folder if found
     """
-    print "trying to find directory"
-    print start_path
-    print folder
+    print("trying to find directory")
 
     if not start_path:
         geopath = "\\\\YARN\\projects"
@@ -32,7 +29,7 @@ def goFindDirectory(start_path,folder):
   
         
         if start_path == os.path.realpath(os.path.join(start_path,"../")):
-            print "the path could not be found"
+            print("the path could not be found")
             geopath = origpath
         else:
             mydirs = scandir.scandir(start_path)
@@ -51,7 +48,7 @@ def checkForPath(basepath,assetname,refversion):
     assetpath = os.path.abspath(os.path.join(basepath,foldername,"mod"))
 
     if not os.path.exists(assetpath):
-        print "making path"
+        print("making path")
         os.makedirs(assetpath)
         
         return assetpath
