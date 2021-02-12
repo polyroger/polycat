@@ -38,7 +38,7 @@ def import_default_arnold_shader():
     else:
         try:
             print(default_shader)
-            cmds.file(default_shader, i=True)
+            cmds.file(default_shader, i=True, iv=True)
         except:
             print("could not import default shader")
 
