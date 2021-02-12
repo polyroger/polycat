@@ -131,7 +131,7 @@ global proc shelf_pc_shelf () {
         -flipY 0
         -useAlpha 1
         -font "plainLabelFont" 
-        -imageOverlayLabel "create_default_shader" 
+        -imageOverlayLabel "duplicate_shader" 
         -overlayLabelColor 0.8 0.8 0.8 
         -overlayLabelBackColor 0 0 0 0.5 
         -image "pythonFamily.png" 
