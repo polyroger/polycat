@@ -1,7 +1,9 @@
 import pymel.core as pm
+import maya.cmds as cmds
 import os
 import re
 from pipeline_utilities import path_manipulation
+
 
 def importAlembicFile():
     """
@@ -30,7 +32,6 @@ def importAlembicFile():
 
 def importAlembic(abcfile):
     pm.AbcImport(abcfile,mode="import")
-
 
 def addGeoSuffix(geoselection,geosuffix):
     repattern = r"_geo$"            #checks if the string ends in _geo
@@ -64,3 +65,14 @@ def duplicateAndMatch():
            
     pm.delete(objtocopy) 
 
+def duplicate_shader():
+    """
+    Duplicates a shader by its shading engine so that any nodes plugged into the shading engine get duplicated too
+    """
+    selection = cmds.ls(selection=True)
+    se = cmds.listConnections(selection, type="shadingEngine")
+    newshader = cmds.duplicate(se, un=True) 
+
+    return newshader
+
+  

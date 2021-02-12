@@ -131,7 +131,7 @@ global proc shelf_pc_shelf () {
         -flipY 0
         -useAlpha 1
         -font "plainLabelFont" 
-        -imageOverlayLabel "create_default_shader" 
+        -imageOverlayLabel "duplicate_shader" 
         -overlayLabelColor 0.8 0.8 0.8 
         -overlayLabelBackColor 0 0 0 0.5 
         -image "pythonFamily.png" 
@@ -139,7 +139,7 @@ global proc shelf_pc_shelf () {
         -style "iconOnly" 
         -marginWidth 1
         -marginHeight 1
-        -command "node_defaults.import_default_arnold_shader()" 
+        -command "from pc_maya.snippets import snippets\nsnippets.duplicate_shader()" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
