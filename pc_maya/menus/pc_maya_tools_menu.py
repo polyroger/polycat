@@ -18,6 +18,7 @@ def createMayaMenus():
     pm.menuItem(label="Scene Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
     pm.menuItem(label="Import Alembic",command="from pc_maya.snippets import snippets;snippets.importAlembicFile()")
     pm.menuItem(label="Scene Exporter",command="from pc_maya.scene_exporter.scene_export_dialog import PcSceneExporter;PcSceneExporter.openExportDialog()")
+    pm.menuItem(label="Material Exporter",command="from pc_maya.material_exporter.material_exporter_ui import Material_Exporter_Dialog;Material_Exporter_Dialog.open_dialog()")
     pm.menuItem(label="Export Camera",command="from pc_maya.camera_exporter.pc_camera_exporter_ui import CameraExporter;CameraExporter.openCameraExportDialog()")
     pm.menuItem(label="Set Frame Range",command="pullframerange.makeRange()")
 

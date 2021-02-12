@@ -137,7 +137,7 @@ class Pc_Logger(object):
         log_logger.log(level,message,*args,**kwargs)    
     
 
-
+#Test cases
 if __name__ == "__main__":
     Pc_Logger.set_log_level(1)
     Pc_Logger.write_log_to_file("logfile.log",1)
