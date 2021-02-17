@@ -35,8 +35,8 @@ pm.evalDeferred("pullframerange.makeRange()")
 pm.evalDeferred("cmds.setAttr('hardwareRenderingGlobals.transparencyAlgorithm', 5)")
 
 #checking for references
-pm.evalDeferred("from pc_maya.update_references import update_references; update_references.run_reference_update()")
-pm.evalDeferred("cmds.scriptJob(event=['SceneOpened', 'from pc_maya.update_references import update_references; update_references.run_reference_update()'])", lp=True)
+pm.evalDeferred("from pc_maya.update_references import update_references; update_references.run_reference_update('scriptJob')")
+pm.evalDeferred("cmds.scriptJob(event=['SceneOpened', 'from pc_maya.update_references import update_references; update_references.run_reference_update(\"scriptJob\")'])", lp=True)
 
 #addimg default shader
 pm.evalDeferred("node_defaults.import_default_arnold_shader()", lp=True) # this makes sure that the shader is created on startup
