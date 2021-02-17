@@ -48,7 +48,7 @@ def getLatestFromList(filelist):
 
 def getLatestFile(filelist):
     """
-    Returns the highest versioned file in a file list
+    Returns the highest versioned filename
     """
     #if there is unexpoected results it is most likely the regex in paatters
     collections,remainder = clique.assemble(filelist,minimum_items=1,patterns=[r"\_v(?P<index>(?P<padding>0*)\d+)"])
@@ -70,6 +70,7 @@ def getLatestFile(filelist):
 
     return latestversion
 
+
 def versionPlusOne(version):
     """
     Expects and integer version as an input
@@ -83,6 +84,23 @@ def versionPlusOne(version):
     print("new version number : %s")%versionplus
 
     return versionplus
+
+def extract_version(filepath):
+    """
+    Given a file path or a file name, extract the version number from the path string
+    args
+    path (str): A string of either the filename or filepath
+
+    returns (int) an extracted version number or None if nothing is found
+    """
+    pattern = (r"_v(\d+)$")
+    name,ext = os.path.splitext(filepath) # split off the filename extension
+
+    match = re.search(pattern, name)
+    version = str((match.group(1))).lstrip("0")
+
+    return int(version)
+
 
 def udim_check(filepath):
     """
