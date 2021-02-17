@@ -1,8 +1,10 @@
 """
 Polycat scene helpers
 """
-import pymel.core as pm
 import os
+import pymel.core as pm
+import maya.cmds as cmds
+from pc_helpers import pc_file_helpers
 
 def getRGlobals():
     
@@ -98,15 +100,3 @@ def checkCameraAspect(camera,mglobals):
     pm.confirmDialog(title="WARNING",message="The camera check failed")
     return None   
 
-def createCineScopeCamera():
-    
-    camera = pm.camera()
-    cam = camera[0]
-    camshape = camera[1]
-
-    #camera settings
-    
-
-
-def createHDCamera():
-    pass

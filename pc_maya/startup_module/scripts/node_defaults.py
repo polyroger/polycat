@@ -4,7 +4,6 @@ This is here as a place to add custom maya node defaults on startup. These are n
 
 import maya.cmds as cmds
 
-
 def set_camera_aspect_default():
     """
     Sets the cameras film back so that the camera aspect default is 1.778 (HD)    
@@ -41,5 +40,4 @@ def import_default_arnold_shader():
             cmds.file(default_shader, i=True, iv=True)
         except:
             print("could not import default shader")
-
 

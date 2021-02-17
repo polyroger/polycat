@@ -174,7 +174,7 @@ class PcSceneExporter(QtWidgets.QDialog):
             print(os.path.isfile(maya_file[0]))
             startpath = os.path.split(maya_file)[0]
         except IndexError:
-            print "The current scene has not been saved"
+            print("The current scene has not been saved")
             startpath = "\\\\YARN\projects"
 
         return startpath
@@ -194,7 +194,7 @@ class PcSceneExporter(QtWidgets.QDialog):
 
     def runExportGeo(self,table):
 
-        print "running export geo"
+        print("running export geo")
         
         explist = export_helpers.getExportList(table)
 

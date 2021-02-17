@@ -227,7 +227,8 @@ def makeMaterials():
     material_node = create_material_node()
     material_node.parm("num_materials").set(num_materials+1) # adding 1 so the default material can be added first
     default_shader = create_default_shader(shop)
-    material_node.parm("shop_materialpath1").set(default_shader.path()) # sets the default_shader to the 1 group on the material node
+    rel_path_to_vopnode = os.path.relpath(default_shader.path(), material_node.path()).replace("\\","/")
+    material_node.parm("shop_materialpath1").set(rel_path_to_vopnode) # sets the default_shader to the 1 group on the material node
     
     index = 2 # starts after the default material
     for group in material_groups:
@@ -241,7 +242,8 @@ def makeMaterials():
         
         # #materail assignment
         material_node.parm("group"+str(index)).set(group)
-        material_node.parm("shop_materialpath"+str(index)).set(shader.path())
+        rel_path_to_vopnode = os.path.relpath(shader.path(), material_node.path()).replace("\\","/")
+        material_node.parm("shop_materialpath"+str(index)).set(rel_path_to_vopnode)
         
         index += 1
 
