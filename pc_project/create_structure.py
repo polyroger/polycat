@@ -51,6 +51,21 @@ def createSequence(job_base,parent,sequence_name):
 
     return sequence
 
+def createSequenceEdit(jobject, sequence):
+    """
+    Makes sub folders in the specified sequence
+    jobject = a json object of the file structure
+    sequence = a pathlib object to a sequence
+
+    Returns true if successful
+    """
+    for key,value in jobject["in_sequence"].items():
+        in_seq = sequence / value
+        makeDir(in_seq)
+    
+    return True
+        
+
 def createCut(jobject,sequence,name=""):
     """
     Creates the cut structure for a sequece
@@ -129,9 +144,9 @@ def createNewProject(serverclient,servername,kprojectname):
 
     #PULLING KITSU DATA
     #local
-    kfunctions.k_local_Login()
+    # kfunctions.k_local_Login()
     #online
-    # kfunctions.kLogin()
+    kfunctions.kLogin()
     
     project = kfunctions.getKProject(kprojectname)
     sequences = kfunctions.getKProjectSequences(project)
@@ -144,6 +159,7 @@ def createNewProject(serverclient,servername,kprojectname):
     # CREATING ALL THE CUTS BASED OFF THE KITSU PROJECT
     for seqname,seqdict in sequences.items():
         sequence = createSequence(base,serverseq,seqname)
+        createSequenceEdit(structure,sequence)
         cuts = kfunctions.getKSequenceCuts(seqdict)
         for cut in cuts:
             createCut(structure,sequence,name=cut["name"])
@@ -177,9 +193,14 @@ if __name__ == "__main__":
     # createNewProject("abc","123","rogerwilldelete")
     # createNewProject("mov","gra","gracie")
     # createNewProject("cdt","bre","beares")
+    # createNewProject("fhd", "cor", "cornetto")
+    # createNewProject("lun", "inv", "investec")
+    # createNewProject("pos", "glo", "glo_cafe")
+    createNewProject("pat","bec","becks")
 
 
     ##### LOCAL ####
 
-    createNewProject("ogi","eas","easterland")
+    # createNewProject("ogi","eas","easterland")
+    # createNewProject("ins","80d","80days")
 
