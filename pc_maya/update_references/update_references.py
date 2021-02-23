@@ -1,7 +1,8 @@
-import sys, os
+import sys, os, re
 import maya.cmds as cmds
 from pc_maya.maya_helpers import scene_helpers
 from pc_helpers import pc_file_helpers
+
 
 def printmap(n):
     """
@@ -17,6 +18,12 @@ def get_all_references():
     """
 
     all_ref_nodes = cmds.ls(type="reference")
+    ignore = ["_UNKNOWN_REF_NODE_", "sharedReferenceNode"] # There seems to be some behind the scenes nodes that cause the update to fail
+
+    for ref in all_ref_nodes:
+        for node in ignore:
+            if ref == node:
+                all_ref_nodes.remove(node)
 
     return all_ref_nodes
 
@@ -26,15 +33,15 @@ def update_reference_check():
     
     Returns (list) : A list of strings, each string being the name of a reference node that can be updated
     """
-    
     nodes_to_update = []
     all_nodes = get_all_references()
     for node in all_nodes:
-        if node == "sharedReferenceNode":
+        node_path = cmds.referenceQuery(node, f=True, un=True, wcn=True)
+        node_dir, filename = os.path.split(node_path)
+        # if there is a file with no version ending in _latest then dont add that node
+        if os.path.splitext(filename)[0].endswith("_latest"):
             continue
-
-        node_path = cmds.referenceQuery(node, f=True)
-        node_dir = os.path.dirname(node_path)
+        
         dir_contents = os.listdir(node_dir)
         node_version = pc_file_helpers.extract_version(node_path)
         latest_version = pc_file_helpers.getLatestFromList(dir_contents)
@@ -44,12 +51,21 @@ def update_reference_check():
     
     return nodes_to_update
 
+
 def get_latest_reference_path(node):
     
-    node_path = cmds.referenceQuery(node, f=True)
-    node_dir = os.path.dirname(node_path)
+    node_path = cmds.referenceQuery(node, f=True, un=True, wcn=True)
+    node_dir, filename = os.path.split(node_path)
+    node_ext = os.path.splitext(filename)[1]
     dir_contents = os.listdir(node_dir)
-    updated_path = os.path.join(node_dir,pc_file_helpers.getLatestFile(dir_contents)).replace("\\","/")
+    # filter out the file type from the contents of the dirlist
+    file_list = []
+    for f in dir_contents:
+        if os.path.splitext(f)[1] == node_ext:
+            file_list.append(f)
+
+    print(file_list)
+    updated_path = os.path.join(node_dir,pc_file_helpers.getLatestFile(file_list)).replace("\\","/")
 
     return updated_path
 

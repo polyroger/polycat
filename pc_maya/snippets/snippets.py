@@ -2,7 +2,8 @@ import pymel.core as pm
 import maya.cmds as cmds
 import os
 import re
-from pipeline_utilities import path_manipulation
+from pc_helpers import pc_path_helpers as pathhelp
+# from pipeline_utilities import path_manipulation
 
 
 def importAlembicFile():
@@ -20,8 +21,7 @@ def importAlembicFile():
         return None
    
     else:
-        
-        asset_path = path_manipulation.goFindDirectory(starting_path,"0_sourcegeo")
+        asset_path = pathhelp.goFindFolder(starting_path,"0_sourcegeo")
         abcfilter = "alembic (*.abc)"
 
         try:
@@ -39,7 +39,7 @@ def addGeoSuffix(geoselection,geosuffix):
     myre = re.search(repattern,geoselection.name())
     
     if not myre:
-        print "{0} does not end in {1}, adding".format(geoselection.name(),geosuffix)
+        print ("{0} does not end in {1}, adding".format(geoselection.name(),geosuffix))
         geoselection.rename(geoselection.name() + geosuffix)
     else:
         print("All the selected geo alredy ends with _geo")

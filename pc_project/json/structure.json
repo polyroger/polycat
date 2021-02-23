@@ -26,6 +26,10 @@
          "assetVfx":"vfx"
     },
 
+    "in_sequence" :{
+        "seqedit": "0_edit"
+    },
+
     "3_development" : {
          "devCharacters":"characters",
          "devEnvironments":"environments",
@@ -41,6 +45,7 @@
 
     "cutLevel": {
         "cutConcept":"0_concept",
+        "cutAnim":"0_anim",
         "cutAss":"0_assfile",
         "cutAudio":"0_audio",
         "cutCamera":"0_camera",
@@ -68,7 +73,13 @@
         "zoy",
         "elia",
         "andre",
-        "caylin"
+        "caylin",
+        "depesh",
+        "peter",
+        "conor",
+        "mandi",
+        "emma",
+        "zandri"
     ],
     "software":[
         "maya",

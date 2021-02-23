@@ -17,10 +17,10 @@ import pymel.core as pm
 
 #polycat imports
 import os
-from pc_maya.helpers.export_helpers import export_helpers
-from pc_maya.exporters import pc_abc_exporter
-from pipeline_utilities import pyside2_helpers
-from pipeline_utilities import path_manipulation
+from pc_maya.maya_helpers import export_helpers
+from pc_maya.exporters import pc_abc_exporter, export_mb
+from pc_helpers import pc_path_helpers as pathhelp
+# from pipeline_utilities import path_manipulation
 
 
 def mayaMainWindow():
@@ -85,7 +85,7 @@ class PcSceneExporter(QtWidgets.QDialog):
    
         #export path widgets
         self.geo_export_path = QtWidgets.QLineEdit()
-        self.geo_export_path.setText(path_manipulation.goFindDirectory(self.getStartingPath(),"0_sourcegeo"))
+        self.geo_export_path.setText(pathhelp.goFindFolder(self.getStartingPath(),"0_sourcegeo"))
         self.geo_export_path_label = QtWidgets.QLabel("Export Directory :")
         self.geo_export_path_btn = QtWidgets.QPushButton()
         self.geo_export_path_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
@@ -147,24 +147,17 @@ class PcSceneExporter(QtWidgets.QDialog):
     def createConnections(self):
         
         self.geo_export_path_btn.clicked.connect(lambda : self.showFileDialog(self.geo_export_path))
-        # self.cam_export_path_btn.clicked.connect(lambda : self.showFileDialog(self.cam_export_path))
         self.export_btn.clicked.connect(lambda : self.runExportGeo(self.geo_table))
-        # self.export_btn.clicked.connect(self.testme)
-        # self.refresh_btn.clicked.connect(self.testme)
         self.refresh_btn.clicked.connect(lambda : self.refreshPysideTableWidget(self.geo_table,export_helpers.getExportSet()))
         self.cancel_btn.clicked.connect(self.close)
        
 
     #START OF CUSTOM METHODS
 
-    def testme(self):
-        print("this is from testme")
-
     def showFileDialog(self,lineedit):
         myd = QtWidgets.QFileDialog.getExistingDirectory(self,"Select export directory",dir=self.geo_export_path.text())
         if myd:
             lineedit.setText(myd)
-    
         
     def getStartingPath(self):
         
@@ -191,12 +184,14 @@ class PcSceneExporter(QtWidgets.QDialog):
         print(myitem.data(self.ATTR_ROLE))
         print(myitem.data(self.VALUE_ROLE))
         print(myitem.checkState())
+    
 
     def runExportGeo(self,table):
 
         print("running export geo")
         
         explist = export_helpers.getExportList(table)
+        print(explist)
 
         for i in explist:
             
@@ -208,15 +203,16 @@ class PcSceneExporter(QtWidgets.QDialog):
             
             print("\n {0} will be exported".format(exportname))
 
+            #.abc export
             pc_abc_exporter.pcAbcExporter(exportname,exportpath,start,end,singlframe)
-
-
+            #. mb export
+            export_mb.run_export(exportname, exportpath)
 
     #this is overwriting the QtWidjet showEvent() method. So that when the window show() event is triggered it automtically refreshes
     def showEvent(self,e):
         super(PcSceneExporter,self).showEvent(e)
         self.refreshPysideTableWidget(self.geo_table,export_helpers.getExportSet())
-        self.geo_export_path.setText(path_manipulation.goFindDirectory(self.getStartingPath(),"0_sourcegeo"))
+        self.geo_export_path.setText(pathhelp.goFindFolder(self.getStartingPath(),"0_sourcegeo"))
 
     def refreshPysideTableWidget(self,table,table_data):
         """
