@@ -13,7 +13,8 @@ from PySide2 import QtGui
 import pymel.core as pm
 
 #Camera exporter
-import pc_camera_exporter as camex
+from pc_maya.camera_exporter import pc_camera_exporter as camex
+# import pc_camera_exporter as camex
 
 #pipeline helpers
 from pc_helpers import pc_path_helpers as phelp

@@ -1,17 +1,23 @@
-#fix the model prep to always make the correcy heireacy
-# get all the objests in the scene that are in the correct heiracy 
-# add those objects to the table in the gui
-# autofill out the lineedit in the gui to the path
-# in a loop exporalembics for all the items returned by the getallexportobjects
+"""
+Polcat maya alembic exporter
+"""
 
 import os
 import pymel.core as pm
-from pc_maya.helpers.export_helpers import export_helpers
-from pipeline_utilities import path_manipulation
-from pipeline_utilities import file_manipulation
+
+from pc_maya.maya_helpers import export_helpers
+from pc_helpers import pc_path_helpers as pathhelp
+from pc_helpers import pc_file_helpers as filehelp
 
 
 def pcAbcExporter(rootname,assetpath,start,end,single):
+    """
+    nested referenced objects will have the same name once the namespace is stored
+    this is handled in the getReferenceVersion on the main group node but not on any of the child nodes.
+    step through children, check if it is a reference if it is check then check the reference version and augment the name
+    try only do this if there is going to be a confilct rather than on every one.
+
+    """
 
     print ("running export")
 
@@ -27,11 +33,11 @@ def pcAbcExporter(rootname,assetpath,start,end,single):
     refversion = export_helpers.getReferenceVersion(rootname)
     exportname = stripns.replace("_GGRP", "")
 
-    exportpath = path_manipulation.checkForPath(assetpath,exportname,refversion)
+    exportpath = pathhelp.checkForPath(assetpath,exportname,refversion)
     refattr = "referenceVersion"
 
-    latest = file_manipulation.getLatestVersion(exportpath,exportname)
-    latestplus = file_manipulation.versionPlusOne(latest)
+    latest = filehelp.getLatestVersion(exportpath,exportname)
+    latestplus = filehelp.versionPlusOne(latest)
     
     exportgeoflag = "-root " + rootname
     exportpathflag = "-file " + exportpath + "\\"  + exportname + refversion + latestplus + ext
@@ -45,6 +51,8 @@ def pcAbcExporter(rootname,assetpath,start,end,single):
 
     print (exportflags)
     pm.AbcExport(j=exportflags)
-     
+   
+
+
 
     
