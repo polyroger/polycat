@@ -12,9 +12,8 @@ import pymel.core as pm
 import maya.OpenMayaUI as omui
 
 #polycat imports
-import pc_maya.helpers.model_helpers
-from pc_maya.helpers.model_helpers import pc_model_prep
-# from pc_maya.helpers.export_helpers import export_helpers
+from pc_maya.maya_helpers import pc_model_prep
+
 
 def mayaMainWindow():
     """

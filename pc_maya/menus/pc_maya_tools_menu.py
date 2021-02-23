@@ -29,7 +29,7 @@ def createMayaMenus():
     #start of Model tools
     pm.menuItem(label="Model Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
     pm.menuItem(label="Model Prep",command="from pc_maya.scene_exporter.export_prep_dialog import NameGGRP;NameGGRP.openNameGGRP_dialog()")
-    pm.menuItem(label="Create Export Set", command="from pc_maya.helpers.export_helpers import export_helpers;export_helpers.createExportSet()")
+    pm.menuItem(label="Create Export Set", command="from pc_maya.maya_helpers import export_helpers;export_helpers.createExportSet()")
     pm.menuItem(label="Scale Reference",subMenu=True,tearOff=True)
     pm.menuItem(label="GRA project scale",command="from pc_maya.snippets import snippets;snippets.importAlembic('//YARN/projects/mov/gra/1_assets/characters/claire/0_sourcegeo/claire/mod/claire_v006.abc')")
     pm.menuItem(label="Measurement Man",command="from pc_maya.snippets import snippets;snippets.importAlembic('//YARN/projects/gen/models/measurement_man/male/male_scaleref_185cm_maya.abc')")
