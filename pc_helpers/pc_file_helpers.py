@@ -50,11 +50,11 @@ def getLatestFile(filelist):
     """
     Returns the highest versioned filename
     """
-    #if there is unexpoected results it is most likely the regex in paatters
+    #if there is unexpoected results it is most likely the regex in paatters. this is specifically looking for _v000 naming
     collections,remainder = clique.assemble(filelist,minimum_items=1,patterns=[r"\_v(?P<index>(?P<padding>0*)\d+)"])
-   
+    # if collections is none, then there is mostlikely only one file in the folder, that does not have correct versioning
     if not collections:
-        return int(0)
+        return filelist[0]
     if len(collections) > 1:
         print("ERROR There is more that one type of sequence in this folder")
         return None
@@ -70,6 +70,59 @@ def getLatestFile(filelist):
 
     return latestversion
 
+def checkFileVersion(afile):
+    """
+    Expects a file name string as an input, looks for "v001" styled versioning. Aims to extract the current version in the filename
+    
+    RETURNS: The version of the file as an integer or False if no version was found
+
+    """
+    
+    repattern = "v\d+"
+    match = re.findall(repattern, afile)
+    
+    if match:
+        print("there is a version in the filename")
+        print("current version is : %s"%match[0])
+
+        version = int(match[0].replace("v",""))
+
+        return version
+    else:
+        print("There is not a correctly nameed version in the filename")
+
+        return False
+
+def getLatestVersion(filepath,assetname):
+    
+    versionlist = [0]
+    contents = os.listdir(filepath)
+    
+    for file in contents:
+        
+        path = os.path.join(filepath,file)
+        
+        if os.path.isfile(path):
+
+            fileversion = checkFileVersion(file)
+            versionlist.append(fileversion)
+    
+    versionlist.sort()
+    
+    return versionlist[-1]
+        
+def versionPlusOne(version):
+
+    """
+    Expects and integer version as an input
+
+    RETURNS: a string integer, double padded version + 1
+
+    """ 
+    versionplus = "_v" + (str(version + 1).zfill(3))
+    print("new version created : %s")%versionplus
+
+    return versionplus
 
 def versionPlusOne(version):
     """
@@ -80,7 +133,7 @@ def versionPlusOne(version):
     if version == None:
         return None
 
-    versionplus = "v" + (str(version + 1).zfill(3))
+    versionplus = "_v" + (str(version + 1).zfill(3))
     print("new version number : %s")%versionplus
 
     return versionplus
@@ -93,14 +146,17 @@ def extract_version(filepath):
 
     returns (int) an extracted version number or None if nothing is found
     """
+    no_version = None
     pattern = (r"_v(\d+)$")
     name,ext = os.path.splitext(filepath) # split off the filename extension
-
-    match = re.search(pattern, name)
-    version = str((match.group(1))).lstrip("0")
-
-    return int(version)
-
+    
+    try:
+        match = re.search(pattern, name)
+        version = str((match.group(1))).lstrip("0")
+        return int(version)
+    except:
+        print("There was an error when attempting to get the version of {0}, make sure that the file has _v000 styled versioning\nSetting version to {1} ".format(name, no_version))
+        return no_version
 
 def udim_check(filepath):
     """
@@ -143,7 +199,6 @@ def replace_udim_file(filename, replace_string):
     udim_filename = re.sub(pattern, replace_string, name) + ext
 
     return udim_filename
-
 
 def create_server_location(filepath,server_location=r"\\\\YARN\\projects"):
     """

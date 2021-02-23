@@ -23,5 +23,17 @@ def mayaMainWindow():
 
     return mainwindowobject
 
+def refreshPysideTableWidget(self,table,tablelist):
+    """
+    Takes in a table and a list of items, sets the rows to 0 then re builds the rows from the list.\n
+    First argument : a table object \n
+    Second argument : a list of row entries
+    """
+
+    print("Running table refresh")
+    
+    table.setRowCount(0)
+    for i in range(len(tablelist)):
+        table.insertRow(i)
 
 
