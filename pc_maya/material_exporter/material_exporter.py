@@ -57,27 +57,23 @@ def get_assigned_shaders(selection):
         return None
 
 def create_mesh_list(shader,selection):
+    """
+    given a shader and a selection, return a list of mesh shapes that a shader is asigned to according to your selection
+    This will error if there are any other nodes in the scene with the same name, ie a duplicated main layout group
+    Will also error if the hypershade is graphed to somthing that has a shader ball geo in the scene. Close the hypershader.
+    """
+    
+    shadinggroup = cmds.listConnections("{0}.outColor".format(shader))[0]
+    transforms = cmds.listRelatives(shadinggroup,type="transform",p=True)
 
-    assigned_list = []
+    ## This is here in case we need the shape node instead
+    # mesh_list = []
+    # for node in transforms:
+    #     mesh = cmds.listRelatives(node, type="shape", pa=True)[0]
+    #     mesh_list.append(mesh)
+        
     
-    #get the meshes return as a list,!! OUTCOLOR IS THE SHADERS OUTPUT NOT THE BASECOLOR OF THE SHADER !!
-    if cmds.listConnections("{0}.outColor".format(shader))[0] in assigned_list:
-        pass
-    else:
-        assigned = cmds.listConnections("{0}.outColor".format(shader))[0]
-        assigned_list.append(assigned) 
-    
-    transforms = cmds.listRelatives(selection,type="transform",p=True)
-    all_meshes = cmds.listConnections(assigned,type="mesh")
-    
-    mesh_list = []
-    for node in all_meshes:
-        if node in transforms:
-            mesh_list.append(node)
-        else:
-            Pc_Logger.warning("skipping {} as it is not in the current selections".format(node))
-    
-    return mesh_list
+    return transforms
 
 def create_shader_parm_dict(shader,shader_parms):
     """
