@@ -113,6 +113,14 @@ def register_viewers(also_remove = "default"):
         "Viewer.viewerProcess",
         DISPLAY_UI_FORMAT % {'view': defaultView, "display": defaultDisplay})
 
+def create_write_node():
+    """
+    Creates a write node with parms set to env vars set in the shell where it was launched
+    """
+    
+    write_name = os.environ.get("COMP_RENDER_NAME").replace("\\","/")
+    wn = nuke.nodes.Write(file=write_name)
+
 # def setWriteNodeSettings(nukenode):
 #     nuke.tprint("running write settings")
 #     nuke.tprint(nukenode.name())
