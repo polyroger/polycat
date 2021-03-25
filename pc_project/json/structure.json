@@ -46,6 +46,7 @@
     "cutLevel": {
         "cutConcept":"0_concept",
         "cutAnim":"0_anim",
+        "cutPrevis":"0_previs",
         "cutAss":"0_assfile",
         "cutAudio":"0_audio",
         "cutCamera":"0_camera",
@@ -79,7 +80,11 @@
         "conor",
         "mandi",
         "emma",
-        "zandri"
+        "zandri",
+        "julia",
+        "kobus",
+        "taylor",
+        "hein"
     ],
     "software":[
         "maya",

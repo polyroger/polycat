@@ -91,6 +91,7 @@ def create_ai_shader(shop,shader_name,material_dict):
     #setting some base paramaters
     standard_surface = vopnode.createNode("arnold::standard_surface",shader_name)
     standard_surface.parm("base").set(1)
+    standard_surface.parm("specular_IOR").set(1.4)
 
     out_material.setInput(0,standard_surface,0)
     standard_surface.setPosition((-4.6,0))
@@ -173,6 +174,9 @@ def create_ai_shader(shop,shader_name,material_dict):
                     # setting the inputs
                     height_node.setInput(0, height_image_node, 0)
                     standard_surface.setInput(parm_index, height_node, 0)
+                
+                #setting node parm values
+                height_node.parm("bump_height").set(0.01)
 
             else:
                 print("cant set dict instance")
@@ -225,7 +229,7 @@ def makeMaterials():
     group_comb.parm("numcombine").set(num_mat_groups)
 
     material_node = create_material_node()
-    material_node.parm("num_materials").set(num_materials+1) # adding 1 so the default material can be added first
+    material_node.parm("num_materials").set(num_materials) # adding 1 so the default material can be added first
     default_shader = create_default_shader(shop)
     rel_path_to_vopnode = os.path.relpath(default_shader.path(), material_node.path()).replace("\\","/")
     material_node.parm("shop_materialpath1").set(rel_path_to_vopnode) # sets the default_shader to the 1 group on the material node

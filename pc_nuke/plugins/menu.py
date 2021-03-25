@@ -14,6 +14,7 @@ toolbar = nuke.menu('Nodes')
 #Polycat Gizmos
 pc_menu = toolbar.addMenu('PC_Gizmos',icon=r"\\YARN\projects\pipeline\utilities\images\icons\nuke\polycat_tools\polycat_tools.png")
 pc_menu.addCommand("pc_matte_painting_setup", "nuke.createNode('matte_painting_setup')")
+pc_menu.addCommand("pc_write", "pstart.create_write_node()", "w")
 
 # Deadline
 menubar = nuke.menu("Nuke")
