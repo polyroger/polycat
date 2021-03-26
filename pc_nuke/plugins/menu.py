@@ -11,12 +11,12 @@ import pc_startup_functions as pstart
 
 toolbar = nuke.menu('Nodes')
 
-#Polycat Gizmos
-pc_menu = toolbar.addMenu('PC_Gizmos',icon=r"\\YARN\projects\pipeline\utilities\images\icons\nuke\polycat_tools\polycat_tools.png")
+#Polycat Gizmos and tools
+pc_menu = toolbar.addMenu('PC_Gizmos',icon='\\\\YARN\\projects\\pipeline\\utilities\\images\\icons\\nuke\\polycat_tools\\polycat_tools.png')
 pc_menu.addCommand("pc_matte_painting_setup", "nuke.createNode('matte_painting_setup')")
-pc_menu.addCommand("pc_write", "pstart.create_write_node()", "w")
+pc_menu.addCommand("pc_write", "pstart.create_write_node()")
 
-# Deadline
+# Deadlines
 menubar = nuke.menu("Nuke")
 tbmenu = menubar.addMenu("&Thinkbox")
 tbmenu.addCommand("Submit Nuke To Deadline", DeadlineNukeClient.main, "")
