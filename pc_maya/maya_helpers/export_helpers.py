@@ -59,6 +59,23 @@ def createExportSet():
         
         return exportset
 
+def create_rig_export_set():
+
+    EXPORTSET = "RIGEXPORTSET"
+    setname = EXPORTSET
+
+    try:
+        exportset =  pm.ls(setname)[0]
+        
+        return exportset           
+    
+    except:
+        print("the set does not exist, creating a new set")
+        exportset = pm.sets(em=True,n=setname)
+        
+        return exportset
+
+
 def getExportSet():
 
     EXPORTSET = "EXPORTSET"
