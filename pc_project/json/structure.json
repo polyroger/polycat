@@ -9,14 +9,13 @@
     },
 
     "0_aaa" : {
-        "clientaudio":"0_client/0_audio",
-        "clientfeedback":"0_client/0_feedback",
-        "clientreference":"0_client/0_reference/client",
-        "internalreference":"0_client/0_reference/internal",
-        "clientupload":"0_client/0_upload",
-        "internaldailies":"0_internal/0_dailies/latest",
-        "internalprojectdata":"0_internal/0_project_data",
-        "internalscript":"0_internal/0_script"
+        "aaaAudio":"0_audio",
+        "aaaFeedback":"0_feedback",
+        "aaaReference":"0_reference",
+        "aaaUpload":"0_upload",
+        "aaaDailies":"0_dailies",
+        "aaaProjectdata":"0_project_data",
+        "aaaScript":"0_script"
     },
 
     "1_assets" : {
