@@ -1,5 +1,7 @@
 import gazu,os
 
+##### LOGGING IN ####
+
 def kLogin():
     """
     A login function to make logging in to the kitsu api a little faster.
@@ -27,6 +29,9 @@ def k_local_Login():
     gazu.log_in(USERNAME, PASSWORD)
 
     return "Logged into the kitsu api"
+
+
+##### GETTING PROJECT DATA #######
 
 def getKProject(projname):
     """
@@ -89,3 +94,33 @@ def getKSequenceCuts(ksequence):
 
     return cuts
 
+
+#### SETTING DATA ######
+
+def set_all_shot_data(project_name, fps=24,frame_in="1001"):
+    """
+    adds information to the "data" dict in the the shot info dict for every seqence in the project.
+    currently only set up for fps and frame_in keys.
+    The login function uses two env var keys,
+    KPWORD and KUSER these need to be set for the function to work
+    
+    Requires gazu
+    
+    """
+    
+    kLogin()
+    project = getKProject(project_name)
+    all_seq = getKProjectSequences(project)
+    
+    for key,value in all_seq.items():
+        seq = all_seq[key]
+        shots = kpc.getKSequenceCuts(seq)
+        for shot in shots:
+            print("updating {0}/{1}".format(seq["name"], shot["name"]))
+            gazu.shot.update_shot_data(shot,data={"fps":fps, "frame_in":frame_in})    
+
+
+##### TEMP SPACE TO RUN OPERATIONS ######
+
+# if __name__ == "__main__":
+#     kLogin()
