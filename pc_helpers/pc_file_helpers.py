@@ -26,13 +26,15 @@ def getLatestFromList(filelist):
     """
     Given a list of files return an int of the latest version file
     """
-    collections,remainder = clique.assemble(filelist,minimum_items=1,patterns=[r"\_v(?P<index>(?P<padding>0*)\d+)"])
+    # collections,remainder = clique.assemble(low_filelist,minimum_items=1,patterns=[r"\_v(?P<index>(?P<padding>0*)\d+)\.mb"])
+    collections,remainder = clique.assemble(filelist,minimum_items=1,case_sensitive=False,patterns=[clique.PATTERNS["versions"]]) # versions is basically the same as the above regex
 
     if not collections:
         return int(0)
-
+  
     if len(collections) > 1:
         print("ERROR There is more that one type of sequence in this folder")
+        
         return None
     
     fileseq = collections[0]
@@ -48,7 +50,7 @@ def getLatestFromList(filelist):
 
 def getLatestFile(filelist):
     """
-    Returns the highest versioned filename
+    Returns the highest versioned filename, note filename not version
     """
     #if there is unexpoected results it is most likely the regex in paatters. this is specifically looking for _v000 naming
     collections,remainder = clique.assemble(filelist,minimum_items=1,patterns=[r"\_v(?P<index>(?P<padding>0*)\d+)"])
@@ -73,6 +75,7 @@ def getLatestFile(filelist):
 def checkFileVersion(afile):
     """
     Expects a file name string as an input, looks for "v001" styled versioning. Aims to extract the current version in the filename
+    This function is an alternative to the getlatestfromlist, which uses clique collections, this is a regex solution
     
     RETURNS: The version of the file as an integer or False if no version was found
 
@@ -82,9 +85,6 @@ def checkFileVersion(afile):
     match = re.findall(repattern, afile)
     
     if match:
-        print("there is a version in the filename")
-        print("current version is : %s"%match[0])
-
         version = int(match[0].replace("v",""))
 
         return version
@@ -93,37 +93,29 @@ def checkFileVersion(afile):
 
         return False
 
-def getLatestVersion(filepath,assetname):
+def getLatestVersion(filepath):
+    """
+    Gets the latest current version,expects a valide file path, use this with the version plus one.
+    """
     
     versionlist = [0]
-    contents = os.listdir(filepath)
     
-    for file in contents:
+    # if the file path does not exist, I assume that the folder has yet to be created and the version should be 0
+    if os.path.isdir(filepath):
+        contents = os.listdir(filepath)
+        for file in contents:
+            path = os.path.join(filepath,file)
+            if os.path.isfile(path):
+
+                fileversion = checkFileVersion(file)
+                versionlist.append(fileversion)
         
-        path = os.path.join(filepath,file)
+        versionlist.sort()
+    latest = versionlist[-1]
+    print("The latest version is: {}".format(latest))
+
+    return latest
         
-        if os.path.isfile(path):
-
-            fileversion = checkFileVersion(file)
-            versionlist.append(fileversion)
-    
-    versionlist.sort()
-    
-    return versionlist[-1]
-        
-def versionPlusOne(version):
-
-    """
-    Expects and integer version as an input
-
-    RETURNS: a string integer, double padded version + 1
-
-    """ 
-    versionplus = "_v" + (str(version + 1).zfill(3))
-    print("new version created : %s")%versionplus
-
-    return versionplus
-
 def versionPlusOne(version):
     """
     Expects and integer version as an input
@@ -132,7 +124,7 @@ def versionPlusOne(version):
     """
     if version == None:
         return None
-
+    
     versionplus = "_v" + (str(version + 1).zfill(3))
     print("new version number : %s")%versionplus
 
@@ -143,6 +135,7 @@ def extract_version(filepath):
     Given a file path or a file name, extract the version number from the path string
     args
     path (str): A string of either the filename or filepath
+    Alternative to clique collections, uses regex only
 
     returns (int) an extracted version number or None if nothing is found
     """
@@ -205,8 +198,6 @@ def create_server_location(filepath,server_location=r"\\\\YARN\\projects"):
     replaces an absolute path (d:\) with the UNC (unified naming convention) path.
     """
     pattern = r".+?:" # finds everything up to a :
-
-
     
     match = re.search(pattern,filepath)
 
