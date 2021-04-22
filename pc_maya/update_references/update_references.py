@@ -1,31 +1,16 @@
+"""
+Polycat animtaions Reference updater
+
+TODO:
+Change the reference to edit only the filename portion of the reference path not the entire path. This is so that base enviroment vars can be used and we dont 
+have to worry about re setting the variable.
+
+
+"""
 import sys, os, re
 import maya.cmds as cmds
 from pc_maya.maya_helpers import scene_helpers
 from pc_helpers import pc_file_helpers
-
-
-def printmap(n):
-    """
-    used to map list values and print them out in new lines with the .format method
-    """
-    print(n)
-
-def get_all_references():
-    """
-    Gets all the references in a maya scene
-    
-    Returns (list): A list of reference nodes
-    """
-
-    all_ref_nodes = cmds.ls(type="reference")
-    ignore = ["_UNKNOWN_REF_NODE_", "sharedReferenceNode"] # There seems to be some behind the scenes nodes that cause the update to fail
-
-    for ref in all_ref_nodes:
-        for node in ignore:
-            if ref == node:
-                all_ref_nodes.remove(node)
-
-    return all_ref_nodes
 
 def update_reference_check():
     """
@@ -34,14 +19,14 @@ def update_reference_check():
     Returns (list) : A list of strings, each string being the name of a reference node that can be updated
     """
     nodes_to_update = []
-    all_nodes = get_all_references()
+    all_nodes = scene_helpers.get_all_references()
     for node in all_nodes:
         node_path = cmds.referenceQuery(node, f=True, un=True, wcn=True)
         node_dir, filename = os.path.split(node_path)
         # if there is a file with no version ending in _latest then dont add that node
         if os.path.splitext(filename)[0].endswith("_latest"):
             continue
-        
+        print(node_dir)
         dir_contents = os.listdir(node_dir)
         node_version = pc_file_helpers.extract_version(node_path)
         latest_version = pc_file_helpers.getLatestFromList(dir_contents)
@@ -50,24 +35,6 @@ def update_reference_check():
             nodes_to_update.append(node)
     
     return nodes_to_update
-
-
-def get_latest_reference_path(node):
-    
-    node_path = cmds.referenceQuery(node, f=True, un=True, wcn=True)
-    node_dir, filename = os.path.split(node_path)
-    node_ext = os.path.splitext(filename)[1]
-    dir_contents = os.listdir(node_dir)
-    # filter out the file type from the contents of the dirlist
-    file_list = []
-    for f in dir_contents:
-        if os.path.splitext(f)[1] == node_ext:
-            file_list.append(f)
-
-    print(file_list)
-    updated_path = os.path.join(node_dir,pc_file_helpers.getLatestFile(file_list)).replace("\\","/")
-
-    return updated_path
 
 def update_one(node, latest_reference_path):
     """
@@ -78,9 +45,12 @@ def update_one(node, latest_reference_path):
     
     return latest
 
-
 def ignore_one():
     print("ignoring one")   
+    return
+
+def ignore_all():
+    print("Ignoring All Reference Updates")
     return
 
 def update_all(reference_node_list):
@@ -88,16 +58,10 @@ def update_all(reference_node_list):
     Update all nodes in the list
     """
     for node in reference_node_list:
-        updated_path = get_latest_reference_path(node)
+        updated_path = scene_helpers.get_latest_reference_path(node)
         update_one(node, updated_path)
     
     cmds.confirmDialog(title="Referece Status", message="There are no more references that need to be updated", button=["WooHoo!"])
-
-
-def ignore_all():
-    print("Ignoring All Reference Updates")
-    return
-
 
 def update_reference(reference_node_list, run_from="scriptJob"):
     """
@@ -128,7 +92,7 @@ def update_reference(reference_node_list, run_from="scriptJob"):
         
         elif update == "I will Choose":
             for node in reference_node_list:
-                updated_path = get_latest_reference_path(node)
+                updated_path = scene_helpers.get_latest_reference_path(node)
                 response = cmds.confirmDialog(title="Reference {0}", message="{1}\n\ncan be updated to :\n\n{2}".format(node, node, updated_path), button=["Update", "Ignore"])
 
                 if response == "Update":
