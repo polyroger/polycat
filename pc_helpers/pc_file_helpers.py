@@ -202,10 +202,10 @@ def create_server_location(filepath,server_location=r"\\\\YARN\\projects"):
     match = re.search(pattern,filepath)
 
     if match:
-        new_path = re.sub(pattern,server_location,filepath)
+        new_path = re.sub(pattern,server_location,filepath,flags=re.IGNORECASE)
         if not os.path.isfile(new_path):
             print("The filepath is not a valid path, make sure that you are using a file from the server")
-            raise Exception("The filepath: {0} is not valid".format(filepath)) 
+            raise Exception(" {0} does not exist on the server".format(filepath)) 
         
         return new_path
     elif not match:
@@ -215,10 +215,10 @@ def create_server_location(filepath,server_location=r"\\\\YARN\\projects"):
         print("there was an error when attempting create a server location for {0}".format(filepath))
         raise Exception("The filepath: {0} is not valid".format(filepath)) 
 
-
 # testpath = r"\\YARN\projects\mov\gra\3_development\pipeline_tools\cut0010\0_camera\maya"
 # # testpath = r"\\YARN\projects\ply\nod\3_development\pipeline_tools\cameratesting\0_camera\houdini"
 # testpath = r"//YARN/projects/mov/gra/1_assets/environment/house/0_sourcegeo/sophies_room/decor/vinyl_cover/tex/latest/vinyl_covers_col_1001.tif"
+# testpath = r"Y:/ply/nod/1_assets/environment/foyer/0_sourcegeo/wall_lamp/tex/latest/light_bulb_tex_norm.tif"
 
 # udim = udim_check(testpath)
 # allfiles = listAllFilesInFolder(testpath)
@@ -233,3 +233,4 @@ def create_server_location(filepath,server_location=r"\\\\YARN\\projects"):
 # print(latestfile)
 # print(latestversion)
 # print(versionplus)
+
