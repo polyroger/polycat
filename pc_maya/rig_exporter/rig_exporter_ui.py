@@ -36,9 +36,7 @@ class PcRigExporterUi(QtWidgets.QDialog):
 
         # Checks for the existance of a rig set, creates it if not there
         rigset = cls.check_for_rig_set()
-        if rigset == True:
-            pass
-        elif rigset == "Create":
+        if rigset == "Create":
             exhelp.create_rig_export_set()
             return
         elif rigset == "Cancel":
@@ -124,6 +122,13 @@ class PcRigExporterUi(QtWidgets.QDialog):
 
     ### START OF UI METHOS ###
 
+    # I extend the raise_ to force a refresh when the gui is not closed and there is an update to the contents of the rig directory
+    # def raise_(self):
+    #     self.set_export_path()
+    #     print("extending the raise function to refresh the export path")
+    #     super(PcRigExporterUi, self).raise_()
+
+
     @classmethod
     def check_for_rig_set(cls):
 
@@ -135,6 +140,9 @@ class PcRigExporterUi(QtWidgets.QDialog):
     
     @classmethod
     def check_set_for_items(cls):
+        """
+        Used when the ui inits for characters and in the file validation for custom paths
+        """
 
         items = cmds.sets(cls.RIGEXPORTSET,q=True)
         if items == None or not items:
@@ -144,7 +152,7 @@ class PcRigExporterUi(QtWidgets.QDialog):
             for item in items:
                 if item.endswith("_rig"):
             
-                    return True
+                    return item
             # if none of the items end in _rig then return false
             answer = cmds.confirmDialog(title="Error", message="No item in the RIGEXPORTSET ends in `_rig`, please rename ", button=["OK..I will rename the item"])
             
@@ -176,6 +184,10 @@ class PcRigExporterUi(QtWidgets.QDialog):
         return export_label_path
     
     def set_export_path(self):
+        """
+        Sets the export path in the ui when loaded, This works for characters. Props tend to have a more complicated folder struncture so finding the directory will be
+        a more manual process.
+        """
 
         win_path = self.get_export_path().replace("/","\\")
         
@@ -203,27 +215,39 @@ class PcRigExporterUi(QtWidgets.QDialog):
 
     def filename_validator(self, filename):
 
-        pattern = r"_v(\d{3})"
+        version_re = r"_v(\d{3})"
+        rig_version_re = r"(_rig_v\d+.mb$)"
 
         if filename:
             
             try:
+                # is there a filenam
+                if not os.path.splitext(filename)[1]:
+                    raise Exception("Please enter a valid file with a .mb extension")
+                
                 # check for spaces
                 if " " in filename:
                     raise Exception("There is a space in your filename, please remove it or use '_' instead")
+                
                 # check for case
                 if not filename.islower():
                     raise Exception("You may not have any uppercase characters in your filename, please rename to all be lowercase")
-                # versioning check
-                if not re.search(pattern, filename).group():
-                    raise Exception("There is no _v000 style versioning in your filename, please add _v000 style versioning")
                 
+                # versioning check
+                if not re.search(version_re, filename).group():
+                    raise Exception("There is no _v000 style versioning in your filename, please add _v000 style versioning")
+                if not re.search(rig_version_re, filename).group():
+                    raise Exception("There is no _rig_v000.mb style naming in your file")
+                
+                # Is filename the same as rig group name
+                if not filename.split("_v0")[0] == self.check_set_for_items():
+                    raise Exception("The filename and the rig group name need to match. Please check the correct spelling")
+
                 return True
             
             except Exception as e:
                 return e
             
-
     def export_rig(self,export_path):
         
         try:
@@ -245,9 +269,12 @@ class PcRigExporterUi(QtWidgets.QDialog):
             
             if self.openFolder.isChecked:
                 os.startfile(os.path.realpath(basename))
+            
+            self.close()
 
         except Exception as e:
             cmds.confirmDialog(title="ERROR", message="{0}".format(e), button=["Ok"])
+            self.close()
 
 
  
