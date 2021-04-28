@@ -221,24 +221,29 @@ class PcRigExporterUi(QtWidgets.QDialog):
         if filename:
             
             try:
+                print("validating extension")
                 # is there a filenam
                 if not os.path.splitext(filename)[1]:
                     raise Exception("Please enter a valid file with a .mb extension")
                 
+                print("validating spaces")
                 # check for spaces
                 if " " in filename:
                     raise Exception("There is a space in your filename, please remove it or use '_' instead")
                 
+                print("validating case")
                 # check for case
                 if not filename.islower():
                     raise Exception("You may not have any uppercase characters in your filename, please rename to all be lowercase")
                 
+                print("validating version naming")
                 # versioning check
-                if not re.search(version_re, filename).group():
+                if not re.search(version_re, filename):
                     raise Exception("There is no _v000 style versioning in your filename, please add _v000 style versioning")
-                if not re.search(rig_version_re, filename).group():
-                    raise Exception("There is no _rig_v000.mb style naming in your file")
+                if not re.search(rig_version_re, filename):
+                    raise Exception("There is no '_rig_' before v000 style version in your filename")
                 
+                print("validating filename")
                 # Is filename the same as rig group name
                 if not filename.split("_v0")[0] == self.check_set_for_items():
                     raise Exception("The filename and the rig group name need to match. Please check the correct spelling")
@@ -253,6 +258,7 @@ class PcRigExporterUi(QtWidgets.QDialog):
         try:
             basename, filename = os.path.split(export_path)
             validation = self.filename_validator(filename)
+            print(validation)
             # the exception here is handled in the filename_validator function, and the msg passed through to this try block
             if type(validation) == Exception:
                 raise Exception("{}".format(validation))
