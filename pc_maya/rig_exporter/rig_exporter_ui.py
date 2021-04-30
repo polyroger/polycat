@@ -262,24 +262,29 @@ class PcRigExporterUi(QtWidgets.QDialog):
             if type(validation) == Exception:
                 raise Exception("{}".format(validation))
 
+            # start of exprt
             self.select_items_in_set(self.RIGEXPORTSET)
-                                          
+            
             if not os.path.isdir(basename):
                 os.makedirs(basename)
             
             cmds.file(export_path,es=True, type="mayaBinary", chn=True, con=True,sh=True)
             cmds.confirmDialog(title="Success", message="Rig exported succesfully", button=["Nice!"])
-
             cmds.select(clear=True)
             
             if self.openFolder.isChecked:
                 os.startfile(os.path.realpath(basename))
             
-            self.close()
-
+            close = True
+            
         except Exception as e:
+            close = False
             cmds.confirmDialog(title="ERROR", message="{0}".format(e), button=["Ok"])
-            self.close()
+        
+        finally:
+            if close:
+                self.close()
+
 
 
  
