@@ -258,7 +258,6 @@ class PcRigExporterUi(QtWidgets.QDialog):
         try:
             basename, filename = os.path.split(export_path)
             validation = self.filename_validator(filename)
-            print(validation)
             # the exception here is handled in the filename_validator function, and the msg passed through to this try block
             if type(validation) == Exception:
                 raise Exception("{}".format(validation))
