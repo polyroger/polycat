@@ -1,7 +1,7 @@
 """
 Polycat scene helpers
 """
-import os
+import os, re
 import pymel.core as pm
 import maya.cmds as cmds
 from pc_helpers import pc_file_helpers
@@ -100,3 +100,47 @@ def checkCameraAspect(camera,mglobals):
     pm.confirmDialog(title="WARNING",message="The camera check failed")
     return None   
 
+def get_all_references():
+    """
+    Gets all the references in a maya scene
+    
+    Returns (list): A list of reference nodes
+    """
+
+    all_ref_nodes = cmds.ls(type="reference")
+    ignore = ["_UNKNOWN_REF_NODE_", "sharedReferenceNode"] # There seems to be some behind the scenes nodes that cause the update to fail
+
+    def filter_ignore(ref):
+        return ref not in ignore
+    
+    def filter_loaded(ref):
+        return cmds.referenceQuery(ref,il=True)
+
+    ignored = list(filter(filter_ignore, all_ref_nodes))
+    all_ref_nodes = list(filter(filter_loaded, ignored))
+
+    return all_ref_nodes
+
+def get_latest_reference_path(node):
+    
+    node_path = cmds.referenceQuery(node, f=True, un=False, wcn=True)
+    node_dir, filename = os.path.split(node_path)
+   
+    # Checking the case for duplicated references that have the {1} duplication tag in the resolved name
+    pattern = r"{\d+}"
+    node_ext = re.sub(pattern,"",os.path.splitext(filename)[1])
+   
+    dir_contents = os.listdir(node_dir)
+    # filter out the file type from the contents of the dirlist
+    file_list = []
+    for f in dir_contents:
+        if os.path.splitext(f)[1] == node_ext:
+            file_list.append(f)
+    
+    # get the resolved and un resolved path the un resolved could have variables in it, we are only interested in the file name so
+    # strip the end off of the unresolved path and replace it with the getLatestFIle
+    # so that the path returned is has the variable and the latest file. 
+
+    updated_path = os.path.join(node_dir,pc_file_helpers.getLatestFile(file_list)).replace("\\","/")
+
+    return updated_path

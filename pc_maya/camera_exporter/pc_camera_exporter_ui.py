@@ -208,7 +208,7 @@ class CameraExporter(QtWidgets.QDialog):
                 version = fhelp.versionPlusOne(latestversion)
 
                 ext = ".abc"
-                filename = cut + "_camera_" + version + ext
+                filename = cut + "_camera" + version + ext
                 filepath = os.path.join(path,filename)
                 camtobake = camex.createCamera(app[1],mglobals)
                 camex.bakeCamera(selectedcam,camtobake,int(self.frame_range_start.text()),int(self.frame_range_end.text()),app[2])

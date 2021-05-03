@@ -46,7 +46,15 @@ def createMayaMenus():
     pm.menuItem(label="Playblast Camera",command="from pc_maya.playblast.pc_playblast import PcPlayblastUi;PcPlayblastUi.show_dialog()")
     pm.menuItem(label="Studio Library",command="from pc_maya.studio_lib import pc_studiolibrary;pc_studiolibrary.launchSL()")
 
+    # sets the parent back to the specified menu
+    pm.setParent("..",menu=True)
 
+    # start of rig tools
+    pm.menuItem(label="Rigging Tools",subMenu=True, parent=custom_tools_menu, tearOff=True)
+    pm.menuItem(label="Rig Exporter",command="from pc_maya.rig_exporter.rig_exporter_ui import PcRigExporterUi;PcRigExporterUi.open_rig_export_dialog()")
+    pm.menuItem(label="Create Rig Export Set",command="from pc_maya.maya_helpers import export_helpers;export_helpers.create_rig_export_set()")
+    
+    
     # add in other pm.menu and pm.menuItem after this to create more menus
 
 

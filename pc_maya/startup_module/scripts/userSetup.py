@@ -16,11 +16,14 @@ sys.path.append("\\\\YARN\\projects\\pipeline\\utilities\\studiolibrary-2.7.1\\s
 # #external packages, after path append
 import scandir
 import pullframerange
-import node_defaults
+import startup_functions
 
 #setting pipeline variables
-node_defaults.set_camera_aspect_default()
-node_defaults.set_ffmpeg_path()
+startup_functions.set_camera_aspect_default()
+startup_functions.set_ffmpeg_path()
+
+#DIRTY.....OH SO DIRTY, SETTING OF PROJECT VARIABLES
+os.environ["PROJASSETS"] = cmds.optionVar(q="pcPROJASSETS")
 
 # setting some preffered settings that dont require functions
 cmds.renderThumbnailUpdate(False)
@@ -39,8 +42,8 @@ pm.evalDeferred("from pc_maya.update_references import update_references; update
 pm.evalDeferred("cmds.scriptJob(event=['SceneOpened', 'from pc_maya.update_references import update_references; update_references.run_reference_update(\"scriptJob\")'])", lp=True)
 
 #addimg default shader
-pm.evalDeferred("node_defaults.import_default_arnold_shader()", lp=True) # this makes sure that the shader is created on startup
-pm.evalDeferred("cmds.scriptJob(event=['NewSceneOpened', 'node_defaults.import_default_arnold_shader()'])", lp=True)
-pm.evalDeferred("cmds.scriptJob(event=['SceneOpened', 'node_defaults.import_default_arnold_shader()'])", lp=True)
+pm.evalDeferred("startup_functions.import_default_arnold_shader()", lp=True) # this makes sure that the shader is created on startup
+pm.evalDeferred("cmds.scriptJob(event=['NewSceneOpened', 'startup_functions.import_default_arnold_shader()'])", lp=True)
+pm.evalDeferred("cmds.scriptJob(event=['SceneOpened', 'startup_functions.import_default_arnold_shader()'])", lp=True)
 
 

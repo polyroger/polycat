@@ -36,7 +36,7 @@ def pcAbcExporter(rootname,assetpath,start,end,single):
     exportpath = pathhelp.checkForPath(assetpath,exportname,refversion)
     refattr = "referenceVersion"
 
-    latest = filehelp.getLatestVersion(exportpath,exportname)
+    latest = filehelp.getLatestVersion(exportpath)
     latestplus = filehelp.versionPlusOne(latest)
     
     exportgeoflag = "-root " + rootname
