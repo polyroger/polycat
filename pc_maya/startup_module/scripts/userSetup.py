@@ -23,7 +23,7 @@ startup_functions.set_camera_aspect_default()
 startup_functions.set_ffmpeg_path()
 
 #DIRTY.....OH SO DIRTY, SETTING OF PROJECT VARIABLES
-os.environ["PROJASSETS"] = cmds.optionVar(q="pcPROJASSETS")
+# os.environ["PROJASSETS"] = cmds.optionVar(q="pcPROJASSETS")
 
 # setting some preffered settings that dont require functions
 cmds.renderThumbnailUpdate(False)
