@@ -68,7 +68,8 @@ class PcRigExporterUi(QtWidgets.QDialog):
         self.create_widgets()
         self.create_layout()
         self.create_connections()
-    
+
+            
     def create_widgets(self):
         
         #export path widgets
@@ -123,10 +124,13 @@ class PcRigExporterUi(QtWidgets.QDialog):
     ### START OF UI METHOS ###
 
     # I extend the raise_ to force a refresh when the gui is not closed and there is an update to the contents of the rig directory
-    # def raise_(self):
-    #     self.set_export_path()
-    #     print("extending the raise function to refresh the export path")
-    #     super(PcRigExporterUi, self).raise_()
+    def raise_(self):
+        self.export_path.setText(self.set_export_path())
+        super(PcRigExporterUi, self).raise_()
+
+    def show(self):
+        self.export_path.setText(self.set_export_path())
+        super(PcRigExporterUi, self).show()
 
 
     @classmethod
