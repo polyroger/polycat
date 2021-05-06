@@ -22,6 +22,7 @@ from pc_maya.maya_helpers import export_helpers as exhelp
 from pc_maya.maya_helpers import scene_helpers as shelp
 from pc_maya.maya_helpers import pyside2_helpers as py2help
 
+from pc_maya.rig_exporter import rig_exporter as rigex
 
 class PcRigExporterUi(QtWidgets.QDialog):
 
@@ -272,9 +273,11 @@ class PcRigExporterUi(QtWidgets.QDialog):
             if not os.path.isdir(basename):
                 os.makedirs(basename)
             
+            rigex.hideNodeHistory(False)
             cmds.file(export_path,es=True, type="mayaBinary", chn=True, con=True,sh=True)
             cmds.confirmDialog(title="Success", message="Rig exported succesfully", button=["Nice!"])
             cmds.select(clear=True)
+            rigex.hideNodeHistory(True)
             
             if self.openFolder.isChecked:
                 os.startfile(os.path.realpath(basename))
