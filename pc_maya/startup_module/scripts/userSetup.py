@@ -12,11 +12,13 @@ import pc_maya
 # sys.path.append("F:\\projects\\pipeline\\packages") # for remote use
 sys.path.append("\\\\YARN\\projects\\pipeline\\packages")
 sys.path.append("\\\\YARN\\projects\\pipeline\\utilities\\studiolibrary-2.7.1\\src")
+sys.path.append("\\\\YARN\\projects\\pipeline\\utilities\\maya")
 
 # #external packages, after path append
 import scandir
 import pullframerange
 import startup_functions
+import pc_rigging
 
 #setting pipeline variables
 startup_functions.set_camera_aspect_default()

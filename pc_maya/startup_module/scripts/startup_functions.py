@@ -29,7 +29,7 @@ def import_default_arnold_shader():
     """
     imorts the default arnold polycat shader
     """
-    default_shader = r"\\YARN\projects\pipeline\utilities\maya\shaders\pc_default\pc_default.mb"
+    default_shader = r"\\YARN\projects\pipeline\utilities\maya\pc_shaders\pc_default\pc_default.mb"
     shader_name = "pc_default"
 
     if cmds.ls(shader_name):
