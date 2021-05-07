@@ -145,6 +145,13 @@ def getAbcCamera(node):
         parameter.set(filename)
         alembicCam.parm('buildHierarchy').pressButton()
         hou.node(".").parm("camera").set(cameraSetup(cut,alembicCam))
+        # sets the color and position of the created camera
+        nodecol = (0.28999999165534973, 0.5649999976158142, 0.8859999775886536) #rgb of houdini lighter blue
+        bcol = hou.Color(nodecol)
+        alembicCam.setColor(bcol)
+        campos = [-2.59164, -4.56144]# xy vector for the camera position relative to the pc_scene_start
+        posvec = hou.Vector2(campos)
+        alembicCam.setPosition(posvec)
     
 ################ savecfile ################
 
@@ -155,7 +162,7 @@ def runSaveScene():
     newfilename = hou.ui.selectFile(start_directory=savedir)
     hou.hipFile.save(newfilename)
     
-    print newfilename
+    print(newfilename)
        
 ############# Frame range from file ##################
 
